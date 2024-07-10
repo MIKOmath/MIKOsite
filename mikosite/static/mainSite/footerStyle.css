@@ -1,8 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap');
 
+html{
+    height: 100%;
+}
 body {
     font-family: "Rubik", sans-serif;
     font-optical-sizing: auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
 }
 
 * {
@@ -28,6 +35,8 @@ ul {
 .footer {
     background-color: #033c49;
     padding: 70px 0;
+    bottom: 0;
+    margin-top: auto;
 }
 
 .footer-col {

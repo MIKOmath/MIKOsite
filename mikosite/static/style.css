@@ -32,7 +32,7 @@
 .navbar a {
   color: var(--b1);
   text-decoration: none;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -92,17 +92,17 @@
 }
 
 h1 {
-  font-size: 36px;
+  font-size: 30px;
   color: var(--b1);
 }
 
 h2 {
-  font-size: 28px;
+  font-size: 25px;
   color: var(--y1);
 }
 
 h3 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 400;
   color: var(--b1);
 }
@@ -140,7 +140,9 @@ hr {
 .column_left{
     width: 150px;
 }
-
+.navbar-left{
+  margin-left: 20px;
+}
 @media screen and (min-width: 500px) {
     .column_left{
         width: 260px;
@@ -156,6 +158,7 @@ hr {
 
   .navbar-left {
     margin-right: auto;
+
   }
 
   .navbar-right {
@@ -179,16 +182,16 @@ hr {
     margin-left: 15px;
   }
 
-  h1 {
-    font-size: 48px;
+ h1 {
+    font-size: 30px;
   }
 
   h2 {
-    font-size: 36px;
+    font-size: 25px;
   }
 
   h3 {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .post {
@@ -198,19 +201,19 @@ hr {
 
 @media screen and (min-width: 1024px) {
   .navbar a {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   h1 {
-    font-size: 60px;
+    font-size: 30px;
   }
 
   h2 {
-    font-size: 44px;
+    font-size: 25px;
   }
 
   h3 {
-    font-size: 28px;
+    font-size: 20px;
   }
 
   .post {
@@ -249,12 +252,18 @@ main {
 }
 
 
-#welcome-text{
+#welcome-text {
   text-align: left;
   width: 70%;
+  font-weight: 400;
   font-size: 25px;
 }
 
+
+
+.div.images img{
+  width: 40%;
+}
 #background-image{
   height: 100%;
   width: 100%;
@@ -281,6 +290,8 @@ main {
 #welcome-text{
   color: white;
 }
+
+
 #landing-banner-wrapper a:hover{
   color: white;
   transition: ease-in 0.2s;
