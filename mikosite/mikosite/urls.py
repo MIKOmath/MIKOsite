@@ -25,6 +25,4 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('kolomatematyczne/', include('kolomat.urls')),
     path("bazahintow/", include("hintBase.urls")),
-
-    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
