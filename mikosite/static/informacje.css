@@ -1,0 +1,280 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+
+}
+.calendar {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 70%;
+    top: 100px;
+    margin: auto;
+    position: relative;
+    border: 1px solid black;
+}
+.header {
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header button {
+    background-color: transparent;
+    border: none;
+    color: var(--b1);
+    font-size: 24px;
+    cursor: pointer;
+}
+.header h2 {
+    font-size: 28px;
+    color: var(--b1);
+    margin: 0;
+}
+.days {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    /*gap: 1px;*/
+    flex-grow: 1;
+}
+.days div {
+    display: flex;
+    height: 70px;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    margin: 10px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.day-nuberw:hover {
+    border: 3px solid var(--b1);
+    margin: 7px;
+    border-radius: 20px;
+}
+
+.days .day-name {
+    font-weight: bold;
+    background-color: var(--b1);
+    color: #ffffff;
+    margin: 0px;
+}
+
+.days .current-day {
+    border: 3px solid var(--r1);
+    margin: 7px;
+    border-radius: 20px;
+}
+.days .current-day:hover{
+    border: 5px solid var(--r1);
+    margin: 5px;
+    border-radius: 20px;
+}
+.event-day {
+    position: relative;
+}
+
+.event-indicator {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background-color: var(--b1);
+    border-radius: 50%;
+    transform: translateX(-50%);
+}
+
+.event-popup {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.popup-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 60%;
+    border-radius: 5px;
+    position: relative;
+}
+
+.day-number{
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#popupDate {
+    margin-top: 0;
+}
+
+#eventList {
+    padding-left: 20px;
+}
+
+.day-number {
+    z-index: 2;
+    color: var(--b1);
+}
+
+
+/*TEST NIŻEJ*/
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --b1: #074A59;
+    --b2: #06313E;
+    --r1: #F24535;
+    --y1: #F2B544;
+    --w1: #ffffff;
+    --bcg: #f0faff;
+    /* --bcg: #ffffff; */
+  }
+
+
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    height: 80px;
+    padding-right: 50px;
+    padding-left: 50px;
+    border-bottom: 1px solid var(--b1);
+}
+
+.navbar a {
+    color: var(--b1);
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.navbar-left {
+    margin-right: auto;
+}
+
+.navbar-center {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.navbar-right {
+    margin-left: auto;
+}
+.navbar-center li {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-center li + li::before {
+    content: "|";
+    color: 06313E;
+    font-weight: 900;
+    margin: 0 15px;
+}
+
+.navbar a:hover {
+    color: var(--y1);
+}
+
+#current
+{
+    color: var(--r1);
+}
+#current:hover
+{
+    color: var(--y1);
+}
+
+h1
+{
+    font-size: 60px;
+    color: var(--b1);
+    margin-bottom: 20px;
+}
+
+h2
+{
+    font-size: 44px;
+    color: var(--y1);
+}
+
+h3
+{
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--b1);
+}
+
+hr
+{
+    color: var(--b1);
+    background-color: var(--b1);
+    height: 3px;
+}
+
+
+
+@media (max-width: 768px) {
+    .calendar {
+        width: 95%;
+    }
+
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+    .navbar-center {
+        flex-direction: column;
+        margin: 10px 0;
+    }
+
+    .navbar-center li + li::before {
+        display: none;
+    }
+}

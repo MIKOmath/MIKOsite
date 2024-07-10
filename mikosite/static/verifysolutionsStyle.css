@@ -1,0 +1,13 @@
+.solutions-container {
+    
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.solution-block {
+    background-color: #f5f5f5; /* Light gray background */
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15); /* Soft shadow */
+}

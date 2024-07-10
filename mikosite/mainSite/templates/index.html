@@ -1,0 +1,99 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <title>MIKO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <script src="{% static 'script.js' %}"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik" />
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">
+            </div>
+            <ul class="navbar-center">
+                <li><a id="current"   href="/">HOME</a></li>
+                <li><a href="/bazahintow">BAZA ZADAŃ</a></li>
+                <li><a href="/bazahintow/addproblem">DODAJ ZADANIE</a></li>
+                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
+                <li><a href="/about">O NAS</a></li>
+            </ul>
+            <div class="navbar-right">
+                <a href="/profile">PROFIL</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="row"></div>
+        <div class="column_left" style="width: 500px;">
+        </div>
+    </main>
+
+    <section id="feed">
+        <h1 style="margin-top: 50px;">Aktualności</h1>
+        <hr>
+        <div class="row" style="margin: 60px 0;">
+            <div class="column_left" style="margin-right: 60px;">
+                <div class="profile">
+                    <img src="{% static 'dsclogo.png' %}" alt="person"
+                        style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
+                    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer"><h3 id="profile_name" style="color: white; text-align: center;">Discord MIKO<span class="material-symbols-outlined">open_in_new</span></h3></a>
+                    <p style="word-break: break-word; color: white; font-size: 14px">Dołącz do społeczności Matematycznego Internetowego
+                        Koła Olimpijskiego na naszym serwerze Discrod!
+
+                    </p>
+                </div>
+            </div>
+            <div class="column_right" style="width: -webkit-calc(100% - 320px);flex-wrap: wrap; word-break:break-word;">
+
+                {% for post in posts %}
+                <div class="post">
+                    <h2 id="post_title">{{ post.title }}</h2>
+                    <h3 id="post_subtitle" style="margin-bottom: 20px;">{{ post.subtitle }}</h3>
+                    <p><strong>Autor/autorzy:</strong>
+                        {% for author in post.authors.all %}
+                        <a href="/publicprofile/{{ author.username }}">{{ author.name }} {{ author.surname }}</a>
+                        {% if not forloop.last %}; {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p><strong>Data publikcaji:</strong> {{ post.date }}</p>
+                    <p><strong>Czas publikcaji:</strong> {{ post.time }}</p>
+                    <p id="post_content">{{ post.text_field_1 }}</p>
+                    <p id="post_content">{{ post.text_field_2 }}</p>
+                    <p>
+                        <strong>Pliki:</strong>
+                        {% if post.file %}
+                        <a href="{{ post.file.url }}">Download</a>
+                        {% else %}
+
+                        {% endif %}
+                    </p>
+                    <div class="images">
+                        <strong></strong>
+                        {% for image in post.images.all %}
+                        <img src="/media/{{ image }}" alt="{{ image.alt_text }}">
+                        {% empty %}
+
+                        {% endfor %}
+                    </div>
+                </div>
+                {% empty %}
+                <p>Brak postów.</p>
+                {% endfor %}
+
+            </div>
+        </div>
+    </section>
+    {% include "footer.html" %}
+
+</body>
+
+</html>

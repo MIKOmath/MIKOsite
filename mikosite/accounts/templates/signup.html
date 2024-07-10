@@ -1,0 +1,94 @@
+{% load static %}
+<!-- TODO -->
+<!-- extends "base.html" 
+
+ block content 
+
+ endblock content  
+ procent nawias otacza kazde ofc-->
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+        rel="stylesheet">
+    <title>Rejestracja</title>
+    <link rel="stylesheet" href="{% static 'accounts/styleSignup.css' %}">
+</head>
+
+<body>
+    <div id="container">
+        <h1>Rejestracja</h1>
+        <div id="comment">Utwórz konto aby dodawać zadania oraz rozwiązania do bazy hintów!</div>
+        <form id="registrationForm" method="POST" enctype="multipart/form-data" action="/signup/">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <input type="text" id="name" name="name" placeholder="Imię" required>
+                <input type="text" id="surname" name="surname" placeholder="Nazwisko" required>
+            </div>
+            <div class="form-group">
+                <input type="text" id="username" name="username" placeholder="Nazwa użytkownika" required>
+                <input type="email" id="email" name="email" placeholder="Adres e-mail" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" name="password" placeholder="Hasło" required>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Potórz hasło" required>
+            </div>
+            <div class="form-group">
+                <select id="region" name="region">
+                    <option value="">Województwo</option>
+                    <option value="Dolnośląskie">Dolnośląskie</option>
+                    <option value="Kujawsko-Pomorskie">Kujawsko-Pomorskie</option>
+                    <option value="Lubelskie">Lubelskie</option>
+                    <option value="Lubuskie">Lubuskie</option>
+                    <option value="Łódzkie">Łódzkie</option>
+                    <option value="Małopolskie">Małopolskie</option>
+                    <option value="Mazowieckie">Mazowieckie</option>
+                    <option value="Opolskie">Opolskie</option>
+                    <option value="Podkarpackie">Podkarpackie</option>
+                    <option value="Podlaskie">Podlaskie</option>
+                    <option value="Pomorskie">Pomorskie</option>
+                    <option value="Śląskie">Śląskie</option>
+                    <option value="Świętokrzyskie">Świętokrzyskie</option>
+                    <option value="Warmińsko-Mazurskie">Warmińsko-Mazurskie</option>
+                    <option value="Wielkopolskie">Wielkopolskie</option>
+                    <option value="Zachodniopomorskie">Zachodniopomorskie</option>
+                </select>
+                <input type="date" id="dateOfBirth" name="date_of_birth" placeholder="Data urodzenia">
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="profileImage">Zdjęcie profilowe</label>
+                <input type="file" id="profileImage" name="profile_image" accept="image/*">
+            </div>
+            <button type="submit">Wyślij</button>
+        </form>
+        <br>
+        <p>Masz już konto? <a href="../signin/">Zaloguj</a></p>
+
+        <p style="color: red">{{ custom_message }}</p>
+
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function (event) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                alert('Hasła się nie zgadzają!');
+            }
+        });
+        s
+    </script>
+</body>
+
+</html>

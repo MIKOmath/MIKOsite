@@ -1,0 +1,8 @@
+django
+django_taggit
+django_formtools
+fuzzywuzzy
+Pillow
+python-Levenshtein
+pytz
+django-redis

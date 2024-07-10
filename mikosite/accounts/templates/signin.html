@@ -1,0 +1,49 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'accounts/styleSignin.css' %}">
+</head>
+
+<body>
+    <header>
+        <!-- TODO: HEADER Z TEMPLATKI WSTAWIĆ -->
+
+    </header>
+    <div class="container">
+
+        <div class="box-inside">
+            <h1>Logowanie</h1>
+            <div id="login">Zaloguj się do swojego konta</div>
+            <form id="loginForm" method="POST" action="/signin/">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <input type="text" id="username" name="username" placeholder="Nazwa użytkownika" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" name="password" placeholder="Hasło" required>
+                </div>
+                <!-- TODO ref to pass reset -->
+                <div class="forgot-password">Zapomniałem hasła</div>
+                <button type="submit">Zaloguj</button>
+            </form>
+
+            <div class="no-acc">Nie masz konta? <a href="../signup/">Zarejestruj się</a></div>
+            <p style="color: red">{{ custom_message }}</p>
+        </div>
+    </div>
+    <!--    <script src="script.js"></script>-->
+</body>
+
+</html>

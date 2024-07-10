@@ -1,0 +1,140 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tasks Page</title>
+<link rel="stylesheet" href="{% static 'hintbaseindexStyle.css' %}">
+
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">
+            </div>
+            <ul class="navbar-center">
+                <li><a href="/">HOME</a></li>
+                <li><a id="current"   href="/bazahintow">BAZA ZADAŃ</a></li>
+                <li><a href="/bazahintow/addproblem">DODAJ ZADANIE</a></li>
+                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
+                <li><a href="/about">O NAS</a></li>
+            </ul>
+            <div class="navbar-right">
+                <a href="/profile">PROFIL</a>
+            </div>
+        </nav>
+    </header>
+
+<div class="container">
+
+
+    <h1> Baza zadań</h1>
+    <hr>
+    <p style="color: #949494; font-style: italic; margin-bottom: 60px;">Znajdziesz tutaj zadania z różnych olimpiad wraz z pełnymi rozwiązaniami oraz podpowiedziami. Zachęcamy też do dodawania własnych zadań oraz rozwiązań!</p>
+
+   <div class="search-container">
+    <h2>Wyszukaj zadanie</h2>
+    <form method="POST" id="filter-form" action="">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="tags">Tagi:</label>
+                <select name="tags_to_filter" id="tags" multiple>
+                    {% for tag in tags %}
+                        <option value="{{ tag }}">{{ tag }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="difficulty">Trudność:</label>
+                <div class="difficulty-selector">
+                    <button type="button" class="difficulty-btn" data-value="1">1</button>
+                    <button type="button" class="difficulty-btn" data-value="2">2</button>
+                    <button type="button" class="difficulty-btn" data-value="3">3</button>
+                    <button type="button" class="difficulty-btn" data-value="4">4</button>
+                    <button type="button" class="difficulty-btn" data-value="5">5</button>
+                    <button type="button" class="difficulty-btn" data-value="6">6</button>
+                    <button type="button" class="difficulty-btn" data-value="7">7</button>
+                    <button type="button" class="difficulty-btn" data-value="8">8</button>
+                    <button type="button" class="difficulty-btn" data-value="9">9</button>
+                    <button type="button" class="difficulty-btn" data-value="10">10</button>
+                </div>
+                <input type="hidden" id="difficulty" name="difficulty" value="">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group search-group">
+                <label for="search">Szukaj:</label>
+                <input type="text" id="search" name="search" placeholder="Wpisz słowo kluczowe...">
+            </div>
+            <div class="form-group submit-group">
+                <input type="submit" value="Szukaj">
+            </div>
+        </div>
+    </form>
+</div>
+
+<hr style="
+width: 100px;
+margin: auto;
+margin-top: 60px;
+">
+
+    <br><br>
+    {% for problem in all_problems %}
+    <div class="problem-block">
+        <h2>Zadanie {{ problem.problem_id }}</h2>
+        <p><strong>Źródło:</strong>
+            <span>{{ problem.source }}</span>
+        </p>
+        
+        <p><strong>trudność:</strong> {{ problem.difficulty }}</p>
+        <p><strong>Zadanie dodał/a:</strong> 
+            {% if proben.author != "" %} 
+            {{ problem.author.username }}
+            {% endif %}
+        </p>
+        <p>
+            <strong>
+                Gatunek:</strong>
+            {% for tag_name in problem.tags.names %}
+            <span>{{ tag_name }}{% if not forloop.last %},{% endif %}</span>
+            {% endfor %}
+        </p>
+
+        <div style="display: flex;justify-content: flex-end;">
+            <a href="/bazahintow/view_problem/{{ problem.problem_id }}" class="view-button">Zobacz zadanie</a>
+        </div>
+        
+    </div>
+    {% endfor %}
+
+</div>
+{% include "footer.html" %}
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+    const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+    const difficultyInput = document.getElementById('difficulty');
+
+    difficultyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.classList.toggle('active');
+            updateDifficultyInput();
+        });
+    });
+
+    function updateDifficultyInput() {
+        const selectedDifficulties = Array.from(difficultyButtons)
+            .filter(btn => btn.classList.contains('active'))
+            .map(btn => btn.dataset.value);
+        difficultyInput.value = selectedDifficulties.join(',');
+    }
+});
+
+</script>
+</body>
+</html>

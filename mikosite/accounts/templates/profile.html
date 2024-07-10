@@ -1,0 +1,105 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{% static 'styleProfile.css' %}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">
+            </div>
+            <ul class="navbar-center">
+                <li><a href="/">HOME</a></li>
+                <li><a href="/bazahintow">BAZA ZADAŃ</a></li>
+                <li><a href="/bazahintow/addproblem">DODAJ ZADANIE</a></li>
+                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
+                <li><a href="/about">O NAS</a></li>
+            </ul>
+            <div class="navbar-right">
+                <a id="current"   href="/profile">PROFIL</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Profil</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+
+            {% if user.profile_image %}
+                <img src="{{ user.profile_image.url }}" alt="Profile Image">
+            {% endif %}
+
+            <div class="field">
+                <label for="username">Nazwa</label>
+                <span id="username">{{ user.username }}</span>
+            </div>
+            <div class="field">
+                <label for="email">Email</label>
+                <span id="email">{{ user.email }}</span>
+            </div>
+            
+
+            <div class="field">
+                <label for="name">Imie</label>
+                <input type="text" id="name" name="name" value="{{ user.name }}">
+            </div>
+            <div class="field">
+                <label for="surname">Nazwisko</label>
+                <input type="text" id="surname" name="surname" value="{{ user.surname }}" required>
+            </div>
+            <div class="field">
+                <label for="region">Województwo</label>
+                    <select class="input"  id="region" name="region" required>
+                        <option value="" {% if user.region == "" %}selected{% endif %} disabled selected>Wybierz z listy</option>
+                        <option value="Dolnośląskie" {% if user.region == "Dolnośląskie" %}selected{% endif %}>Dolnośląskie</option>
+                        <option value="Kujawsko-pomorskie" {% if user.region == "Kujawsko-pomorskie" %}selected{% endif %}>Kujawsko-pomorskie</option>
+                        <option value="Lubelskie" {% if user.region == "Lubelskie" %}selected{% endif %}>Lubelskie</option>
+                        <option value="Lubuskie" {% if user.region == "Lubuskie" %}selected{% endif %}>Lubuskie</option>
+                        <option value="Łódzkie" {% if user.region == "Łódzkie" %}selected{% endif %}>Łódzkie</option>
+                        <option value="Małopolskie" {% if user.region == "Małopolskie" %}selected{% endif %}>Małopolskie</option>
+                        <option value="Mazowieckie" {% if user.region == "Mazowieckie" %}selected{% endif %}>Mazowieckie</option>
+                        <option value="Opolskie" {% if user.region == "Opolskie" %}selected{% endif %}>Opolskie</option>
+                        <option value="Podkarpackie" {% if user.region == "Podkarpackie" %}selected{% endif %}>Podkarpackie</option>
+                        <option value="Podlaskie" {% if user.region == "Podlaskie" %}selected{% endif %}>Podlaskie</option>
+                        <option value="Pomorskie" {% if user.region == "Pomorskie" %}selected{% endif %}>Pomorskie</option>
+                        <option value="Śląskie" {% if user.region == "Śląskie" %}selected{% endif %}>Śląskie</option>
+                        <option value="Świętokrzyskie" {% if user.region == "Świętokrzyskie" %}selected{% endif %}>Świętokrzyskie</option>
+                        <option value="Warmińsko-mazurskie" {% if user.region == "Warmińsko-mazurskie" %}selected{% endif %}>Warmińsko-mazurskie</option>
+                        <option value="Wielkopolskie" {% if user.region == "Wielkopolskie" %}selected{% endif %}>Wielkopolskie</option>
+                        <option value="Zachodniopomorskie" {% if user.region == "Zachodniopomorskie" %}selected{% endif %}>Zachodniopomorskie</option>
+                    </select>
+            </div>
+
+            <div class="field">
+                <label for="date_of_birth">Data urodzenia</label>
+                <input class="input" type="date" id="date_of_birth" name="date_of_birth"
+                       value="{% if user.date_of_birth %}{{ user.date_of_birth|date:"Y-m-d" }}{% endif %}"
+                       min="1900-01-01">
+            </div>
+            <div class="field">
+                <label for="problem_counter">Dodane zadania</label>
+                <span id="problem_counter">{{ user.problem_counter }}</span>
+            </div>
+            <div id="buttons">
+                <a href="/signout/"><button type="button">Wyloguj</button></a> 
+                <a href="/change_password/"><button type="button">Zmień hasło</button></a>
+                <a href="../publicprofile/{{ user.username }}"><button type="button">Zobacz swoje zadania i rozwiązania</button></a>
+                <button type="submit">Zapisz</button>
+            </div>     
+
+            {% if user_belongs_to_moderator_group %}
+                <a href="/zarzadzanie/"><button type="button">Zarządzanie</button></a>
+            {% endif %}
+            
+            <p style="color: red">{{ custom_message }}</p>
+        </form>
+    </div>
+</body>
+</html>

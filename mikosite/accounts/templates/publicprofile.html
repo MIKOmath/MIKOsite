@@ -1,0 +1,68 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ username }}'s Public Profile</title>
+
+    <!-- tu jest css do profilu, trzeba zrobić nowy plik-->
+        <link rel="stylesheet" href="{% static 'styleProfile.css' %}">
+
+</head>
+<body>
+<header>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">
+            </div>
+            <ul class="navbar-center">
+                <li><a href="/">HOME</a></li>
+                <li><a href="/bazahintow">BAZA ZADAŃ</a></li>
+                <li><a href="/about">O NAS</a></li>
+                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
+
+            </ul>
+            <div class="navbar-right">
+                <a id="current"  href="/profile">PROFIL</a>
+            </div>
+        </nav>
+    </header>
+    <h1>{{ username }}'s Public Profile</h1>
+
+    <h2>General Information</h2>
+    <ul>
+        <li>Username: {{ username }}</li>
+        <li>Name: {{ name }}</li>
+        <li>Surname: {{ surname }}</li>
+    </ul>
+
+    <h2>Problems</h2>
+    {% if problems %}
+        <ul>
+        {% for problem in problems %}
+            <li>
+                Problem ID: {{ problem.problem_id }}
+                <br>
+                Title: {{ problem.title }}
+                <!-- Add more problem details as needed -->
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No problems found.</p>
+    {% endif %}
+
+    <h2>Problem Hint IDs</h2>
+    {% if hints_ids %}
+        <ul>
+        {% for hint_id in hints_ids %}
+            <li>{{ hint_id }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No problem hint IDs found.</p>
+    {% endif %}
+</body>
+</html>

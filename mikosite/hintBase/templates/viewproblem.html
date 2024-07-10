@@ -1,0 +1,201 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+        rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'hintBase/viewproblemStyle.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <title>View Problem</title>
+</head>
+
+<body>
+    
+    <header>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">
+            </div>
+            <ul class="navbar-center">
+                <li><a href="/">HOME</a></li>
+                <li><a id="current"   href="/bazahintow">BAZA ZADAŃ</a></li>
+                <li><a href="/bazahintow/addproblem">DODAJ ZADANIE</a></li>
+                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
+                <li><a href="/about">O NAS</a></li>
+            </ul>
+            <div class="navbar-right">
+                <a href="/profile">PROFIL</a>
+            </div>
+        </nav>
+    </header>
+
+    <div id="container">
+        <div class="row">
+            <div class="column" style="margin-right: 60px;">                
+                <div id="title">
+                    <div class="problem-title-box">
+                        <h1>Zadanie {{ problem.problem_id }}</h1>
+
+                    </div>
+                </div>
+            </div>
+            <div class="column" >
+
+                <h2>Zadanie dodał/a:
+                    {% if proben.author != "" %}
+                        <a href="/publicprofile/{{ problem.author.username }}" style="text-decoration: none; color: #F2B544; cursor: pointer">{{ problem.author.username }} ({{ problem.author.name }} {{ problem.author.surname }})</a>
+                    {% endif %}
+                </h2>
+                <h2>
+                    Źródło: {{ problem.source }}<br>
+                    Tagi:
+                    {% for tag_name in problem.tags.names %}
+                    <span>{{ tag_name }},</span>
+                    {% endfor %}
+                </h2>
+            </div>
+        </div>
+        <div id='problem-content'>
+            
+            <h2>
+                {% if problem.image %}
+            </h2>
+            <img src="{{ problem.image.url }}" alt="Problem Image">
+            {% endif %}
+            
+            <hr style="
+            color: var(--b1);
+            background-color: var(--b1);
+            height: 1px; width: 100%; border: 0;">
+            <div id="latex-container">
+                {{ problem.latex_code }}
+            </div>
+            <div class="difficulty-rating">
+                <form method="post">
+                    {% csrf_token %}
+                    <label style="font-size: 20px" for="difficulty">Oceń trudność zadania (1-10):</label>
+                    <select name="difficulty" id="difficulty">
+                        {% for i in "123456789" %}
+                            <option value="{{ i }}">{{ i }}</option>
+                        {% endfor %}
+                        <option value="10">10</option>
+                    </select>
+                    <button type="submit">Wyślij</button>
+                </form>
+            <!-- Display average rating -->
+            <div class="average-rating">
+
+                <p style="font-size: 16px;">
+                    Średnia z ocen trudności tego zadania:
+                    <a
+                       style="
+                       {% if rating < 5 %}
+                           color: green;
+                       {% elif rating < 8 %}
+                           color: #f04435;
+                       {% else %}
+                           color: #be00be;
+                       {% endif %}
+                       ">
+                       {{ rating }}
+                    </a>
+                </p>
+            </div>
+        </div>
+
+
+
+        </div>
+
+        
+        <div id="hints-container">
+            <div id="hint-title">
+                <h3>Rozwiązania ({{ hinty|length }})</h3>
+                <br>
+                {% if user.is_authenticated %}
+                    <h2 style="text-align: center"><button><a href="./add_solution" style="text-decoration: none; color: #ff5540">Dodaj rozwiązanie</a></button></h2>
+                {% endif %}
+            </div>
+
+            <br>
+            {% for hintIntance in hinty %}
+            <div class="solution">
+                <h4>Rozwiązanie {{ forloop.counter }}</h4>
+
+
+                {% for line in hintIntance.hints.splitlines %}
+                    <div class="clue" id="latex-container" >
+                        Podpowiedź {{ forloop.counter }}:
+                        <div class="spoiler-wrapper">
+                            <a class="spoiler">
+                              <span class="spoiler-text">{{ line }}</span>
+                            </a>
+                              <svg class="spoiler-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                                <path d="M442-242q118 0 200.5-82.5T725-525q0-118-82.5-200T442-807q-118 0-200 82t-82 200q0 118 82 200.5T442-242Zm0-172q46 0 78-32t32-78q0-46-32-78t-78-32q-46 0-78 32t-32 78q0 46 32 78t78 32Zm0 60q-75 0-138-39t-99-105q-7-12-7-26t7-26q36-66 99-105t138-39q75 0 138 39t99 105q7 12 7 26t-7 26q-36 66-99 105t-138 39Zm0-100q29 0 49.5-20.5T512-524q0-29-20.5-49.5T442-594q-29 0-49.5 20.5T372-524q0 29 20.5 49.5T442-454Zm0 318q-81 0-151.5-30.5t-123-83.5q-52.5-53-83-123.5T54-525q0-81 30.5-151.5t83-123q52.5-52.5 123-83T442-913q81 0 151.5 30.5t123.5 83q53 52.5 83.5 123T831-525q0 69-22.5 130.5T746-283l123 123q15 15 15 37t-15 37q-15 15-37 15t-37-15L671-210q-48 35-106 54.5T442-136Z"/>
+                              </svg>
+                          </div>
+                    </div>
+                {% endfor %}
+
+
+                <div class="clue" id="latex-container">
+                    Pełne rozwiązanie:
+                    <div class="spoiler-wrapper">
+                        <a class="spoiler">
+                            <span>{{ hintIntance.latex_solution }}</span>
+                        </a>
+                        <svg class="spoiler-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                            <path d="M442-242q118 0 200.5-82.5T725-525q0-118-82.5-200T442-807q-118 0-200 82t-82 200q0 118 82 200.5T442-242Zm0-172q46 0 78-32t32-78q0-46-32-78t-78-32q-46 0-78 32t-32 78q0 46 32 78t78 32Zm0 60q-75 0-138-39t-99-105q-7-12-7-26t7-26q36-66 99-105t138-39q75 0 138 39t99 105q7 12 7 26t-7 26q-36 66-99 105t-138 39Zm0-100q29 0 49.5-20.5T512-524q0-29-20.5-49.5T442-594q-29 0-49.5 20.5T372-524q0 29 20.5 49.5T442-454Zm0 318q-81 0-151.5-30.5t-123-83.5q-52.5-53-83-123.5T54-525q0-81 30.5-151.5t83-123q52.5-52.5 123-83T442-913q81 0 151.5 30.5t123.5 83q53 52.5 83.5 123T831-525q0 69-22.5 130.5T746-283l123 123q15 15 15 37t-15 37q-15 15-37 15t-37-15L671-210q-48 35-106 54.5T442-136Z"/>
+                        </svg>
+                    </div>
+
+                </div>
+
+                <div style="font-size: 20px; font-weight: 400">Autor rozwiązania/(rozwiązanie dodał):{{ hintIntance.author.username }}</div>
+            </div>
+            <br>
+            {% endfor %}
+
+
+            {% if user.is_authenticated %}
+                {% if is_admin %}
+                    <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Jeśli jesteś adminem: Na pewno chcesz usunąc zadanie?');">
+                        {% csrf_token %}
+                            <input type="hidden" name="delhandeler";value="delete">
+                        <button type="submit" name="delete_problem">Usuń zadanie</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+{% include "footer.html" %}
+</body>
+
+</html>
+
+<script src="{% static 'hintBase/viewproblemScript.js' %}"></script>

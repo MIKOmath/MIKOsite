@@ -1,0 +1,44 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Solutions</title>
+    <link rel="stylesheet" href="{% static 'verifysolutionsStyle.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+    <script src ="{% static 'verifysolutionsScript.js' %}"></script>
+</head>
+<body>
+    
+    <h1>Solutions</h1>
+    <form method="post" action="./" id="verifysolutions1">
+    {% csrf_token %}
+        <div class="solutions-container">
+            
+            {% for solution_ in solutions_toverify %}
+                <div class="solution-block">
+                    <p> Problem </p>
+                    <label>{{ solution_.problem.latex_code }}</label>
+                    <p>Author: {{ solution_.author.username }}, {{ solution_.hintId }}</p>
+                    <p>Hints:</p>
+                    <label>{{ solution_.hints|linebreaks }}</label>
+                    <p>Full Solution:</p>
+                    <label>{{ solution_.latex_solution }}</label>
+                <br>    
+                <button type="submit" name="verify_solution" value="{{ solution_.hintId }}" style ="color: green">Verify</button>
+                <button type="submit" name="delete_solution" value="{{ solution_.hintId }}" style ="color: red"> Delete</button>
+                
+
+                </div>
+                
+            {% endfor %}
+        </div>
+    </form>
+</body>
+</html>

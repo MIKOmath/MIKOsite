@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'addproblemStyle.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+    <script src ="{% static 'addproblemScript.js' %}"></script>
+    
+    <title>Create a Problem</title>
+    
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">
+            </div>
+            <ul class="navbar-center">
+                <li><a href="/">HOME</a></li>
+                <li><a href="/bazahintow">BAZA ZADAŃ</a></li>
+                <li><a id="current"   href="/bazahintow/addproblem">DODAJ ZADANIE</a></li>
+                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
+                <li><a href="/about">O NAS</a></li>
+            </ul>
+            <div class="navbar-right">
+                <a href="/profile">PROFIL</a>
+            </div>
+        </nav>
+    </header>
+
+    <section id="addproblem">
+        <h1 style="margin-top: 50px;">Dodaj zadanie</h1>
+        <hr>
+        <h2>Podgląd</h2>
+        <label id="preview" style="font-weight: normal"></label>
+        
+        {% if confirm_key == "False" %}
+        
+            <form action="/bazahintow/addproblem/" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div>
+                    <h2 for="latex_code">Kod Latex</h2>
+                    <textarea id="latex_code" name="latex_code" rows="10" cols="100" placeholder=
+                    "$\sqrt{\frac{a^N}{b^{N-1}}}$" required></textarea>
+                </div>
+                <div class="row" style="margin: 30px 0; ">
+                    <div class="column" style="margin-right: 60px;">
+                        <h2 for="source">Źródło</h2>
+                        <input type="text" id="source" name="source" style="height: 40px;">
+                    </div>
+                    <div class="column">
+
+                        <h2 for="difficulty">Trudność (1-10)</h2>
+                        <input type="number" id="difficulty" name="difficulty" min="1" max="10" required>
+    
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="column" style="margin-right: 60px;">
+                        <h2 for="tags">Typ zadania</h2>
+                        <select name="selected_tags" id="tags" multiple>
+                            {% for tag in tags %}
+                            <option value="{{ tag }}">{{ tag }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="column" >
+                        <h2 for="image">Obraz</h2>
+                        <input type="file" id="image" name="image">
+                    </div>
+                </div>
+                
+                <input type="submit" value="Prześlij">
+            </form>
+        
+            {% if custom_message %}<p style="color: red">{{ custom_message }}</p>{% endif %}
+        {% else %}
+        
+            <form action="/bazahintow/addproblem/" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div>
+                    <label style="display:None" name="confirm_key">True</label>
+                    <label for="latex_code">Latex Code:</label>
+                    <textarea id="latex_code" name="latex_code" rows="10" cols="100" placeholder=
+                    "\documentclass{article}
+            \begin{document}
+            \end{document}" required>{{ problem.latex_code }}</textarea>
+                </div>
+                <div>
+                    <label for="source">Source:</label>
+                    <input type="text" id="source" name="source" value="{{ problem.source }}">
+                </div>
+                <div>
+                    <label for="image">Image:</label>
+                    <input type="file" id="image" name="image">
+                </div>
+                <div>
+                    <label for="difficulty">Difficulty (1-10):</label>
+                    <input type="number" id="difficulty" name="difficulty" min="1" max="10" value="{{ problem.difficulty }}" required>
+                </div>
+                <div>
+                    <label for="tags">Typ zadania:</label><br>
+                    <select name="selected_tags" id="tags" multiple>
+                        {% for tag in tags %}
+                        <option value="{{ tag }}">{{ tag }}</option>
+                        {% endfor %}
+                    </select><br><br>
+                </div>
+                
+                <input type="submit" value="Dodaj" name="confirm_key">
+                <input type="submit" value="Usuń" name="confirm_key" style="color: white">
+            </form>
+            {% if custom_message %}<p style="color: red">{{ custom_message }}</p>{% endif %}
+        
+            {% for s_problem in similar_problems %}
+                <div>
+                    <strong>Problem ID:</strong> {{ s_problem.problem_id }}<br>
+                    <strong>Author:</strong> 
+                    {% if s_problem.author != "" %} 
+                    {{ s_problem.author.username }}
+                    {% endif %}
+                    <br>
+                    <strong>Source:</strong> {{ s_problem.source }}<br>
+                    <strong>Difficulty:</strong> {{ s_problem.difficulty }}<br>
+                    <p><strong>Genre:</strong> 
+                        {% for tag_name in s_problem.tags.names %}
+                            <span>{{ tag_name }},</span>
+                        {% endfor %}
+                    </p>
+                    {% if s_problem.image %}
+                        <img src="{{ s_problem.image.url }}" alt="Problem Image">
+                    {% endif %}
+                </div>
+                <div>
+                    <strong>LaTeX Code:</strong><br>
+                    <div id="latex-container">
+                        {{ s_problem.latex_code }}
+                    </div>
+                </div>
+        
+            {% endfor%}
+        
+        {% endif %}
+    </section>
+    {% include "footer.html" %}
+</body>
+</html>
