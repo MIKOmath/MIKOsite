@@ -46,7 +46,7 @@
                     <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer">Facebook MIKO<span class="material-symbols-outlined">open_in_new</span></a>
                 </div>
             </div>
-            <div id="background-image" style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0),rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_PICTURE.png' %}');">
+            <div id="background-image" style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0),rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.jpg' %}');">
 
             </div>
         </div>
@@ -64,11 +64,48 @@
                     <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; font-size:25px; cursor: pointer"><h3 id="profile_name" style="color: white; text-align: center;">Discord MIKO<span class="material-symbols-outlined">open_in_new</span></h3></a>
                     <p style="word-break: break-word; color: white; font-size: 20px">Dołącz do społeczności Matematycznego Internetowego
                         Koła Olimpijskiego na naszym serwerze Discrod!
-
                     </p>
                 </div>
+                <div class="info-banner">
+                    <h2>Najbliższe eventy i kółka:</h2>
+                    {% for kolo in eventy %}
+                        <div class="event">
+                            <h3>{{ kolo.theme }}</h3>
+                            <div class="event-info">
+                                <strong>Date:</strong> {{ kolo.date }}<br>
+                                <strong>Time:</strong> {{ kolo.time }}<br>
+                                <strong>Duration:</strong> {{ kolo.duration }}<br>
+                                <strong>Level:</strong> {{ kolo.level }}
+                            </div>
+                            <div class="event-description">
+                                {{ kolo.description }}
+                            </div>
+                            {% if kolo.tutors %}
+                                <div class="event-tutors">
+                                    <strong>Tutors:</strong>
+                                    {% for tutor in kolo.tutors.all %}
+                                        {{ tutor.name }} {{ tutor.surname }}
+                                    {% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if kolo.image %}
+                                <div class="event-image">
+                                    <img src="{{ kolo.image.url }}" alt="{{ kolo.theme }}" style="max-width: 100%; height: auto;">
+                                </div>
+                            {% endif %}
+                            {% if kolo.file %}
+                                <div class="event-file">
+                                    <a href="{{ kolo.file.url }}" download>Download associated file</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <h3>Brak eventów w najbliższym czasie ://</h3>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="column_right" style="width: -webkit-calc(100% - 320px);flex-wrap: wrap; word-break:break-word;">
+            <div class="column_right" style="flex-wrap: wrap; word-break:break-word;">
 
                 {% for post in posts %}
                 <div class="post">
@@ -131,4 +168,19 @@
 
 // Call the function when the page loads
 document.addEventListener('DOMContentLoaded', toggleImageSize);</script>
+
+<script>const backgroundDiv = document.getElementById('background-image');
+const images = ['MIKO_BG1.jpg', 'MIKO_PICTURE.png'];
+let currentIndex = 0;
+
+function changeBackground() {
+    currentIndex = (currentIndex + 1) % images.length;
+    const nextImage = `/static/${images[currentIndex]}`; // Direct string concatenation
+
+    backgroundDiv.style.transition = 'background-image 1s ease-in-out';
+    backgroundDiv.style.backgroundImage = `linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0), rgba(255,255,255,0), rgba(255,255,255,0)), url('${nextImage}')`; // Template literal here
+}
+
+// Change background every 5 seconds
+setInterval(changeBackground, 5000);</script>
 </html>
