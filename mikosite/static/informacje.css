@@ -1,9 +1,24 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+:root {
+  --b1: #074A59;
+  --b2: #06313E;
+  --r1: #F24535;
+  --y1: #F2B544;
+  --w1: #ffffff;
+}
+
+
 body, html {
+    font-family: "Rubik", sans-serif;
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: "Rubik", sans-serif;
     font-optical-sizing: auto;
+
 
 }
 .calendar {
@@ -13,8 +28,9 @@ body, html {
     width: 70%;
     top: 100px;
     margin: auto;
-    position: relative;
     border: 1px solid black;
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 .header {
     padding: 20px;
@@ -27,14 +43,14 @@ body, html {
     background-color: transparent;
     border: none;
     color: var(--b1);
-    font-size: 24px;
     cursor: pointer;
 }
 .header h2 {
-    font-size: 28px;
+    font-size: 25px;
     color: var(--b1);
     margin: 0;
 }
+
 .days {
     padding: 10px;
     display: grid;
@@ -85,10 +101,10 @@ body, html {
     position: absolute;
     bottom: 5px;
     left: 50%;
-    width: 10px;
+    width: 20px;
     height: 10px;
-    background-color: var(--b1);
-    border-radius: 50%;
+    background-color: var(--r1);
+    border-radius: 5px;
     transform: translateX(-50%);
 }
 
@@ -153,12 +169,6 @@ body, html {
 /*TEST NIŻEJ*/
 
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 :root {
     --b1: #074A59;
     --b2: #06313E;
@@ -177,32 +187,37 @@ body, html {
     align-items: center;
     background-color: #fff;
     height: 80px;
-    padding-right: 50px;
-    padding-left: 50px;
+    padding-right: 30px;
+    padding-left: 30px;
     border-bottom: 1px solid var(--b1);
+    flex-direction: column;
 }
+
+
+
 
 .navbar a {
     color: var(--b1);
     text-decoration: none;
-    font-size: 22px;
     font-weight: bold;
+    font-size: 20px;
+    margin: 0px;
+    padding: 0px;
 }
 
 .navbar-left {
-    margin-right: auto;
+    margin-right: 0px;
+    margin-left: 0px;
 }
 
 .navbar-center {
     list-style: none;
     display: flex;
     align-items: center;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .navbar-right {
-    margin-left: auto;
+    margin-left: 0px;
 }
 .navbar-center li {
     display: flex;
@@ -211,7 +226,7 @@ body, html {
 
 .navbar-center li + li::before {
     content: "|";
-    color: 06313E;
+    color: #06313E;
     font-weight: 900;
     margin: 0 15px;
 }
@@ -231,20 +246,20 @@ body, html {
 
 h1
 {
-    font-size: 60px;
+    font-size: 30px;
     color: var(--b1);
     margin-bottom: 20px;
 }
 
 h2
 {
-    font-size: 44px;
+    font-size: 25px;
     color: var(--y1);
 }
 
 h3
 {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 400;
     color: var(--b1);
 }
@@ -258,23 +273,29 @@ hr
 
 
 
-@media (max-width: 768px) {
-    .calendar {
-        width: 95%;
-    }
 
+.introduction{
+    margin: auto;
+    justify-content: center;
+    text-align: center;
+    margin: 20px;
+    /*border: 1px var(--b1) solid;*/
+}
+
+
+
+
+@media screen and (min-width: 768px) {
     .navbar {
-        flex-direction: column;
-        height: auto;
-        padding: 10px;
+        flex-direction: row;
+        padding: 0 30px;
+        height: 80px;
     }
-
-    .navbar-center {
-        flex-direction: column;
-        margin: 10px 0;
+    .navbar-left{
+        margin-right: auto;
+        margin-left: 20px;
     }
-
-    .navbar-center li + li::before {
-        display: none;
+    .navbar-right{
+        margin-left: auto;
     }
 }

@@ -78,26 +78,32 @@ function updateCalendar() {
 
 function showEventPopup(date, eventsList) {
     const warsawTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Warsaw' }));
-
-
     popupDate.textContent = date.toLocaleDateString('pl', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    popupDate.style.fontWeight = "bold"
     eventList.innerHTML = '';
+
     eventsList.forEach(event => {
         const li = document.createElement('li');
         const eventStatus = determineEventStatus(event, warsawTime);
         const levelName = getLevelName(event.level);
 
+        li.style.color = '#06313E';
+        li.style.fontFamily = '"Rubik", sans-serif';
+
         li.innerHTML = `
-            <strong>Temat: ${event.theme || 'Brak.'}</strong><br>
-            Początek zajęć: ${event.time ? event.time.toLocaleTimeString() : 'Not specified'}<br>
-            Czas trwania zajęć: ${event.duration ? `${event.duration.hours}h ${event.duration.minutes}m` : 'Not specified'}<br>
-            Prowadzący/a: ${event.tutors.join(', ') || 'None'}<br>
-            Opis: ${event.description || 'No description'}<br>
-            Poziom zaawansowania: ${levelName}<br>
-            Status: ${eventStatus}<br>
-            ${event.image ? `<img src="/media/${event.image}" alt="Event image" style="max-width: 100px;">` : ''}
-            ${event.file ? `<a href="$/media/{event.file}" download>Download attached file</a>` : ''}
+            <a style="font-size: 20px; font-weight: bold">Temat:</a> ${event.theme || 'Brak.'}<br>
+            <span style="font-size: 20px;">
+                <a style="font-weight: bold">Początek zajęć:</a> ${event.time ? event.time.toLocaleTimeString() : 'Not specified'}<br>
+                <a style="font-weight: bold">Czas trwania zajęć:</a> ${event.duration ? `${event.duration.hours}h ${event.duration.minutes}m` : 'Not specified'}<br>
+                <a style="font-weight: bold">Prowadzący/a:</a> <span>${event.tutors.join(', ') || 'None'}</span><br>
+                <a style="font-weight: bold">Opis:</a> ${event.description || 'No description'}<br>
+                <a style="font-weight: bold">Poziom zaawansowania:</a> ${levelName}<br>
+                <a style="font-weight: bold">Status:</a> ${eventStatus}<br>
+                ${event.image ? `<img src="/media/${event.image}" alt="Event image" style="max-width: 100px;">` : ''}
+                ${event.file ? `<a href="/media/${event.file}" download>Download attached file</a>` : ''}
+            </span>
         `;
+
         eventList.appendChild(li);
     });
 

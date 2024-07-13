@@ -24,23 +24,14 @@ def index(request):
         next_kolo_instances = []
     else:
 
-        # Sort the future Kolos by date and time
         future_kolos.sort(key=lambda k: datetime.combine(k.date, k.time))
 
-        # Get the earliest date
         next_date = future_kolos[0].date
 
-        # Filter instances happening on the same day as the earliest instance
         next_kolo_instances = [
             kolo for kolo in future_kolos if kolo.date == next_date
         ]
 
-        next_kolo_instances = [
-            kolo for kolo in future_kolos if kolo.date == next_date
-        ]
-
-        for i in next_kolo_instances:
-            print(i)
 
 
 

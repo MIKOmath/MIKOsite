@@ -1,24 +1,30 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
-    <meta charset="UTF-8">
     <title>Title</title>
+    <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="{% static 'informacje.css' %}">
     <script defer src="{% static 'informacje.js' %}"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
 </head>
 <body>
 
-    <header>
+     <header>
         <nav class="navbar">
             <div class="navbar-left">
 <!--                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">-->
                 <h2>MIKO</h2>
             </div>
             <ul class="navbar-center">
-                <li><a id="current" href="/">HOME</a></li>
-                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
+                <li><a  href="/">HOME</a></li>
+                <li><a id="current" href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
                 <li><a href="/about">O NAS</a></li>
                 <li><a href="/bazahintow">BAZA ZADAŃ</a></li>
             </ul>
@@ -28,45 +34,53 @@
         </nav>
     </header>
 
-<div class="calendar">
-    <div class="header">
-        <button id="prevMonth">◀ </button>
-        <h2 id="currentMonth"></h2>
-        <button id="nextMonth">▶</button>
+     <div class="introduction">
+        <h1>Informacje</h1>
+         <h3>Matematyczne internetowe koło olimpijskie zorganizowane przez ... tu trzeba napisać ładny opis miko
+             . Kilka zdań o tym kto/ po co/co robimy/ że niżej można zobaczyć terminy/ odbywa się an kilku poziomach / zachęcamy do prowadzenia kółek itpt itd.</h3>
+     </div>
+
+    <div class="calendar">
+        <div class="header">
+            <button id="prevMonth">◀ </button>
+            <h2 id="currentMonth"></h2>
+            <button id="nextMonth">▶</button>
+        </div>
+        <div class="days" id="calendarDays"></div>
     </div>
-    <div class="days" id="calendarDays"></div>
-</div>
 
-<div id="eventPopup" class="event-popup">
-    <div class="popup-content">
-        <span class="close-btn">&times;</span>
-        <h3 id="popupDate"></h3>
-        <ul id="eventList"></ul>
+    <div id="eventPopup" class="event-popup">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <h3 id="popupDate"></h3>
+            <ul id="eventList"></ul>
+        </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        {% for kolo in kolka %}
-            addEvent({
-                date: new Date("{{ kolo.date|date:'Y-m-d' }}"),
-                time: new Date("{{ kolo.date|date:'Y-m-d' }}T{{ kolo.time|time:'H:i' }}"),
-                duration: {
-                    hours: Math.floor({{ kolo.duration.total_seconds }} / 3600),
-                    minutes: Math.floor(({{ kolo.duration.total_seconds }} % 3600) / 60)
-                },
-                tutors: [{% for tutor in kolo.tutors.all %}"{{ tutor.username }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
-                theme: "{{ kolo.theme|escapejs }}",
-                description: "{{ kolo.description|escapejs }}",
-                image: "{{ kolo.image }}",
-                file: "{{ kolo.file }}",
-                level: {{ kolo.level|default_if_none:"null" }},
-                finished: {{ kolo.finished|yesno:"true,false" }}
-            });
-        {% endfor %}
-        updateCalendar();
-    });
-</script>
+     {% include "footer.html" %}
 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for kolo in kolka %}
+                addEvent({
+                    date: new Date("{{ kolo.date|date:'Y-m-d' }}"),
+                    time: new Date("{{ kolo.date|date:'Y-m-d' }}T{{ kolo.time|time:'H:i' }}"),
+                    duration: {
+                        hours: Math.floor({{ kolo.duration.total_seconds }} / 3600),
+                        minutes: Math.floor(({{ kolo.duration.total_seconds }} % 3600) / 60)
+                    },
+                    tutors: [{% for tutor in kolo.tutors.all %}"{{ tutor.username }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    theme: "{{ kolo.theme|escapejs }}",
+                    description: "{{ kolo.description|escapejs }}",
+                    image: "{{ kolo.image }}",
+                    file: "{{ kolo.file }}",
+                    level: {{ kolo.level|default_if_none:"null" }},
+                    finished: {{ kolo.finished|yesno:"true,false" }}
+                });
+            {% endfor %}
+            updateCalendar();
+        });
+    </script>
 </body>
 </html>
