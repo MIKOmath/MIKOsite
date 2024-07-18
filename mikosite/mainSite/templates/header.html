@@ -1,0 +1,40 @@
+{% load static %}
+
+
+<head>
+    <title>Footer Design</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'mainSite/headerStyle.css' %}">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+</head>
+
+<body>
+    <header>
+  <nav class="navbar">
+    <div class="navbar-left">
+      <h2>MIKO</h2>
+    </div>
+    <button class="navbar-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 100 80" width="30" height="30">
+        <rect width="100" height="20"></rect>
+        <rect y="30" width="100" height="20"></rect>
+        <rect y="60" width="100" height="20"></rect>
+      </svg>
+    </button>
+    <ul class="navbar-center">
+        <li><a href="/" {% if request.path == '/' %}id="current"{% endif %}>HOME</a></li>
+        <li><a href="/kolomatematyczne" {% if request.path == '/kolomatematyczne/' %}id="current"{% endif %}>KOŁO MATEMATYCZNE</a></li>
+        <li><a href="/about" {% if request.path == '/about/' %}id="current"{% endif %}>O NAS</a></li>
+        <li><a href="/bazahintow" {% if request.path == '/bazahintow/' %}id="current"{% endif %}>BAZA ZADAŃ</a></li>
+        <li class="profile-item"><a href="/profile" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a></li>
+    </ul>
+    <div class="navbar-right">
+      <a href="/profile">PROFIL</a>
+    </div>
+  </nav>
+</header>
+</body>
+
+</html>

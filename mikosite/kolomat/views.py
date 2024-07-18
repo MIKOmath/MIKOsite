@@ -12,14 +12,13 @@ from fuzzywuzzy import fuzz
 from datetime import datetime
 from pytz import timezone
 import pytz
+from django.views.decorators.cache import cache_page
+
 
 
 # Create your views here.
 
+# @cache_page(60*15)
 def informacje(request):
-    kolka = Kolo.objects.all()
-
-    for i in kolka:
-        print(i.date)
-
+    kolka = Kolo.objects.all().order_by('date', 'time')
     return render(request, "informacje.html", {"kolka": kolka})

@@ -28,9 +28,10 @@ body, html {
     width: 70%;
     top: 100px;
     margin: auto;
-    border: 1px solid black;
+    border: 2px solid var(--b1);
     margin-top: 50px;
     margin-bottom: 50px;
+    border-radius: 20px;
 }
 .header {
     padding: 20px;
@@ -97,6 +98,17 @@ body, html {
     position: relative;
 }
 
+#eventList{
+    padding: 0;
+}
+#eventList li{
+    border: 2px var(--b1) solid;
+    margin: 10px;
+    margin-left: 0px;
+    padding: 10px;
+    border-radius: 20px;
+}
+
 .event-indicator {
     position: absolute;
     bottom: 5px;
@@ -126,7 +138,7 @@ body, html {
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
-    max-width: 60%;
+    max-width: 80%;
     border-radius: 5px;
     position: relative;
 }
@@ -154,11 +166,10 @@ body, html {
 
 #popupDate {
     margin-top: 0;
+    text-align: center;
 }
 
-#eventList {
-    padding-left: 20px;
-}
+
 
 .day-number {
     z-index: 2;
@@ -181,68 +192,156 @@ body, html {
 
 
 
-.navbar {
-    display: flex;
+.introduction{
+    margin: auto;
     justify-content: center;
-    align-items: center;
-    background-color: #fff;
-    height: 80px;
-    padding-right: 30px;
-    padding-left: 30px;
-    border-bottom: 1px solid var(--b1);
-    flex-direction: column;
+    text-align: center;
+    margin: auto;
+        margin-top: 20px;
+    width: 70%;
+
+    /*border: 1px var(--b1) solid;*/
 }
 
 
-
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 25px;
+  border-bottom: 1px solid var(--b1);
+}
 
 .navbar a {
-    color: var(--b1);
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 20px;
-    margin: 0px;
-    padding: 0px;
-}
-
-.navbar-left {
-    margin-right: 0px;
-    margin-left: 0px;
+  color: var(--b1);
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .navbar-center {
-    list-style: none;
-    display: flex;
-    align-items: center;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
-.navbar-right {
-    margin-left: 0px;
-}
 .navbar-center li {
-    display: flex;
-    align-items: center;
+  /*display: flex;*/
+  align-items: center;
 }
 
 .navbar-center li + li::before {
-    content: "|";
-    color: #06313E;
-    font-weight: 900;
-    margin: 0 15px;
+  content: "|";
+  color: #06313E;
+  font-weight: 900;
+  margin: 0 15px;
 }
 
 .navbar a:hover {
-    color: var(--y1);
+  color: var(--y1);
 }
 
-#current
-{
-    color: var(--r1);
+#current {
+  color: var(--r1);
 }
-#current:hover
-{
-    color: var(--y1);
+
+#current:hover {
+  color: var(--y1);
 }
+
+
+  .navbar-right{
+    display: block;
+  }
+
+
+.navbar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.navbar-toggle svg {
+  fill: var(--b1);
+}
+
+@media screen and (max-width: 900px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile-item{
+    display: block;
+  }
+  .navbar-right{
+    display: none;
+  }
+
+  .navbar-toggle {
+    display: block;
+    position: absolute;
+    /*top: 15px;*/
+    right: 15px;
+  }
+
+  .navbar-center {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 15px;
+  }
+
+  .navbar-center.active {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar-center li {
+    margin: 10px 0;
+    display: flex;
+  }
+
+  .navbar-center li + li::before {
+    display: none;
+  }
+
+  .navbar-right {
+    margin: auto;
+    margin-top: 15px;
+  }
+
+  .profile-item{
+    display: block;
+  }
+  .introduction{
+      width: 97%;
+  }
+  .calendar{
+      width: 97%;
+  }
+  .days{
+      padding: 0px;
+  }
+  .popup-content{
+      width: 90%;
+      margin: 15% auto;
+      max-width: 100%;
+  }
+}
+
+
+
+
+
+
+
+
 
 h1
 {
@@ -273,29 +372,17 @@ hr
 
 
 
-
-.introduction{
-    margin: auto;
-    justify-content: center;
-    text-align: center;
-    margin: 20px;
-    /*border: 1px var(--b1) solid;*/
+.levels li{
+    margin: 5px;
 }
 
 
+.profile-item{
+    display: none;
+}
 
-
-@media screen and (min-width: 768px) {
-    .navbar {
-        flex-direction: row;
-        padding: 0 30px;
-        height: 80px;
-    }
-    .navbar-left{
-        margin-right: auto;
-        margin-left: 20px;
-    }
-    .navbar-right{
-        margin-left: auto;
-    }
+@media screen and (max-width: 500px) {
+  .levels li h3 {
+    text-align: center;
+  }
 }

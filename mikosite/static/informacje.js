@@ -12,6 +12,10 @@ let currentDate = new Date();
 let events = {};
 
 function addEvent(eventDetails) {
+    if (!eventDetails.date) {
+        console.warn("Event skipped: No date specified");
+        return;
+    }
     const key = eventDetails.date.toDateString();
     if (!events[key]) {
         events[key] = [];
@@ -84,8 +88,8 @@ function showEventPopup(date, eventsList) {
 
     eventsList.forEach(event => {
         const li = document.createElement('li');
-        const eventStatus = determineEventStatus(event, warsawTime);
         const levelName = getLevelName(event.level);
+        const timeDisplay = getTimeDisplay(event);
 
         li.style.color = '#06313E';
         li.style.fontFamily = '"Rubik", sans-serif';
@@ -93,12 +97,11 @@ function showEventPopup(date, eventsList) {
         li.innerHTML = `
             <a style="font-size: 20px; font-weight: bold">Temat:</a> ${event.theme || 'Brak.'}<br>
             <span style="font-size: 20px;">
-                <a style="font-weight: bold">Początek zajęć:</a> ${event.time ? event.time.toLocaleTimeString() : 'Not specified'}<br>
-                <a style="font-weight: bold">Czas trwania zajęć:</a> ${event.duration ? `${event.duration.hours}h ${event.duration.minutes}m` : 'Not specified'}<br>
-                <a style="font-weight: bold">Prowadzący/a:</a> <span>${event.tutors.join(', ') || 'None'}</span><br>
-                <a style="font-weight: bold">Opis:</a> ${event.description || 'No description'}<br>
+                <a style="font-weight: bold">Czas zajęć:</a> ${timeDisplay}<br>
+                <a style="font-weight: bold">
+                ${event.tutors.length > 1 ? 'Prowadzą' : 'Prowadzi'}:</a> <span>${event.tutors ? event.tutors.join(', ') : 'Brak danych'}</span><br>
+                <a style="font-weight: bold">Opis:</a> ${event.description || 'Brak opisu'}<br>
                 <a style="font-weight: bold">Poziom zaawansowania:</a> ${levelName}<br>
-                <a style="font-weight: bold">Status:</a> ${eventStatus}<br>
                 ${event.image ? `<img src="/media/${event.image}" alt="Event image" style="max-width: 100px;">` : ''}
                 ${event.file ? `<a href="/media/${event.file}" download>Download attached file</a>` : ''}
             </span>
@@ -108,6 +111,23 @@ function showEventPopup(date, eventsList) {
     });
 
     eventPopup.style.display = 'block';
+}
+
+function getTimeDisplay(event) {
+    if (!event.time) {
+        return 'Brak danych';
+    }
+
+    let startTime = event.time.toLocaleTimeString('pl', { hour: '2-digit', minute: '2-digit' });
+
+    if (!event.duration) {
+        return `${startTime} (czas trwania: brak danych)`;
+    }
+
+    let endTime = new Date(event.time.getTime() + (event.duration.hours * 60 + event.duration.minutes) * 60000);
+    endTime = endTime.toLocaleTimeString('pl', { hour: '2-digit', minute: '2-digit' });
+
+    return `${startTime} - ${endTime}`;
 }
 
 function getLevelName(level) {
@@ -124,26 +144,7 @@ function getLevelName(level) {
                 return 'Brak poziomu zaawansowania';
         }
     }
-function determineEventStatus(event, currentWarsawDate) {
-    if (!event.time) {
-        return 'Nie określono';
-    }
-    const eventStartTime = new Date(event.date.getTime());
-    eventStartTime.setHours(event.time.getHours(), event.time.getMinutes(), event.time.getSeconds());
 
-    const eventEndTime = new Date(eventStartTime.getTime());
-    if (event.duration) {
-        eventEndTime.setHours(eventEndTime.getHours() + event.duration.hours, eventEndTime.getMinutes() + event.duration.minutes);
-    }
-
-    if (currentWarsawDate < eventStartTime) {
-        return 'Nie odbyło się';
-    } else if (currentWarsawDate >= eventStartTime && currentWarsawDate <= eventEndTime) {
-        return 'W trakcie';
-    } else {
-        return 'Odbyło się';
-    }
-}
 
 
 closeBtn.onclick = function() {
@@ -169,3 +170,37 @@ nextMonthButton.addEventListener('click', () => {
 
 
 updateCalendar();
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const navbarToggle = document.querySelector('.navbar-toggle');
+    const navbarCenter = document.querySelector('.navbar-center');
+    const eventPopup = document.getElementById('eventPopup');
+
+    navbarToggle.addEventListener('click', function() {
+        navbarCenter.classList.toggle('active');
+    });
+
+    // Add event listener for keydown events
+    document.addEventListener('keydown', function(event) {
+        // Check if the pressed key is Escape (key code 27)
+        if (event.key === 'Escape' || event.key === 'Esc') {
+            // Close the popup if it's open
+            if (eventPopup && eventPopup.style.display === 'block') {
+                eventPopup.style.display = 'none';
+            }
+        }
+    });
+});
+
+
+const showCurrentMonthButton = document.getElementById('showCurrentMonth');
+
+// Add this function to reset the calendar to the current month
+function showCurrentMonth() {
+    currentDate = new Date();
+    updateCalendar();
+}
+
+// Add this event listener with your other event listeners
+showCurrentMonthButton.addEventListener('click', showCurrentMonth);

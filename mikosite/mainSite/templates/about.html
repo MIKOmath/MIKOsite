@@ -9,95 +9,86 @@
 </head>
 <body>
 
-    <header>
-        <nav class="navbar">
-            <div class="navbar-left">
-<!--                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">-->
-                <h2>MIKO</h2>
-            </div>
-            <ul class="navbar-center">
-                <li><a href="/">HOME</a></li>
-                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
-                <li><a id="current" href="/about">O NAS</a></li>
-                <li><a href="/bazahintow">BAZA ZADAŃ</a></li>
-            </ul>
-            <div class="navbar-right">
-                <a href="/profile">PROFIL</a>
-            </div>
-        </nav>
-    </header>
+   {% include "header.html" %}
+
 
     <section id="description">
-        <h2>Our Mission</h2>
-        <h3>At MIKO, we are dedicated to fostering a love for mathematics and providing a supportive environment for students to explore and excel in this fascinating field. Our team of passionate educators and mathematicians work tirelessly to create engaging content, challenging problems, and innovative learning experiences that inspire the next generation of mathematical thinkers.</h3>
+        <h2>Kim jesteśmy?</h2>
+        <h3>Jesteśmy grupą młodych pasjonatów matematyki i informatyki, którzy chcą podzielić się swoją wiedzą z kolegami niemającymi dostępu do odpowiednich materiałów. Zależy nam na stworzeniu otwartej, długotrwałej społeczności złożonej zarówno z doświadczonych olimpijczyków, jak i uczniów stawiających swoje pierwsze kroki w Olimpiadzie Matematycznej.
+            Naszym celem jest między innymi umożliwienie uczniom ze szkół bez tradycji olimpijskiej równych szans w starcie w Olimpiadach.
+            Organizujemy regularne kółka, konkursy zadaniowe, udostępniamy materiały i nie tylko.
+            Przede wszystkim działamy w ramach modelu "od uczniów, dla uczniów"; każdy wystarczająco doświadczony członek społeczności jest mile widziany w roli prowadzącego kółka lub przy pomocy w organizacji wykładów i bezpośrednio w udzielaniu odpowiedzi na czatach naszego serwera <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: underline dashed;">Discorda</a>. Zamierzamy również prowadzić działalność popularyzatorską na rzecz matematyki olimpijskiej.
+        </h3>
     </section>
 
     <section id="team">
-        <h2>Meet Our Team</h2>
+        <h2>Nasz zespół</h2>
         <div class="team-tiles">
 
             <div class="team-member">
                 <div class="photo-placeholder"> </div>
-                <h2>Maria Wiśniewska</h2>
-                <h3 class="role">Administrator strony; Prowadzący zajęć matematycznych; Prowadzący zajęć koła olimpiady AI; Przewodniczący koła</h3>
-                <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
-                <h4 class="kontakt-tile">alermgm@gmail.com</h4>
+                <h2>Oleksii Iermolenko</h2>
+                <h3 class="role">Administrator strony; Prowadzący zajęć matematycznych;</h3>
+                <h3 class="description">Jestem absolwentem XI Liceum w Krakowie, interesuję się matematyką, informatyką i gram w szachy.
+                W sprawie strony internetowej MIKO zapraszam do kontaktu.</h3>
+<!--                <h4 class="kontakt-tile">alermgm@gmail.com</h4>-->
             </div><div class="team-member">
                 <div class="photo-placeholder"> </div>
-                <h2>Maria Wiśniewska</h2>
+                <h2>Filip Manijak</h2>
                 <h3 class="role">Administrator strony; Prowadzący zajęć matematycznych; Prowadzący zajęć koła olimpiady AI; Przewodniczący koła</h3>
                 <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
                 </div><div class="team-member">
                     <div class="photo-placeholder"> </div>
-                    <h2>Maria Wiśniewska</h2>
+                    <h2>Konstanty Smolira</h2>
                     <h3 class="role">Administrator strony; Prowadzący zajęć matematycznych; Prowadzący zajęć koła olimpiady AI; Przewodniczący koła</h3>
                     <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
                 </div><div class="team-member">
                     <div class="photo-placeholder"> </div>
-                    <h2>Maria Wiśniewska</h2>
+                    <h2>Antoni Łuczak</h2>
                     <h3 class="role">Administrator strony; Prowadzący zajęć matematycznych; Prowadzący zajęć koła olimpiady AI; Przewodniczący koła</h3>
                     <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
                 </div><div class="team-member">
                     <div class="photo-placeholder"> </div>
-                    <h2>Maria Wiśniewska</h2>
+                    <h2>Łukasz Próchniak</h2>
                     <h3 class="role">Administrator strony; Prowadzący zajęć matematycznych; Prowadzący zajęć koła olimpiady AI; Przewodniczący koła</h3>
                     <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
                 </div>
             <div class="team-member">
                 <div class="photo-placeholder"> </div>
-                <h2>Maria Wiśniewska</h2>
+                <h2>Miłosz Płatek</h2>
                 <h3 class="role">Administrator strony;</h3>
                 <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
             </div>
             <div class="team-member">
                 <div class="photo-placeholder"> </div>
-                <h2>Maria Wiśniewska</h2>
+                <h2>Kordian Pisarek</h2>
                 <h3 class="role">Administrator strony;</h3>
                 <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
             </div>
             <div class="team-member">
                 <div class="photo-placeholder"> </div>
-                <h2>Maria Wiśniewska</h2>
+                <h2>Tymoteusz Stępkowski</h2>
                 <h3 class="role">Administrator strony;</h3>
                 <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
             </div>
             <div class="team-member">
                 <div class="photo-placeholder"> </div>
-                <h2>Maria Wiśniewska</h2>
+                <h2>Jakub Podhajski</h2>
                 <h3 class="role">Administrator strony;</h3>
                 <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
             </div>
             <div class="team-member">
                 <div class="photo-placeholder"></div>
-                <h2>Maria Wiśniewska</h2>
+                <h2>Igor Stec</h2>
                 <h3 class="role">Administrator strony;</h3>
                 <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
             </div>
             <div class="team-member">
                 <div class="photo-placeholder"> </div>
-                <h2>Maria Wiśniewska</h2>
+                <h2>Prowadzacy kółek :))</h2>
                 <h3 class="role">Administrator strony;</h3>
-                <h3 class="description">Maria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts throaria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts throaria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts throaria creates engaging mathematical content for our online platforms. She has a knack for explaining difficult concepts through creative analogies and visual aids.</h3>
+                <h3 class="description">Serdecznie dziękujemy każdej osobie, która poświęciła chociaż trochę swojego czasu na
+                przygotowanie wykładu, organizację event'u lub pomogła nam w inny sposób. Bez was ta społeczności nie mogłaby istnieć!</h3>
             </div>
 
 
@@ -108,4 +99,15 @@
 {% include "footer.html" %}
 
 </body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+  const navbarToggle = document.querySelector('.navbar-toggle');
+  const navbarCenter = document.querySelector('.navbar-center');
+
+  navbarToggle.addEventListener('click', function() {
+    navbarCenter.classList.toggle('active');
+  });
+});
+</script>
 </html>

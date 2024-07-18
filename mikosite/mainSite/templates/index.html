@@ -14,50 +14,29 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar">
-            <div class="navbar-left">
-<!--                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">-->
-                <h2>MIKO</h2>
-            </div>
-            <ul class="navbar-center">
-                <li><a id="current" href="/">HOME</a></li>
-                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
-                <li><a href="/about">O NAS</a></li>
-                <li><a href="/bazahintow">BAZA ZADAŃ</a></li>
-            </ul>
-            <div class="navbar-right">
-                <a href="/profile">PROFIL</a>
-            </div>
-        </nav>
-    </header>
-
-
-
+       {% include "header.html" %}
     <main>
-
         <div id="landing-banner-wrapper">
             <div id ="info-wrapper">
                 <img src="{% static 'logoDark.png' %}" alt="person"
                     style="">
-                <h2 id="welcome-text">Dołącz do nas, rozwiązuj ciekawe zadania i baw się matematyką razem z nami!</h2>
+                <h2 id="welcome-text">Dołącz do nas, rozwiązuj ciekawe zadania, rozwijajc z nami pasję do matematyki!</h2>
                 <div style="display: flex; justify-content: space-evenly; font-weight: 400; margin-top: 20px;">
-                    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer">Discord MIKO<span class="material-symbols-outlined">open_in_new</span></a>
-                    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer">Facebook MIKO<span class="material-symbols-outlined">open_in_new</span></a>
+                    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer">Dołączam!<span class="material-symbols-outlined">open_in_new</span></a>
+                    <a href="kolomatematyczne/" style="text-decoration: none; cursor: pointer">O kole<span class="material-symbols-outlined">open_in_new</span></a>
                 </div>
             </div>
             <div id="background-image" style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0),rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.jpg' %}');">
 
             </div>
         </div>
-
     </main>
 
     <section id="feed">
         <h1 style="margin-top: 50px;">Aktualności</h1>
         <hr>
-        <div class="row" style="margin: 60px 0;">
-            <div class="column_left" style="margin-right: 60px;">
+        <div class="row">
+            <div class="column_left">
                 <div class="profile">
                     <img src="{% static 'dsclogo.png' %}" alt="person"
                         style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
@@ -70,25 +49,39 @@
                     <h2>Najbliższe eventy i kółka:</h2>
                     {% for kolo in eventy %}
                         <div class="event">
-                            <h3>{{ kolo.theme }}</h3>
+                            <h3 style="color: var(--b2)"><strong>Temat:</strong> {{ kolo.theme }}</h3>
                             <div class="event-info">
-                                <strong>Date:</strong> {{ kolo.date }}<br>
-                                <strong>Time:</strong> {{ kolo.time }}<br>
-                                <strong>Duration:</strong> {{ kolo.duration }}<br>
-                                <strong>Level:</strong> {{ kolo.level }}
-                            </div>
-                            <div class="event-description">
-                                {{ kolo.description }}
-                            </div>
-                            {% if kolo.tutors %}
+                                <strong>Data:</strong> {{ kolo.date }}<br>
+                                <strong>Czas zajęć:</strong> {{ kolo.time_range }}<br>
+                                {% if kolo.tutors %}
                                 <div class="event-tutors">
-                                    <strong>Tutors:</strong>
+                                    {% if kolo.tutors|length > 1%}
+                                    <strong>Prowadzą:</strong>
+                                    {% else %}
+                                    <strong>Prowadzi:</strong>
+                                    {% endif %}
                                     {% for tutor in kolo.tutors.all %}
                                         {{ tutor.name }} {{ tutor.surname }}
                                     {% if not forloop.last %}, {% endif %}
                                     {% endfor %}
                                 </div>
-                            {% endif %}
+                                {% endif %}
+                                <strong>Opis: </strong>
+                                {{ kolo.description }}
+                                <strong>Poziom zaawansowania:</strong>
+                                {% if kolo.level == 0 %}
+                                    Grupa początkująca
+                                {% elif kolo.level == 1  %}
+                                    Grupa średnia
+                                {% elif kolo.level == 2  %}
+                                    Grupa Finał ++
+                                {% elif kolo.level == 3  %}
+                                    Poziom olimpiad międzynarodowych
+                                {% endif %}
+                            </div>
+                            <div class="event-description">
+
+                            </div>
                             {% if kolo.image %}
                                 <div class="event-image">
                                     <img src="{{ kolo.image.url }}" alt="{{ kolo.theme }}" style="max-width: 100%; height: auto;">
@@ -96,7 +89,7 @@
                             {% endif %}
                             {% if kolo.file %}
                                 <div class="event-file">
-                                    <a href="{{ kolo.file.url }}" download>Download associated file</a>
+                                    <a href="{{ kolo.file.url }}" download>Plik do pobrania</a>
                                 </div>
                             {% endif %}
                         </div>

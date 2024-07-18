@@ -9,23 +9,8 @@
     <link rel="stylesheet" href="{% static 'styleProfile.css' %}">
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-            <div class="navbar-left">
-<!--                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">-->
-                <h2>MIKO</h2>
-            </div>
-            <ul class="navbar-center">
-                <li><a id="current" href="/">HOME</a></li>
-                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
-                <li><a href="/about">O NAS</a></li>
-                <li><a href="/bazahintow">BAZA ZADAŃ</a></li>
-            </ul>
-            <div class="navbar-right">
-                <a id="current"   href="/profile">PROFIL</a>
-            </div>
-        </nav>
-    </header>
+       {% include "header.html" %}
+
 
     <div class="container">
         <h1>Profil</h1>

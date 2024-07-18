@@ -282,3 +282,11 @@ input[type="submit"]:hover {
     color: var(--r1);
     border: 2px solid var(--r1);
 }
+
+.problem-preview{
+    padding: 10px;
+    border: 1px solid var(--b2);
+    border-radius: 10px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}

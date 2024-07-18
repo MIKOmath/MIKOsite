@@ -1,4 +1,5 @@
 {% load static %}
+{% load latex_filters %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,34 +8,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tasks Page</title>
 <link rel="stylesheet" href="{% static 'hintbaseindexStyle.css' %}">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
 
 </head>
 <body>
 
-    <header>
-        <nav class="navbar">
-            <div class="navbar-left">
-<!--                <img src="{% static 'LOGO_HEADER.png' %}" alt="Logo" style="height: 80px;">-->
-                <h2>MIKO</h2>
-            </div>
-            <ul class="navbar-center">
-                <li><a id="current" href="/">HOME</a></li>
-                <li><a href="/kolomatematyczne">KOŁO MATEMATYCZNE</a></li>
-                <li><a href="/about">O NAS</a></li>
-                <li><a href="/bazahintow">BAZA ZADAŃ</a></li>
-            </ul>
-            <div class="navbar-right">
-                <a href="/profile">PROFIL</a>
-            </div>
-        </nav>
-    </header>
+       {% include "header.html" %}
+
 
 <div class="container">
 
 
     <h1> Baza zadań</h1>
     <hr>
-    <p style="color: #949494; font-style: italic; margin-bottom: 60px;">Znajdziesz tutaj zadania z różnych olimpiad wraz z pełnymi rozwiązaniami oraz podpowiedziami. Zachęcamy też do dodawania własnych zadań oraz rozwiązań!</p>
+    <p style="color: #949494; font-style: italic; margin-bottom: 60px;">
+        Witamy w bazie zadań! <br>
+        Znajdziesz tutaj zadania z rozmaitych olimpiad wraz z rozwiązaniami podzielonymi na kroki myślowe w postaci ukrytych podpowiedzi.<br>
+        Między innymi, ideą tego projektu jest ułatwienie nauki dla początkujących olimpijczyków.
+        Niniejsza forma rozwiązań pozwala szybciej opanować metody rozwiązywania zarówno prostych, jak i skomplikowanych zadań olimpijskich.<br>
+        Zachęcamy do dodawania zadań, których nie ma w bazie. Dzięki wykrywaniu podobnych treści zadań nie musisz się martwić,
+        że utworzysz duplikat, system wyświetli Ci wszystkie podobne zagadnienia. Podobnie sprawa wygląda z dodawaniem rozwiązań, różnicą jest
+        manualna ich weryfikacja przez organizatorów <strong>MIKO</strong> oraz zaufane osoby.
+    </p>
 
    <div class="search-container">
     <h2>Wyszukaj zadanie</h2>
@@ -106,13 +117,15 @@ margin-top: 60px;
             {% endfor %}
         </p>
 
+        <div class="problem-preview">
+            <a>    {{ problem.latex_code|latex_preview }} </a>
+        </div>
+
         <div style="display: flex;justify-content: flex-end;">
             <a href="/bazahintow/view_problem/{{ problem.problem_id }}" class="view-button">Zobacz zadanie</a>
         </div>
-        
     </div>
     {% endfor %}
-
 </div>
 {% include "footer.html" %}
 <script>
@@ -134,6 +147,39 @@ margin-top: 60px;
         difficultyInput.value = selectedDifficulties.join(',');
     }
 });
+
+</script>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+        // Select all elements with the class 'clue'
+        const clueElements = document.getElementsByClassName('problem-preview');
+
+        // Iterate over the collection of elements
+        for (let i = 0; i < clueElements.length; i++) {
+            try {
+                // Render math in the current element
+                renderMathInElement(clueElements[i], {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false},
+                        {left: "\\(", right: "\\)", display: false},
+                        {left: "\\begin{equation}", right: "\\end{equation}", display: true},
+                        {left: "\\begin{align}", right: "\\end{align}", display: true},
+                        {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
+                        {left: "\\begin{gather}", right: "\\end{gather}", display: true},
+                        {left: "\\begin{CD}", right: "\\end{CD}", display: true},
+                        {left: "\\[", right: "\\]", display: true}
+                    ],
+                    throwOnError: false
+                });
+            } catch (error) {
+                console.error('Error rendering math in element:', clueElements[i], error);
+            }
+        }
+    }
+)
+
 
 </script>
 </body>

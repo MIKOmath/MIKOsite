@@ -13,16 +13,16 @@ from datetime import datetime
 from pytz import timezone
 import pytz
 from django.db.models import Q
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+import re
 
-
-# Create your views here.
-
-
-# Index view: Displays the list of problems with filtering options
+# @cache_page(60*5)
 def index(request):
+
     # Retrieve all problems in reverse order
     all_problems = reversed(Problem.objects.all())
-    
+
     # Check if the user belongs to the 'Moderator' group
     user_belongs_to_moderator_group = request.user.groups.filter(name='Moderator').exists()
     
