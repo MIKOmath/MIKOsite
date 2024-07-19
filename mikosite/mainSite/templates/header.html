@@ -27,11 +27,11 @@
         <li><a href="/" {% if request.path == '/' %}id="current"{% endif %}>HOME</a></li>
         <li><a href="/kolomatematyczne" {% if request.path == '/kolomatematyczne/' %}id="current"{% endif %}>KOŁO MATEMATYCZNE</a></li>
         <li><a href="/about" {% if request.path == '/about/' %}id="current"{% endif %}>O NAS</a></li>
-        <li><a href="/bazahintow" {% if request.path == '/bazahintow/' %}id="current"{% endif %}>BAZA ZADAŃ</a></li>
-        <li class="profile-item"><a href="/profile" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a></li>
+        <li><a href="#" {% if request.path == '/bazahintow/' %}id="current"{% endif %}>BAZA ZADAŃ</a></li>
+        <li class="profile-item"><a href="#" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a></li>
     </ul>
     <div class="navbar-right">
-      <a href="/profile">PROFIL</a>
+      <a href="">PROFIL</a>
     </div>
   </nav>
 </header>

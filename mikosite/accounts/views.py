@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from mainSite.models import Post
 from hintBase.models import Problem, ProblemHint
-
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -137,6 +137,8 @@ def profile(request):
     return render(request, "profile.html", messages)
 
 def public_profile(request, username):
+
+    return HttpResponse("Update soon :))")
     user = User.objects.get(username=username)
 
     parameters_to_pass = {}
