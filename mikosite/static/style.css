@@ -87,20 +87,21 @@ h3 {
   text-decoration: none;
   font-family: "Rubik", sans-serif;
   font-size: 20px;
-  color: white;
-  border: white 2px solid;
-  background-color: transparent;
-  border-radius: 20px;
-  padding: 7px;
-  margin-right: 5px;
-}
 
-#landing-banner-wrapper a:hover {
-  color: white;
-  transition: ease-in 0.2s;
   color: var(--b2);
   border: white 2px solid;
   background-color: white;
+  border-radius: 20px;
+  padding: 10px;
+    transition: ease-in 0.2s;
+
+  margin-right: 5px;
+}
+
+
+#landing-banner-wrapper a:hover {
+  transition: ease-in 0.2s;
+  transform: translateY(-3px);
   border-radius: 20px;
 }
 

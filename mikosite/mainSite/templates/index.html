@@ -14,18 +14,17 @@
 </head>
 
 <body>
-       {% include "header.html" %}
-
+    {% include "header.html" %}
 
     <main>
         <div id="landing-banner-wrapper">
-            <div id ="info-wrapper">
+            <div id="info-wrapper">
                 <img src="{% static 'logoDark.png' %}" alt="person"
                     style="">
-                <h2 id="welcome-text">Dołącz do nas, rozwiązuj ciekawe zadania, rozwijajc z nami pasję do matematyki!</h2>
+                <h2 id="welcome-text">Dołącz do nas, rozwiązuj ciekawe zadania, rozwijając z nami pasję do matematyki!</h2>
                 <div style="display: flex; justify-content: space-evenly; font-weight: 400; margin-top: 20px;">
-                    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer">Dołączam!<span class="material-symbols-outlined">open_in_new</span></a>
-                    <a href="kolomatematyczne/" style="text-decoration: none; cursor: pointer">O kole<span class="material-symbols-outlined">open_in_new</span></a>
+                    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer">Dołączam!</a>
+                    <a href="kolomatematyczne/" style="text-decoration: none; cursor: pointer">O kole</a>
                 </div>
             </div>
             <div id="background-image" style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0),rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.jpg' %}');">
@@ -44,7 +43,7 @@
                         style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
                     <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; font-size:25px; cursor: pointer"><h3 id="profile_name" style="color: white; text-align: center;">Discord MIKO<span class="material-symbols-outlined">open_in_new</span></h3></a>
                     <p style="word-break: break-word; color: white; font-size: 20px">Dołącz do społeczności Matematycznego Internetowego
-                        Koła Olimpijskiego na naszym serwerze Discrod!
+                        Koła Olimpijskiego na naszym serwerze Discord!
                     </p>
                 </div>
                 <div class="info-banner">
@@ -112,8 +111,8 @@
                         {% if not forloop.last %}; {% endif %}
                         {% endfor %}
                     </p>
-                    <p><strong>Data publikcaji:</strong> {{ post.date }}</p>
-                    <p><strong>Czas publikcaji:</strong> {{ post.time }}</p>
+                    <p><strong>Data publikacji:</strong> {{ post.date }}</p>
+                    <p><strong>Czas publikacji:</strong> {{ post.time }}</p>
                     <p id="post_content">{{ post.text_field_1 }}</p>
                     <p id="post_content">{{ post.text_field_2 }}</p>
                     <p>

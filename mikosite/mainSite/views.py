@@ -7,7 +7,7 @@ from django.views.decorators.cache import cache_page
 
 # Create your views here.
 
-@cache_page(60*5)
+# @cache_page(60*5)
 def index(request):
 
     today = date.today()
