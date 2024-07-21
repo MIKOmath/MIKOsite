@@ -4,19 +4,16 @@ from django.http import HttpResponse
 from kolomat.models import Kolo
 from datetime import datetime, date, time
 from django.views.decorators.cache import cache_page
+from babel.dates import format_date, format_time
+from babel import Locale
+
 
 # Create your views here.
-
 # @cache_page(60*5)
 def index(request):
-
     today = date.today()
     now = datetime.now().time()
-
-    months = [
-        ("stycznia"), ("lutego"), ("marca"), ("kwietnia"), ("maja"), ("czerwca"),
-        ("lipca"), ("sierpnia"), ("września"), ("października"), ("listopada"), ("grudnia")
-    ]
+    locale = Locale('pl_PL')
 
     # Get all future Kolo instances
     future_kolos = [
@@ -31,22 +28,22 @@ def index(request):
         next_date = future_kolos[0].date
         next_kolo_instances = [kolo for kolo in future_kolos if kolo.date == next_date]
 
-        # If there are less than 3 events on the next date, try to get one more recent event
-        if len(next_kolo_instances) < 3:
-            remaining_kolos = [kolo for kolo in future_kolos if kolo.date > next_date]
-            if remaining_kolos:
-                next_kolo_instances.append(remaining_kolos[0])
-
+    # If there are less than 3 events on the next date, try to get one more recent event
+    if len(next_kolo_instances) < 3:
+        remaining_kolos = [kolo for kolo in future_kolos if kolo.date > next_date]
+        if remaining_kolos:
+            next_kolo_instances.append(remaining_kolos[0])
 
     event_data = []
     for kolo in next_kolo_instances:
-        start_time = kolo.time.strftime('%H:%M')
-        end_time = (datetime.combine(date.today(), kolo.time) + kolo.duration).time().strftime('%H:%M')
-        polish_month = months[kolo.date.month - 1]
+        start_time = format_time(kolo.time, format='HH:mm', locale=locale)
+        end_time = format_time((datetime.combine(date.today(), kolo.time) + kolo.duration).time(), format='HH:mm',
+                               locale=locale)
+        polish_date = format_date(kolo.date, format='d MMMM y', locale=locale)
 
         event_data.append({
             'theme': kolo.theme,
-            'date': f"{kolo.date.day} {polish_month} {kolo.date.year}",
+            'date': polish_date,
             'time_range': f"{start_time} - {end_time}",
             'duration': kolo.duration,
             'tutors': kolo.tutors.all(),
@@ -58,13 +55,27 @@ def index(request):
         })
 
     posts = Post.objects.all()
-    reversed_posts = reversed(posts)
 
+    formatted_posts = []
+    for post in posts:
+        formatted_post = {
+            'title': post.title,
+            'subtitle': post.subtitle,
+            'authors': post.authors.all(),
+            'file': post.file,
+            'images': post.images.all(),
+            'text_field_1': post.text_field_1,
+            'text_field_2': post.text_field_2,
+            'date': format_date(post.date, format='d MMMM y', locale=locale) if post.date else '',
+            'time': format_time(post.time, format='HH:mm', locale=locale) if post.time else '',
+        }
+        formatted_posts.append(formatted_post)
+    formatted_posts = reversed(formatted_posts)
     context = {
-        "posts": reversed_posts,
+        "posts": formatted_posts,
         "eventy": event_data,
-        "user": request.user}
-
+        "user": request.user
+    }
     return render(request, "index.html", context)
 
 

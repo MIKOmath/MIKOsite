@@ -21,12 +21,14 @@ body {
 .container {
     max-width: 1170px;
     margin: auto;
+    padding: 10px;
 }
 
 .row {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
+    justify-content: center;
 }
 
 ul {
@@ -40,9 +42,14 @@ ul {
     margin-top: auto;
 }
 
+
+hr{
+    border: none;
+}
 .footer-col {
     width: 25%;
     padding: 0 15px;
+    height: auto;
 }
 
 .footer-col h4 {

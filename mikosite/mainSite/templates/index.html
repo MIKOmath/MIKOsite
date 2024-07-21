@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -34,17 +35,15 @@
     </main>
 
     <section id="feed">
-        <h1 style="margin-top: 50px;">Aktualności</h1>
-        <hr>
+
         <div class="row">
             <div class="column_left">
                 <div class="profile">
                     <img src="{% static 'dsclogo.png' %}" alt="person"
                         style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
                     <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; font-size:25px; cursor: pointer"><h3 id="profile_name" style="color: white; text-align: center;">Discord MIKO<span class="material-symbols-outlined">open_in_new</span></h3></a>
-                    <p style="word-break: break-word; color: white; font-size: 20px">Dołącz do społeczności Matematycznego Internetowego
-                        Koła Olimpijskiego na naszym serwerze Discord!
-                    </p>
+                    <p style="word-break: break-word; color: white; font-size: 20px">Dołącz do społeczności
+                        Matematycznego Internetowego Koła Olimpijskiego!</p>
                 </div>
                 <div class="info-banner">
                     <h2>Najbliższe eventy i kółka:</h2>
@@ -100,25 +99,28 @@
                 </div>
             </div>
             <div class="column_right" style="flex-wrap: wrap; word-break:break-word;">
-
+                <h1 style="margin-top: 0px;">Aktualności</h1>
+                <hr style="margin-bottom: 20px">
                 {% for post in posts %}
                 <div class="post">
                     <h2 id="post_title">{{ post.title }}</h2>
-                    <h3 id="post_subtitle" style="margin-bottom: 20px;">{{ post.subtitle }}</h3>
+                    <h3 id="post_subtitle" style="margin-bottom: 0px;">{{ post.subtitle }}</h3>
+                    <p style="font-size: 15px; color: var(--b1); font-style: italic; text-align: end">{{ post.date }} {{ post.time }}</p>
+                    <hr style="border: none; height: 2px; margin-bottom: 10px">
                     <p><strong>Autor/autorzy:</strong>
                         {% for author in post.authors.all %}
                         <a href="/publicprofile/{{ author.username }}">{{ author.name }} {{ author.surname }}</a>
                         {% if not forloop.last %}; {% endif %}
                         {% endfor %}
                     </p>
-                    <p><strong>Data publikacji:</strong> {{ post.date }}</p>
-                    <p><strong>Czas publikacji:</strong> {{ post.time }}</p>
-                    <p id="post_content">{{ post.text_field_1 }}</p>
-                    <p id="post_content">{{ post.text_field_2 }}</p>
-                    <p>
-                        <strong>Pliki:</strong>
+
+                    <p class="post_content">{{ post.text_field_1 }}</p>
+                    <p class="post_content">{{ post.text_field_2 }}</p>
+                    <hr style="border: none; height: 2px; margin-bottom: 10px">
+                    <p style="margin-bottom: 10px">
+
                         {% if post.file %}
-                        <a href="{{ post.file.url }}">Download</a>
+                            <a href="{{ post.file.url }}">{{ post.file|filename  }}</a>
                         {% else %}
 
                         {% endif %}

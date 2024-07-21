@@ -40,6 +40,8 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
+SESSION_COOKIE_DOMAIN = None
+
 APPEND_SLASH = True
 
 
