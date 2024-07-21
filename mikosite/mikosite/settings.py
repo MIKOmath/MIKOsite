@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure-7on77ki9!=6=7h)9vc%sm)kxq-17dnmac!raqoi3$7a*2lqmb*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "mikomath.org",
+    "195.117.15.149",
+    "127.0.0.1",
+    "localhost",
+]
 
 APPEND_SLASH = True
 
