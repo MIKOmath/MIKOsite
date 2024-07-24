@@ -36,7 +36,8 @@ CSRF_TRUSTED_ORIGINS = [
 SECRET_KEY = 'django-insecure-7on77ki9!=6=7h)9vc%sm)kxq-17dnmac!raqoi3$7a*2lqmb*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
