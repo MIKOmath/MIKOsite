@@ -1,4 +1,5 @@
 django
+babel
 django_taggit
 django_formtools
 fuzzywuzzy
