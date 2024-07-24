@@ -129,3 +129,5 @@ Thumbs.db
 # Folders created by macOS
 .Spotlight-V100
 .Trashes
+
+./mikosite/mikosite/settings.py
