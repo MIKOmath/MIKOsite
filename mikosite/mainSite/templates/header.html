@@ -2,7 +2,6 @@
 
 
 <head>
-    <title>Footer Design</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'mainSite/headerStyle.css' %}">
@@ -25,7 +24,7 @@
     </button>
     <ul class="navbar-center">
         <li><a href="/" {% if request.path == '/' %}id="current"{% endif %}>HOME</a></li>
-        <li><a href="/kolomatematyczne" {% if request.path == '/kolomatematyczne/' %}id="current"{% endif %}>KOŁO MATEMATYCZNE</a></li>
+        <li><a href="/kolo" {% if request.path == '/kolomatematyczne/' %}id="current"{% endif %}>KOŁO MATEMATYCZNE</a></li>
         <li><a href="/about" {% if request.path == '/about/' %}id="current"{% endif %}>O NAS</a></li>
         <li><a href="#" {% if request.path == '/bazahintow/' %}id="current"{% endif %}>BAZA ZADAŃ</a></li>
         <li class="profile-item"><a href="#" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a></li>

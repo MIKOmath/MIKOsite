@@ -21,7 +21,11 @@
         <div id="landing-banner-wrapper">
             <div id="info-wrapper">
                 <img src="{% static 'logoDark.png' %}" alt="person"
-                    style="">
+                    style="    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;">
                 <h2 id="welcome-text">Dołącz do nas, rozwiązuj ciekawe zadania, rozwijając z nami pasję do matematyki!</h2>
                 <div style="display: flex; justify-content: space-evenly; font-weight: 400; margin-top: 20px;">
                     <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer">Dołączam!</a>
@@ -29,7 +33,7 @@
                 </div>
             </div>
             <div id="background-image" style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0),rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.jpg' %}');">
-
+<!--.-->
             </div>
         </div>
     </main>
@@ -38,15 +42,17 @@
 
         <div class="row">
             <div class="column_left">
-                <div class="profile">
-                    <img src="{% static 'dsclogo.png' %}" alt="person"
-                        style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
-                    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; font-size:25px; cursor: pointer"><h3 id="profile_name" style="color: white; text-align: center;">Discord MIKO<span class="material-symbols-outlined">open_in_new</span></h3></a>
-                    <p style="word-break: break-word; color: white; font-size: 20px">Dołącz do społeczności
-                        Matematycznego Internetowego Koła Olimpijskiego!</p>
-                </div>
+
+                    <div href = "#" class="profile">
+                        <img src="{% static 'dsclogo.png' %}" alt="person"
+                            style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
+                        <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; font-size:25px; cursor: pointer"><h3 id="profile_name" style="color: white; text-align: center;">Discord MIKO<span class="material-symbols-outlined">open_in_new</span></h3></a>
+                        <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none"><p style="word-break: break-word; color: white; font-size: 20px">Dołącz do społeczności
+                            Matematycznego Internetowego Koła Olimpijskiego!</p> </a>
+                    </div>
+
                 <div class="info-banner">
-                    <h2>Najbliższe eventy i kółka:</h2>
+                    <h2>Najbliższe eventy i&nbsp;kółka:</h2>
                     {% for kolo in eventy %}
                         <div class="event">
                             <h3 style="color: var(--b2)"><strong>Temat:</strong> {{ kolo.theme }}</h3>

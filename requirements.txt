@@ -1,9 +1,9 @@
-django
 babel
-django_taggit
+django
 django_formtools
+django-redis
+django_taggit
 fuzzywuzzy
 Pillow
 python-Levenshtein
 pytz
-django-redis
