@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Page</title>
+    <link rel="stylesheet" href="{% static 'roadmapStyle.css' %}">
+</head>
+<body>
+  {% include "header.html" %}
+    <div class="table-container">
+        <table style="margin-top: 20px">
+            <thead>
+                <tr>
+                    <th style="width: 20%"><h2>Nazwa</h2></th>
+                    <th style="width: 65%"><h2>Opis</h2></th>
+                    <th style="width: 15%"><h2>uwagi</h2></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="width: 20%"><h3>Algebra i teoria liczb </h3></td>
+                    <td style="width: 65%"><h3>Jest to ciekawa książka o algebrze </h3></td>
+                    <td style="width: 15%"><h3>Nie należy się z niej uczyć, lecz traktować ją bardziej jako encyklopedię</h3></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+  {% include "footer.html" %}
+
+</body>
+
+</html>

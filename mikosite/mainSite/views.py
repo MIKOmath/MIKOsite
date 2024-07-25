@@ -81,3 +81,7 @@ def index(request):
 
 def about(request):
     return render(request, "about.html")
+
+
+def roadmap(request):
+    return render(request, "roadmap.html")
