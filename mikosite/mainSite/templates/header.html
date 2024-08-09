@@ -13,7 +13,7 @@
     <header>
   <nav class="navbar">
     <div class="navbar-left">
-      <h2>MIKO</h2>
+      <a href="/" style="text-decoration: none; cursor: pointer"><h2>MIKO</h2></a>
     </div>
     <button class="navbar-toggle" aria-label="Toggle menu">
       <svg viewBox="0 0 100 80" width="30" height="30">
@@ -24,7 +24,7 @@
     </button>
     <ul class="navbar-center">
         <li><a href="/" {% if request.path == '/' %}id="current"{% endif %}>HOME</a></li>
-        <li><a href="/kolo" {% if request.path == '/kolomatematyczne/' %}id="current"{% endif %}>KOŁO MATEMATYCZNE</a></li>
+        <li><a href="/kolo" {% if request.path == '/kolo/' %}id="current"{% endif %}>KOŁO MATEMATYCZNE</a></li>
         <li><a href="/about" {% if request.path == '/about/' %}id="current"{% endif %}>O NAS</a></li>
         <li><a href="#" {% if request.path == '/bazahintow/' %}id="current"{% endif %}>BAZA ZADAŃ</a></li>
         <li class="profile-item"><a href="#" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a></li>

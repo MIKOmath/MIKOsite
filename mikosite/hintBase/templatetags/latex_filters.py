@@ -1,6 +1,5 @@
 from django import template
 
-print("Loading latex_filters.py")
 register = template.Library()
 
 @register.filter
