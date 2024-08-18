@@ -2,7 +2,7 @@ name: Check Website Health
 
 on:
   schedule:
-    - cron: '*/30 * * * *' # Every 30 minutes
+    - cron: '*/5 * * * *' # Every 5 minutes
 
 jobs:
   build:
