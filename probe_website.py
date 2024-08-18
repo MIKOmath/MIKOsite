@@ -29,7 +29,7 @@ try:
 except requests.exceptions.Timeout:
     embed = {'title': f'Przekroczono limit czasu!', 
              'description': (f'`{formatted_time}` Zautomatyzowany test wykrył błąd na {website_url}.\n'
-               f'Nie można się połączyć z powodu przekroczenia limitu czasu. Sprawdź czy VPS działa poprawnie.'), 
+               f'Nie można się połączyć ze stroną. Sprawdź, czy VPS działa poprawnie.'), 
              'url': website_url, 
              'color': embed_color}
     send_webhook(embed)
@@ -38,7 +38,7 @@ except requests.exceptions.Timeout:
 if r.status_code != 200:  # Website is not working
     embed = {'title': f'Błąd {r.status_code}!', 
              'description': (f'`{formatted_time}` Zautomatyzowany test wykrył błąd na {website_url}.\n'
-               f'Oczekiwano statusu `200`, napotkano `{r.status_code}`. Sprawdź czy strona działa poprawnie.'), 
+               f'Oczekiwano statusu `200`, napotkano `{r.status_code}`. Sprawdź, czy strona działa poprawnie.'), 
              'url': website_url, 
              'color': embed_color}
     send_webhook(embed)
