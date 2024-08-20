@@ -28,8 +28,7 @@ body, html {
     width: 70%;
     top: 100px;
     margin: auto;
-    border: 2px solid var(--b1);
-    margin-top: 50px;
+    border: 1px solid var(--b1);
     margin-bottom: 50px;
     border-radius: 20px;
 }
@@ -195,7 +194,7 @@ body, html {
 .introduction{
     margin: auto;
     justify-content: center;
-    text-align: center;
+    text-align: left;
     margin: auto;
         margin-top: 20px;
     width: 70%;
@@ -352,7 +351,7 @@ h1
 
 h2
 {
-    font-size: 25px;
+    font-size: 22px;
     color: var(--y1);
 }
 
@@ -367,10 +366,16 @@ hr
 {
     color: var(--b1);
     background-color: var(--b1);
-    height: 3px;
+    height: 1px;
+    width: 50px;
+    margin: 1rem 0rem ;
 }
 
-
+.levels{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 
 .levels li{
     margin: 5px;
@@ -385,4 +390,19 @@ hr
   .levels li h3 {
     text-align: center;
   }
+}
+
+
+.column {
+  flex: 1;
+  margin: 10px 10px ;
+  text-align: left;
+  border: 1px solid var(--b1);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.column h3
+{
+  margin-top: 10px;
 }
