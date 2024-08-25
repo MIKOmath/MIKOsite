@@ -128,66 +128,67 @@ fill: var(--b1);
   text-align: center;
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 900px) 
+{
+  #description{
+    width: 100%;
+    text-align: left;
+    margin: auto;
+    margin-top: 50px;
+    padding: 0px 20px;
+  }
+  #team{
+    padding: 0px;
+  }
 
-#description{
-  width: 100%;
-  text-align: left;
-  margin: auto;
-  margin-top: 50px;
-}
-#team{
-  padding: 0px;
-}
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile-item{
+    display: block;
+  }
+  .navbar-right{
+    display: none;
+  }
 
-.navbar {
-  flex-direction: column;
-  align-items: flex-start;
-}
-.profile-item{
-  display: block;
-}
-.navbar-right{
-  display: none;
-}
+  .navbar-toggle {
+    display: block;
+    position: absolute;
+    /*top: 15px;*/
+    right: 15px;
+  }
 
-.navbar-toggle {
-  display: block;
-  position: absolute;
-  /*top: 15px;*/
-  right: 15px;
-}
+  .navbar-center {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 15px;
+  }
 
-.navbar-center {
-  display: none;
-  width: 100%;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-top: 15px;
-}
+  .navbar-center.active {
+    display: flex;
+    align-items: center;
+  }
 
-.navbar-center.active {
-  display: flex;
-  align-items: center;
-}
+  .navbar-center li {
+    margin: 10px 0;
+    display: flex;
+  }
 
-.navbar-center li {
-  margin: 10px 0;
-  display: flex;
-}
+  .navbar-center li + li::before {
+    display: none;
+  }
 
-.navbar-center li + li::before {
-  display: none;
-}
+  .navbar-right {
+    margin: auto;
+    margin-top: 15px;
+  }
 
-.navbar-right {
-  margin: auto;
-  margin-top: 15px;
-}
-
-.profile-item{
-  display: block;
-}
+  .profile-item{
+    display: block;
+  }
 }
 
 

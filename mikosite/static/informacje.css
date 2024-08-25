@@ -392,14 +392,27 @@ hr
   }
 }
 
+@media (max-width: 768px) {
+  .levels {
+      flex-direction: column; /* Stack columns vertically on small screens */
+      padding: 0; /* Remove padding to make it fit better on small screens */
+  }
+  .column {
+      margin: 0; /* Remove margin between columns on small screens */
+      margin-bottom: 30px; /* Add bottom margin to separate stacked columns */
+  }
+  .mobile-left-padding
+  {
+    padding-left: 10px;
+  }
+}
+
 
 .column {
   flex: 1;
-  margin: 10px 10px ;
   text-align: left;
-  border: 1px solid var(--b1);
   border-radius: 20px;
-  padding: 20px;
+  padding: 20px 20px;
 }
 
 .column h3
