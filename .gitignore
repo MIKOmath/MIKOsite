@@ -1,6 +1,9 @@
 # Media files
 mikosite/media/
 
+# Secrets file
+mikosite/mikosite/secrets.py
+
 # Byte-compiled files
 *.log
 *.pot
@@ -94,6 +97,12 @@ docs/_static/
 # Pyre type checker
 .pyre/
 
+# Linting and code checking
+tox.ini
+setup.cfg
+.pep8
+.flake8
+
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
 
@@ -131,5 +140,3 @@ Thumbs.db
 # Folders created by macOS
 .Spotlight-V100
 .Trashes
-
-./mikosite/mikosite/secrets.py
