@@ -162,6 +162,8 @@ def addproblem(request):
 # View Problem view: Displays a specific problem and its hints
 def view_problem(request, problem_id):
     problem = get_object_or_404(Problem, problem_id=problem_id)
+    assert isinstance(problem_id, int)
+
     hinty = ProblemHint.objects.filter(problem=problem, verified=True)
     try:
         reviews = Review.objects.get(problem=problem,)
@@ -223,6 +225,8 @@ def add_solution(request, problem_id):
             time=current_time,
         )
         problemhint.save()
+
+        assert isinstance(problem_id, int)
         return redirect(f"/bazahintow/view_problem/{problem_id}/")
 
     return render(request, 'addsolution.html', {"problem": problem})
