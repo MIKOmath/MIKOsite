@@ -29,10 +29,8 @@ def signup(request):
         image = request.POST.get("profile_image")
         
         if User.objects.filter(email=email).exists():
-            print("email exists, redirecting to signup")
             return render(request, "signup.html", {"custom_message": "Konto z takim adresem e-mail już istnieje."})
         if User.objects.filter(username=username).exists():
-            print("username exists, redirecting to signup")
             return render(request, "signup.html", {"custom_message": "Konto z taką nazwą użytkownika już istnieje."})
         
        
@@ -41,12 +39,10 @@ def signup(request):
             datetime.datetime.strptime(date_of_birth, '%Y-%m-%d')
         except ValueError:
             # If invalid format, assign "default_date" and add an error message
-            print("Brak/ data essy nie ma")
             date_of_birth = datetime.date.today()
         
         
-        
-        print(password0, password1)
+
         if password0 != password1:
             return render(request, "signup.html", {"custom_message": "Hasła nie są takie same."})
         
@@ -60,8 +56,7 @@ def signup(request):
         group, created = Group.objects.get_or_create(name='user')
         newUser.groups.add(group)
         newUser.save()
-        
-        print("success, redirecting to signin")
+
         return redirect("../signin/")
         
         
@@ -99,7 +94,7 @@ def profile(request):
                 date_of_birth=request.POST.get('date_of_birth'),
                 problem_counter=request.user.problem_counter  # Preserve original problem counter
             )
-        print(new_user.date_of_birth)
+
         changes_detected = False
         try:
             # Attempt to parse the date (modify format string as needed)
@@ -112,7 +107,6 @@ def profile(request):
                     break  
         except ValueError:
             # If invalid format, assign "default_date" and add an error message
-            print("Brak/hujowa data essy nie ma")
             for field in ['name', 'surname', 'region']:
                 original_value = getattr(request.user, field)
                 new_value = getattr(new_user, field)
@@ -132,7 +126,7 @@ def profile(request):
         else:
             return render(request, "profile.html", {"custom_message": "Zadnych zmian nie ma"})
     user_belongs_to_moderator_group = request.user.groups.filter(name='Moderator').exists()
-    print(user_belongs_to_moderator_group)
+
     messages["user_belongs_to_moderator_group"] = user_belongs_to_moderator_group
     return render(request, "profile.html", messages)
 
@@ -203,7 +197,6 @@ def zarzadzanie(request):
                 return render(request, "zarzadzanie.html", {'all_users': all_users, 'moderator_users': moderator_users,
                                                             "custom_message": f"Konto o podanej nazwie użytkownika nie istnieje"})
 
-            print(user_to_delete)
             user_to_delete.delete()
             return render(request, "zarzadzanie.html", {'all_users': all_users, 'moderator_users': moderator_users,
                                                         "custom_message": f"Usunęto konto {user_to_delete}"})
@@ -220,16 +213,14 @@ def zarzadzanie(request):
         text_field_2 = request.POST.get('text_field_2')
 
         # Verify if the user exists
-        print(author_ids)
         authors = []
         for author_id in author_ids:
-            print(author_id)
             try:
                 author = User.objects.get(username=author_id)
                 authors.append(author)
             except User.DoesNotExist:
                 return redirect("/zarzadzanie/", {"custom_message": "Uzytkownik o podanym ID nie istnieje"})
-        print(authors)
+
         # Create the post   
         post = Post(
             title=title,

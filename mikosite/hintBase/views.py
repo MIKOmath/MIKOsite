@@ -33,7 +33,7 @@ def index(request):
         tags_to_filter = set(request.POST.getlist('tags_to_filter'))
         diffStr = str(request.POST.get('difficulty'))
         search = str(request.POST.get("search"))
-        print(search)
+
         if len(diffStr) != 0:
             ranges = [int(x) for x in diffStr.split(',')]
             query = Q()
