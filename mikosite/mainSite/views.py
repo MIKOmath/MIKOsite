@@ -1,14 +1,11 @@
 from django.shortcuts import render
 from mainSite.models import Post
-from django.http import HttpResponse
 from kolomat.models import Kolo
-from datetime import datetime, date, time
-from django.views.decorators.cache import cache_page
+from datetime import datetime, date
 from babel.dates import format_date, format_time
 from babel import Locale
 
 
-# Create your views here.
 # @cache_page(60*5)
 def index(request):
     today = date.today()

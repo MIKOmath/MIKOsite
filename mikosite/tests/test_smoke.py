@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+
 class WebsiteTest(TestCase):
 
     def test_home_page_response(self):

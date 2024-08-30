@@ -16,7 +16,6 @@ class CustomUserManager(BaseUserManager):
 
     # Method to create a superuser
     def create_superuser(self, username, email, password, **extra_fields):
-
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.is_superuser = True
@@ -26,7 +25,6 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-
     username = models.CharField(max_length=30, unique=True, validators=[MinLengthValidator(5)])
     email = models.EmailField(max_length=255, unique=True)
     password = models.CharField(max_length=128)

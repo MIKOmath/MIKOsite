@@ -1,34 +1,25 @@
 from django.shortcuts import render, HttpResponse
-from django.contrib import messages
-from accounts.models import User
 from django.shortcuts import redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
-from django.conf import settings
 from .models import Problem, ProblemHint, Review
 from taggit.models import Tag
 from fuzzywuzzy import fuzz
 from datetime import datetime
 from pytz import timezone
-import pytz
 from django.db.models import Q
-from django.views.decorators.cache import cache_page
-from django.core.cache import cache
-import re
+
 
 # @cache_page(60*5)
 def index(request):
-
     # Retrieve all problems in reverse order
     all_problems = reversed(Problem.objects.all())
 
     # Check if the user belongs to the 'Moderator' group
     user_belongs_to_moderator_group = request.user.groups.filter(name='Moderator').exists()
-    
+
     # Get all tag names
     tags = [tag.name for tag in Tag.objects.all()]
-    
+
     if request.method == 'POST':
         tags_to_filter = set(request.POST.getlist('tags_to_filter'))
         diffStr = str(request.POST.get('difficulty'))
@@ -56,13 +47,13 @@ def index(request):
 
         return render(request, 'index1.html', {
             "all_problems": filtered_problems,
-            "user_belongs_to_moderator_group": user_belongs_to_moderator_group, 
+            "user_belongs_to_moderator_group": user_belongs_to_moderator_group,
             "tags": tags
         })
 
     return render(request, 'index1.html', {
-        "all_problems": all_problems, 
-        "user_belongs_to_moderator_group": user_belongs_to_moderator_group, 
+        "all_problems": all_problems,
+        "user_belongs_to_moderator_group": user_belongs_to_moderator_group,
         "tags": tags
     })
 
@@ -98,15 +89,14 @@ def addproblem(request):
         current_date = current_time.date()
         current_time = current_time.time()
 
-
         problem = Problem(
             latex_code=latex_code,
             source=source,
             image=image,
             difficulty=difficulty,
             author=request.user,
-            date = current_date,
-            time = current_time,
+            date=current_date,
+            time=current_time,
         )
 
         confirm_key = request.POST.get('confirm_key')
@@ -166,7 +156,7 @@ def view_problem(request, problem_id):
 
     hinty = ProblemHint.objects.filter(problem=problem, verified=True)
     try:
-        reviews = Review.objects.get(problem=problem,)
+        reviews = Review.objects.get(problem=problem, )
     except:
         reviews = Review(current_rating=problem.difficulty, problem=problem)
         reviews.save()
@@ -176,7 +166,7 @@ def view_problem(request, problem_id):
     if request.user.is_authenticated:
         if request.method == "POST":
             if request.POST.get("delhandeler") == "delete":
-                if is_admin==True:
+                if is_admin:
                     problem.delete()
                     return redirect("/bazahintow/")
             else:
@@ -199,8 +189,6 @@ def view_problem(request, problem_id):
 # Add Solution view: Allows authenticated users to add a solution to a problem
 @login_required(login_url='../signin')
 def add_solution(request, problem_id):
-
-
     problem = get_object_or_404(Problem, problem_id=problem_id)
 
     warsaw_timezone = timezone('Europe/Warsaw')
@@ -211,7 +199,6 @@ def add_solution(request, problem_id):
     # Extract date and time
     current_date = current_time.date()
     current_time = current_time.time()
-
 
     if request.method == 'POST':
         hints = "\n".join([value for key, value in request.POST.items() if key.startswith('hint')])
@@ -238,8 +225,6 @@ def verifysolutions(request):
     if not request.user.groups.filter(name='Moderator').exists():
         return redirect("/")
 
-
-
     if request.method == 'POST':
         if 'delete_solution' in request.POST:
             hint_to_delete = ProblemHint.objects.get(hintId=request.POST['delete_solution'])
@@ -250,7 +235,7 @@ def verifysolutions(request):
             hint_to_verify.save()
 
     solutions_toverify = ProblemHint.objects.filter(verified=False)
-    problems_toverify = Problem.objects.filter(verified=False) # Add functionality to remove unferified problems. 
+    problems_toverify = Problem.objects.filter(verified=False)  # Add functionality to remove unverified problems.
 
-
-    return render(request, 'verifysolutions.html', {"solutions_toverify": solutions_toverify, "problems_toverify" : problems_toverify})
+    return render(request, 'verifysolutions.html',
+                  {"solutions_toverify": solutions_toverify, "problems_toverify": problems_toverify})

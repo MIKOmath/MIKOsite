@@ -2,12 +2,13 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter
 def upper(value):
     return value.upper()
 
-@register.filter
 
+@register.filter
 def latex_preview(text):
     delimiters = [
         "$$", "$", "\\(", "\\)", "\\begin{equation}", "\\end{equation}",
@@ -18,7 +19,7 @@ def latex_preview(text):
 
     def is_latex_boundary(index):
         for delim in delimiters:
-            if text[index:].startswith(delim) and (index == 0 or text[index-1] != '\\'):
+            if text[index:].startswith(delim) and (index == 0 or text[index - 1] != '\\'):
                 return True
         return False
 
@@ -65,6 +66,5 @@ def latex_preview(text):
 
     preview = text[:last_space + 1] if last_space != -1 else text
     return preview + ('...' if len(preview) < total_length else '')
-
 
 # register.filter("latex_preview", latex_preview)

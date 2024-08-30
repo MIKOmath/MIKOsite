@@ -13,17 +13,14 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 try:
-        from .secrets import SECRET_KEY, DB_PASSWORD
+    from .secrets import SECRET_KEY, DB_PASSWORD
 except ImportError:
-        raise ImportError("Create a secrets.py file with SECRET_KEY and DB_PASSWORD")
-
+    raise ImportError("Create a secrets.py file with SECRET_KEY and DB_PASSWORD")
 
 CSRF_TRUSTED_ORIGINS = [
     'https://mikomath.org',
@@ -46,7 +43,6 @@ CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_AGE = 1209600  # 2 weeks, in seconds
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
-
 ALLOWED_HOSTS = [
     "mikomath.org",
     "195.117.15.149",
@@ -55,7 +51,6 @@ ALLOWED_HOSTS = [
 ]
 
 APPEND_SLASH = True
-
 
 # Application definition
 
@@ -77,11 +72,10 @@ INSTALLED_APPS = [
 USE_L10N = True
 TAGGIT_CASE_INSENSITIVE = True
 
-
 TEMPLATES = [
     {
         'NAME': 'tex',
-        'BACKEND': 'django_tex.engine.TeXEngine', 
+        'BACKEND': 'django_tex.engine.TeXEngine',
         'APP_DIRS': True,
     },
 ]
@@ -116,17 +110,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mikosite.wsgi.application'
 
-
 sqlite_db_path = BASE_DIR / 'db.sqlite3'
-
-
 
 if sqlite_db_path.exists():
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': sqlite_db_path,                
-        }   
+            'NAME': sqlite_db_path,
+        }
     }
 else:
     DATABASES = {
@@ -138,7 +129,7 @@ else:
             'HOST': 'localhost',
             'PORT': '5432',
         }
-    } 
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -154,7 +145,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # CACHES = {
 #     "default": {
@@ -179,7 +169,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
@@ -189,14 +178,12 @@ STATICFILES_DIRS = [
 
 STATIC_URL = 'static/'
 
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = "accounts.User"  
+AUTH_USER_MODEL = "accounts.User"

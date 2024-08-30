@@ -10,69 +10,60 @@ from mainSite.models import Post
 from hintBase.models import Problem, ProblemHint
 from django.http import HttpResponse
 
-# Create your views here.
-
-
 
 def signup(request):
-    
     if request.method == "POST":
         username = request.POST.get("username")
         email = request.POST.get("email")
         password0 = request.POST.get("password")
         password1 = request.POST.get("confirmPassword")
-        
+
         name = request.POST.get("name")
         surname = request.POST.get("surname")
         date_of_birth = request.POST.get("date_of_birth")
         region = request.POST.get("region")
-        image = request.POST.get("profile_image")
-        
+
         if User.objects.filter(email=email).exists():
             return render(request, "signup.html", {"custom_message": "Konto z takim adresem e-mail już istnieje."})
         if User.objects.filter(username=username).exists():
             return render(request, "signup.html", {"custom_message": "Konto z taką nazwą użytkownika już istnieje."})
-        
-       
+
         try:
             # Attempt to parse the date (modify format string as needed)
             datetime.datetime.strptime(date_of_birth, '%Y-%m-%d')
         except ValueError:
             # If invalid format, assign "default_date" and add an error message
             date_of_birth = datetime.date.today()
-        
-        
 
         if password0 != password1:
             return render(request, "signup.html", {"custom_message": "Hasła nie są takie same."})
-        
+
         newUser = User.objects.create_user(username=username, email=email, password=password0)
-        
+
         newUser.name = name
         newUser.surname = surname
         newUser.date_of_birth = date_of_birth
         newUser.region = region
-    
+
         group, created = Group.objects.get_or_create(name='user')
         newUser.groups.add(group)
         newUser.save()
 
         return redirect("../signin/")
-        
-        
-        
+
     return render(request, "signup.html")
 
+
 def signin(request):
-    
     if request.user.is_authenticated:
-            return render(request, "signin.html", {"custom_message": f"Jesteś zalogowany jako {request.user.username}. Musisz się wylogować, aby zalogować się ponownie."})
-    
+        return render(request, "signin.html", {
+            "custom_message": f"Jesteś zalogowany jako {request.user.username}. Musisz się wylogować, aby zalogować się ponownie."})
+
     if request.method == "POST":
-        
+
         username = request.POST.get("username")
         password = request.POST.get("password")
-        
+
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
@@ -81,19 +72,20 @@ def signin(request):
             return render(request, "signin.html", {"custom_message": "Login laub hasło nie jest poprawne"})
     return render(request, "signin.html")
 
+
 @login_required(login_url='../signin')
 def profile(request):
     messages = {}
-    if request.method =="POST":
+    if request.method == "POST":
         new_user = User(
-                username=request.user.username,  # Preserve original username for security
-                email=request.user.email,        # Preserve original email for security
-                name=request.POST.get('name'),
-                surname=request.POST.get('surname'),
-                region=request.POST.get('region'),
-                date_of_birth=request.POST.get('date_of_birth'),
-                problem_counter=request.user.problem_counter  # Preserve original problem counter
-            )
+            username=request.user.username,  # Preserve original username for security
+            email=request.user.email,  # Preserve original email for security
+            name=request.POST.get('name'),
+            surname=request.POST.get('surname'),
+            region=request.POST.get('region'),
+            date_of_birth=request.POST.get('date_of_birth'),
+            problem_counter=request.user.problem_counter  # Preserve original problem counter
+        )
 
         changes_detected = False
         try:
@@ -104,7 +96,7 @@ def profile(request):
                 new_value = getattr(new_user, field)
                 if original_value != new_value:
                     changes_detected = True
-                    break  
+                    break
         except ValueError:
             # If invalid format, assign "default_date" and add an error message
             for field in ['name', 'surname', 'region']:
@@ -112,8 +104,7 @@ def profile(request):
                 new_value = getattr(new_user, field)
                 if original_value != new_value:
                     changes_detected = True
-                    break  
-            
+                    break
 
         if changes_detected:
             request.user.name = new_user.name
@@ -121,8 +112,8 @@ def profile(request):
             request.user.region = new_user.region
             request.user.date_of_birth = new_user.date_of_birth
             request.user.save()
-            
-            return render(request, "profile.html", {"custom_message": "Zmiany zostały zapisane"})  
+
+            return render(request, "profile.html", {"custom_message": "Zmiany zostały zapisane"})
         else:
             return render(request, "profile.html", {"custom_message": "Zadnych zmian nie ma"})
     user_belongs_to_moderator_group = request.user.groups.filter(name='Moderator').exists()
@@ -130,8 +121,8 @@ def profile(request):
     messages["user_belongs_to_moderator_group"] = user_belongs_to_moderator_group
     return render(request, "profile.html", messages)
 
-def public_profile(request, username):
 
+def public_profile(request, username):
     return HttpResponse("Update soon :))")
     user = User.objects.get(username=username)
 
@@ -169,33 +160,35 @@ def change_password(request):
             request.user.set_password(new_password1)
             request.user.save()
             messages.success(request, "Password changed successfully!")
-            return render(request, 'changepassword.html', {"custom_message": "Hasło zostało zmienione"}) # Adjust to your success page URL
+            return render(request, 'changepassword.html',
+                          {"custom_message": "Hasło zostało zmienione"})  # Adjust to your success page URL
 
     return render(request, 'changepassword.html')  # Adjust to your template name
+
 
 @login_required(login_url='../signin')
 def signout(request):
     logout(request)
     return redirect("/")
 
+
 @login_required(login_url='../signin')
 def zarzadzanie(request):
-    messages={}
     all_users = User.objects.all()
     moderator_group = Group.objects.get(name='Moderator')
     moderator_users = moderator_group.user_set.all()
 
-    if request.user.is_staff == False:
+    if not request.user.is_staff:
         return redirect("/")
     if request.method == 'POST':
 
         if request.POST.get("delete") == "True":
             username = request.POST.get("user_username")
             try:
-                user_to_delete =User.objects.get(username=username)
+                user_to_delete = User.objects.get(username=username)
             except:
                 return render(request, "zarzadzanie.html", {'all_users': all_users, 'moderator_users': moderator_users,
-                                                            "custom_message": f"Konto o podanej nazwie użytkownika nie istnieje"})
+                                                            "custom_message": "Konto o podanej nazwie użytkownika nie istnieje"})
 
             user_to_delete.delete()
             return render(request, "zarzadzanie.html", {'all_users': all_users, 'moderator_users': moderator_users,
@@ -221,7 +214,7 @@ def zarzadzanie(request):
             except User.DoesNotExist:
                 return redirect("/zarzadzanie/", {"custom_message": "Uzytkownik o podanym ID nie istnieje"})
 
-        # Create the post   
+        # Create the post
         post = Post(
             title=title,
             subtitle=subtitle,
@@ -244,6 +237,4 @@ def zarzadzanie(request):
         request.session['custom_message'] = "Post został utworzony"
         return redirect('/zarzadzanie/')
 
-
     return render(request, "zarzadzanie.html", {'all_users': all_users, 'moderator_users': moderator_users})
-    
