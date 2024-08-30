@@ -79,9 +79,10 @@ h3 {
 }
 
 #info-wrapper img {
-  height: 60%;
-  min-height: 100px;
-  min-width: 100px;
+  width: 70%;
+  padding: 10px;
+  min-height: 250px;
+  min-width: 250px;
 }
 #landing-banner-wrapper a {
   text-decoration: none;

@@ -20,7 +20,7 @@
     <main>
         <div id="landing-banner-wrapper">
             <div id="info-wrapper">
-                <img src="{% static 'logoDark.png' %}" alt="Logo Matematycznego Internetowego Koła Olimpijskiego"
+                <img src="{% static 'logoDark.svg' %}" alt="Logo Matematycznego Internetowego Koła Olimpijskiego"
                     style="    -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
@@ -32,7 +32,7 @@
                     <a href={% url 'informacje' %} style="text-decoration: none; cursor: pointer">O kole</a>
                 </div>
             </div>
-            <div id="background-image" style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0),rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.jpg' %}');">
+            <div id="background-image" style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0),rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.webp' %}');">
 <!--.-->
             </div>
         </div>
@@ -44,7 +44,7 @@
             <div class="column_left">
 
                     <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer" class="profile">
-                        <img src="{% static 'dsclogo.png' %}" alt="Ikona z logo Discord"
+                        <img src="{% static 'dsclogo.webp' %}" alt="Ikona z logo Discord"
                             style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
                         <h3 id="profile_name" style="color: white; text-align: center;">
                             Dołącz do&nbsp;społeczności MIKO na&nbsp;Discordzie!
@@ -172,7 +172,7 @@
 document.addEventListener('DOMContentLoaded', toggleImageSize);</script>
 
 <script>const backgroundDiv = document.getElementById('background-image');
-const images = ['MIKO_BG1.jpg', 'MIKO_PICTURE.png'];
+const images = ['MIKO_BG1.webp', 'MIKO_PICTURE.webp'];
 let currentIndex = 0;
 
 function changeBackground() {
