@@ -146,17 +146,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://127.0.0.1:6379/1",
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+CACHE_BACKEND = 'redis_cache.cache://127.0.0.1:6379/1'
 SESSION_CACHE_ALIAS = "default"
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -167,7 +170,7 @@ TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
