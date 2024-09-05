@@ -402,7 +402,7 @@ hr
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1250px) {
   .levels {
       flex-direction: column; /* Stack columns vertically on small screens */
       padding: 0; /* Remove padding to make it fit better on small screens */
@@ -421,8 +421,16 @@ hr
 .column {
   flex: 1;
   text-align: left;
-  border-radius: 20px;
   padding: 20px 20px;
+  margin: 10px;
+
+  
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: left;
+  transition: transform 0.3s ease;
 }
 
 .column h3
