@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "taggit",
     "formtools",
     "kolomat",
+    "cards",
 ]
 
 USE_L10N = True

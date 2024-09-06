@@ -1,10 +1,12 @@
-babel
-django
+babel~=2.16.0
+CairoSVG~=2.7.1
+django~=5.1.1
 django_formtools
 django-redis
 django_taggit
-fuzzywuzzy
-Pillow
+fuzzywuzzy~=0.18.0
+Pillow~=10.4.0
 psycopg2
 python-Levenshtein
-pytz
+pytz~=2024.1
+tqdm~=4.66.5
