@@ -40,52 +40,131 @@
     <p style="color: #949494; font-style: italic; margin-bottom: 60px;">
         Witamy w bazie zadań! <br>
         Znajdziesz tutaj zadania z rozmaitych olimpiad wraz z rozwiązaniami podzielonymi na kroki myślowe w postaci ukrytych podpowiedzi.<br>
-        Między innymi, ideą tego projektu jest ułatwienie nauki dla początkujących olimpijczyków.
+        Ideą tego projektu jest między innymi ułatwienie nauki dla początkujących olimpijczyków.
         Niniejsza forma rozwiązań pozwala szybciej opanować metody rozwiązywania zarówno prostych, jak i skomplikowanych zadań olimpijskich.<br>
-        Zachęcamy do dodawania zadań, których nie ma w bazie. Dzięki wykrywaniu podobnych treści zadań nie musisz się martwić,
-        że utworzysz duplikat, system wyświetli Ci wszystkie podobne zagadnienia. Podobnie sprawa wygląda z dodawaniem rozwiązań, różnicą jest
+        Zachęcamy do dodawania zadań, których nie ma w bazie. Podczas dodawania zadań system wyświetla wszystkie podobne zagadnienia, co zapobiega
+        tworzeniu duplikatów. Podobnie sprawa wygląda z dodawaniem rozwiązań, różnicą jest
         manualna ich weryfikacja przez organizatorów <strong>MIKO</strong> oraz zaufane osoby.
     </p>
 
    <div class="search-container">
-    <h2>Wyszukaj zadanie</h2>
+    <h2 style="margin-bottom: 16px;">Wyszukaj zadanie</h2>
     <form method="POST" id="filter-form" action="">
-        {% csrf_token %}
+        {% csrf_token %}        
         <div class="form-row">
-            <div class="form-group">
+            <div class="form-col-left">
+                <label for="search">Słowo kluczowe:</label>
+                <input type="text" id="search" name="search" placeholder="Wyszukaj frazę...">
+            </div>
+            <div class="form-col-right">
+                <label for="difficulty">Trudność:</label>
+                <div class="difficulty-selector">
+                    <div class="sliders_control">
+                        <input id="fromSlider" type="range" value="1" min="1" max="10"/>
+                        <input id="toSlider" type="range" value="10" min="1" max="10"/>
+                        <div class="difficulty-bars">
+                            <label class="noselect">|</label>
+                            <label class="noselect">|</label>
+                            <label class="noselect">|</label>
+                            <label class="noselect">|</label>
+                            <label class="noselect">|</label>
+                            <label class="noselect">|</label>
+                            <label class="noselect">|</label>
+                            <label class="noselect">|</label>
+                            <label class="noselect">|</label>
+                            <label class="noselect">|</label>
+                        </div>
+                        <div class="difficulty-description">
+                            <label>1</label>
+                            <label>2</label>
+                            <label>3</label>
+                            <label>4</label>
+                            <label>5</label>
+                            <label>6</label>
+                            <label>7</label>
+                            <label>8</label>
+                            <label>9</label>
+                            <label>10</label>
+                        </div>
+                    </div>
+                    <div class="form_control" type="hidden">                        
+                        <div class="form_control_container">
+                            <input type="hidden" class="form_control_container__time__input" type="number" id="fromInput" value="1" min="1" max="10"/>
+                        </div>
+                        <div class="form_control_container">
+                            <input type="hidden" class="form_control_container__time__input" type="number" id="toInput" value="10" min="1" max="10"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="tag-col-left">
                 <label for="tags">Tagi:</label>
+                <input type="text" id="tag-search" name="tag-search" placeholder="Wyszukaj tagi...">
                 <select name="tags_to_filter" id="tags" multiple>
                     {% for tag in tags %}
                         <option value="{{ tag }}">{{ tag }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group">
-                <label for="difficulty">Trudność:</label>
-                <div class="difficulty-selector">
-                    <button type="button" class="difficulty-btn" data-value="1">1</button>
-                    <button type="button" class="difficulty-btn" data-value="2">2</button>
-                    <button type="button" class="difficulty-btn" data-value="3">3</button>
-                    <button type="button" class="difficulty-btn" data-value="4">4</button>
-                    <button type="button" class="difficulty-btn" data-value="5">5</button>
-                    <button type="button" class="difficulty-btn" data-value="6">6</button>
-                    <button type="button" class="difficulty-btn" data-value="7">7</button>
-                    <button type="button" class="difficulty-btn" data-value="8">8</button>
-                    <button type="button" class="difficulty-btn" data-value="9">9</button>
-                    <button type="button" class="difficulty-btn" data-value="10">10</button>
+            <div class="tag-col-right">
+                <div class="selected-tags-box">
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Algebra</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Kombinatoryka</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Teoria Liczb</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Geometria</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Algebra</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Kombinatoryka</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Teoria Liczb</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Geometria</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Algebra</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Kombinatoryka</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Teoria Liczb</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
+                    <div class="selected-tag"> 
+                        <div class="selected-tag-col-value">Geometria</div>  
+                        <div class="selected-tag-col-delete">×</div>    
+                    </div>
                 </div>
-                <input type="hidden" id="difficulty" name="difficulty" value="">
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group search-group">
-                <label for="search">Szukaj:</label>
-                <input type="text" id="search" name="search" placeholder="Wpisz słowo kluczowe...">
-            </div>
-            <div class="form-group submit-group">
-                <input type="submit" value="Szukaj">
-            </div>
-        </div>
+    <div id="submit-row">
+        <input type="submit" id="submit" value="Szukaj">
+    </div>        
+    </div>
     </form>
 </div>
 
@@ -140,12 +219,96 @@ margin-top: 60px;
         });
     });
 
-    function updateDifficultyInput() {
-        const selectedDifficulties = Array.from(difficultyButtons)
-            .filter(btn => btn.classList.contains('active'))
-            .map(btn => btn.dataset.value);
-        difficultyInput.value = selectedDifficulties.join(',');
+
+    <!--Slider control:-->
+
+    function controlFromInput(fromSlider, fromInput, toInput, controlSlider) {
+    const [from, to] = getParsed(fromInput, toInput);
+    fillSlider(fromInput, toInput, '#C6C6C6', '#25daa5', controlSlider);
+    if (from > to) {
+        fromSlider.value = to;
+        fromInput.value = to;
+    } else {
+        fromSlider.value = from;
     }
+}
+    
+function controlToInput(toSlider, fromInput, toInput, controlSlider) {
+    const [from, to] = getParsed(fromInput, toInput);
+    fillSlider(fromInput, toInput, '#C6C6C6', '#25daa5', controlSlider);
+    setToggleAccessible(toInput);
+    if (from <= to) {
+        toSlider.value = to;
+        toInput.value = to;
+    } else {
+        toInput.value = from;
+    }
+}
+
+function controlFromSlider(fromSlider, toSlider, fromInput) {
+  const [from, to] = getParsed(fromSlider, toSlider);
+  fillSlider(fromSlider, toSlider, '#ccc', '#F24535', toSlider);
+  if (from > to) {
+    fromSlider.value = to;
+    fromInput.value = to;
+  } else {
+    fromInput.value = from;
+  }
+}
+
+function controlToSlider(fromSlider, toSlider, toInput) {
+  const [from, to] = getParsed(fromSlider, toSlider);
+  fillSlider(fromSlider, toSlider, '#ccc', '#F24535', toSlider);
+  setToggleAccessible(toSlider);
+  if (from <= to) {
+    toSlider.value = to;
+    toInput.value = to;
+  } else {
+    toInput.value = from;
+    toSlider.value = from;
+  }
+}
+
+function getParsed(currentFrom, currentTo) {
+  const from = parseInt(currentFrom.value, 10);
+  const to = parseInt(currentTo.value, 10);
+  return [from, to];
+}
+
+function fillSlider(from, to, sliderColor, rangeColor, controlSlider) {
+    const rangeDistance = to.max-to.min;
+    const fromPosition = from.value - to.min;
+    const toPosition = to.value - to.min;
+    controlSlider.style.background = `linear-gradient(
+      to right,
+      ${sliderColor} 0%,
+      ${sliderColor} ${(fromPosition)/(rangeDistance)*95}%,
+      ${rangeColor} ${((fromPosition)/(rangeDistance))*95}%,
+      ${rangeColor} ${(toPosition)/(rangeDistance)*90 + 7}%, 
+      ${sliderColor} ${(toPosition)/(rangeDistance)*90 + 7}%, 
+      ${sliderColor} 100%)`;
+}
+
+function setToggleAccessible(currentTarget) {
+  const toSlider = document.querySelector('#toSlider');
+  if (Number(currentTarget.value) <= 0 ) {
+    toSlider.style.zIndex = 2;
+  } else {
+    toSlider.style.zIndex = 0;
+  }
+}
+
+const fromSlider = document.querySelector('#fromSlider');
+const toSlider = document.querySelector('#toSlider');
+const fromInput = document.querySelector('#fromInput');
+const toInput = document.querySelector('#toInput');
+fillSlider(fromSlider, toSlider, '#ccc', '#F24535', toSlider);
+setToggleAccessible(toSlider);
+
+fromSlider.oninput = () => controlFromSlider(fromSlider, toSlider, fromInput);
+toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
+fromInput.oninput = () => controlFromInput(fromSlider, fromInput, toInput, toSlider);
+toInput.oninput = () => controlToInput(toSlider, fromInput, toInput, toSlider);
 });
 
 </script>
