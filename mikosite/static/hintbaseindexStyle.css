@@ -19,10 +19,10 @@ body {
 }
 
 .container {
-    margin-left: auto;
-    margin-right: auto;
-    box-sizing: border-box;
-    width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    width: 100%;
+    max-width: 1400px;
 }
 
 #footer
@@ -53,11 +53,11 @@ body {
 
 @media screen and (max-width: 1500px) {
     .container {
-       width: -webkit-calc(100% - 100px);
+       width: -webkit-calc(100% - 40px);
     }
     #footer-text
     {
-        width: -webkit-calc(100% - 100px);
+        width: -webkit-calc(100% - 40px);
     }
 }
 

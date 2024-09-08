@@ -336,7 +336,11 @@ body, html {
     display: block;
   }
   .introduction{
-      width: 97%;
+    width: 100%;
+    text-align: left;
+    margin: auto;
+    margin-top: 50px;
+    padding: 0px 20px;
   }
   .calendar{
       width: 97%;
