@@ -327,8 +327,8 @@ clear: both;
 
 .photo-placeholder {
   height: 200px;
-  margin-bottom: 10px;
-  background-color: #ddd;
+  width: 300px;
+  object-fit: cover;
   /* You can replace this with an actual image later */
 }
 
