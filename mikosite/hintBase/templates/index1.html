@@ -27,7 +27,7 @@
 
 
 </head>
-<body>
+<body onload = "javascript:filterResults()">
 
        {% include "header.html" %}
 
@@ -101,63 +101,17 @@
         <div class="form-row">
             <div class="tag-col-left">
                 <label for="tags">Tagi:</label>
-                <input type="text" id="tag-search" name="tag-search" placeholder="Wyszukaj tagi...">
-                <select name="tags_to_filter" id="tags" multiple>
+                <input type="text" id="tag-search" name="tag-search" placeholder="Wyszukaj tagi..." oninput="filterResults()" onload="filterResults()">
+                <div name="tags_to_filter" id="tags" class="tags">
+                    <!--                    
                     {% for tag in tags %}
                         <option value="{{ tag }}">{{ tag }}</option>
                     {% endfor %}
-                </select>
+                    -->
+                </div>
             </div>
             <div class="tag-col-right">
-                <div class="selected-tags-box">
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Algebra</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Kombinatoryka</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Teoria Liczb</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Geometria</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Algebra</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Kombinatoryka</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Teoria Liczb</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Geometria</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Algebra</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Kombinatoryka</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Teoria Liczb</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
-                    <div class="selected-tag"> 
-                        <div class="selected-tag-col-value">Geometria</div>  
-                        <div class="selected-tag-col-delete">×</div>    
-                    </div>
+                <div class="selected-tags-box" id="selected-tags-box">
                 </div>
             </div>
         </div>
@@ -207,6 +161,59 @@ margin-top: 60px;
     {% endfor %}
 </div>
 {% include "footer.html" %}
+
+
+<script>
+    const items = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew", "a", "b", "c", "d"];
+    let selectedItems = new Set();
+    const resultsBox = document.getElementById('tags');
+    const selectedItemsContainer = document.getElementById('selected-tags-box');
+
+    function filterResults() {
+        const query = document.getElementById('tag-search').value.toLowerCase();
+        resultsBox.innerHTML = '';
+
+        const filteredItems = items.filter(item => item.toLowerCase().includes(query));
+        filteredItems.forEach(item => {
+            if (!selectedItems.has(item)){
+                const div = document.createElement('div');
+                div.className = 'result-item';
+                div.textContent = item;
+                div.onclick = () => selectItem(item);
+                resultsBox.appendChild(div);
+            }
+        });
+    }
+
+function selectItem(item) {
+
+    if (!selectedItems.has(item)) {  // Only add if not already selected
+        selectedItems.add(item);
+
+    const div = document.createElement('div');
+    div.className = 'selected-tag';
+    div.id = 'selected-tag:' + item;
+    const div2 = document.createElement('div');
+    const div3 = document.createElement('div');
+    div2.className = 'selected-tag-col-value';
+    div3.className = 'selected-tag-col-delete';
+    div2.textContent = item;
+    div3.textContent = 'x';
+    div.appendChild(div2);
+    div.appendChild(div3);
+    div3.onclick = () => removeItem(item);
+    selectedItemsContainer.appendChild(div);
+    }
+    filterResults();
+}
+function removeItem(item) {
+    const div = document.getElementById('selected-tag:' + item);
+    selectedItems.delete(item);
+    div.remove();
+    filterResults();
+}
+</script>
+
 <script>
    document.addEventListener('DOMContentLoaded', function() {
     const difficultyButtons = document.querySelectorAll('.difficulty-btn');
@@ -345,6 +352,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 </script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
   const navbarToggle = document.querySelector('.navbar-toggle');

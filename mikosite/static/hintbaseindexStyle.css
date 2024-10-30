@@ -169,6 +169,7 @@ hr
     flex: 0 0 20px;
     height: 20px;
     width: 20px;
+    cursor: pointer;
 }
 
 .selected-tags-box
@@ -249,7 +250,7 @@ label {
     font-weight: bold;
 }
 
-select, input[type="text"] {
+select, input[type="text"], #tags {
     width: 100%;
     height: 40px;
     padding: 15px;
@@ -262,8 +263,10 @@ select, input[type="text"] {
     background-color: var(--bcg);
 }
 
-select[multiple] {
+select[multiple], #tags {
     height: 140px;
+    max-height: 196px;
+    overflow-y: auto;
 }
 
 .difficulty-selector {
@@ -461,6 +464,12 @@ input[type="range"]
 .difficulty-bars label 
 {
     color: #ccc;
+}
+
+.result-item:hover
+{
+    color: var(--b1);
+    cursor: pointer;
 }
 
 
