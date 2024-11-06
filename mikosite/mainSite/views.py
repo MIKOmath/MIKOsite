@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from mainSite.models import Post
-from kolomat.models import Kolo
+from seminars.models import Seminar
 from datetime import datetime, date
 from babel.dates import format_date, format_time
 from babel import Locale
@@ -12,43 +12,43 @@ def index(request):
     now = datetime.now().time()
     locale = Locale('pl_PL')
 
-    # Get all future Kolo instances
-    future_kolos = [
-        kolo for kolo in Kolo.objects.all()
-        if kolo.date and kolo.time and (kolo.date > today or (kolo.date == today and kolo.time > now))
+    # Get all future Seminar instances
+    future_seminars = [
+        seminar for seminar in Seminar.objects.all()
+        if seminar.date and seminar.time and (seminar.date > today or (seminar.date == today and seminar.time > now))
     ]
 
-    if not future_kolos:
-        next_kolo_instances = []
+    if not future_seminars:
+        next_seminars = []
     else:
-        future_kolos.sort(key=lambda k: datetime.combine(k.date, k.time))
-        next_date = future_kolos[0].date
-        next_kolo_instances = [kolo for kolo in future_kolos if kolo.date == next_date]
+        future_seminars.sort(key=lambda k: datetime.combine(k.date, k.time))
+        next_date = future_seminars[0].date
+        next_seminars = [seminar for seminar in future_seminars if seminar.date == next_date]
 
     # If there are less than 3 events on the next date, try to get one more recent event
-    if len(next_kolo_instances) < 3:
-        remaining_kolos = [kolo for kolo in future_kolos if kolo.date > next_date]
-        if remaining_kolos:
-            next_kolo_instances.append(remaining_kolos[0])
+    if len(next_seminars) < 3:
+        remaining_seminars = [kolo for kolo in future_seminars if kolo.date > next_date]
+        if remaining_seminars:
+            next_seminars.append(remaining_seminars[0])
 
     event_data = []
-    for kolo in next_kolo_instances:
-        start_time = format_time(kolo.time, format='HH:mm', locale=locale)
-        end_time = format_time((datetime.combine(date.today(), kolo.time) + kolo.duration).time(), format='HH:mm',
+    for seminar in next_seminars:
+        start_time = format_time(seminar.time, format='HH:mm', locale=locale)
+        end_time = format_time((datetime.combine(date.today(), seminar.time) + seminar.duration).time(), format='HH:mm',
                                locale=locale)
-        polish_date = format_date(kolo.date, format='d MMMM y', locale=locale)
+        polish_date = format_date(seminar.date, format='d MMMM y', locale=locale)
 
         event_data.append({
-            'theme': kolo.theme,
+            'theme': seminar.theme,
             'date': polish_date,
             'time_range': f"{start_time} - {end_time}",
-            'duration': kolo.duration,
-            'tutors': kolo.tutors.all(),
-            'description': kolo.description,
-            'image': kolo.image,
-            'file': kolo.file,
-            'level': kolo.level,
-            'finished': kolo.finished,
+            'duration': seminar.duration,
+            'tutors': seminar.tutors.all(),
+            'description': seminar.description,
+            'image': seminar.image,
+            'file': seminar.file,
+            'level': seminar.level,
+            'finished': seminar.finished,
         })
 
     posts = Post.objects.all()

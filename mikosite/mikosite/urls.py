@@ -24,6 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("mainSite.urls")),
     path('', include('accounts.urls')),
-    path('kolo/', include('kolomat.urls')),
+    path('kolo/', include('seminars.urls')),
     path("bazahintow/", include("hintBase.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

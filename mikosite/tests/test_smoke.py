@@ -13,7 +13,7 @@ class WebsiteTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'about.html')
 
-    def test_kolomat_response(self):
+    def test_seminars_response(self):
         response = self.client.get('/kolo/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'informacje.html')

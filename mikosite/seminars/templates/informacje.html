@@ -118,46 +118,46 @@
 
     <script>
 document.addEventListener('DOMContentLoaded', function() {
-    {% for kolo in kolka %}
+    {% for seminar in seminars %}
     try {
-        const eventDate = new Date("{{ kolo.date|date:'Y-m-d' }}");
+        const eventDate = new Date("{{ seminar.date|date:'Y-m-d' }}");
         if (isNaN(eventDate.getTime())) {
             throw new Error("Invalid date");
         }
 
-        const eventTime = new Date("{{ kolo.date|date:'Y-m-d' }}T{{ kolo.time|time:'H:i' }}");
+        const eventTime = new Date("{{ seminar.date|date:'Y-m-d' }}T{{ seminar.time|time:'H:i' }}");
         if (isNaN(eventTime.getTime())) {
             throw new Error("Invalid time");
         }
 
-        const durationSeconds = parseInt("{{ kolo.duration.total_seconds }}");
+        const durationSeconds = parseInt("{{ seminar.duration.total_seconds }}");
         if (isNaN(durationSeconds)) {
             throw new Error("Invalid duration");
         }
 
-        const tutors = [{% for tutor in kolo.tutors.all %}"{{ tutor.username }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+        const tutors = [{% for tutor in seminar.tutors.all %}"{{ tutor.username }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
 
 
-        const theme = "{{ kolo.theme|escapejs }}";
+        const theme = "{{ seminar.theme|escapejs }}";
         if (!theme) {
             throw new Error("Invalid theme");
         }
 
-        const description = "{{ kolo.description|escapejs }}";
+        const description = "{{ seminar.description|escapejs }}";
         // Description can be empty, so we don't throw an error if it's missing
 
-        const image = "{{ kolo.image }}";
+        const image = "{{ seminar.image }}";
         // Image can be empty, so we don't throw an error if it's missing
 
-        const file = "{{ kolo.file }}";
+        const file = "{{ seminar.file }}";
         // File can be empty, so we don't throw an error if it's missing
 
-        const level = {{ kolo.level|default_if_none:"null" }};
+        const level = {{ seminar.level|default_if_none:"null" }};
         if (level !== null && (isNaN(level) || level < 0 || level > 3)) {
             throw new Error("Invalid level");
         }
 
-        const finished = {{ kolo.finished|yesno:"true,false" }};
+        const finished = {{ seminar.finished|yesno:"true,false" }};
         if (typeof finished !== 'boolean') {
             throw new Error("Invalid finished status");
         }

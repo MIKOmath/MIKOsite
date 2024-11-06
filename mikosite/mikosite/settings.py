@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     "hintBase",
     "taggit",
     "formtools",
-    "kolomat",
+    "seminars",
     "cards",
 ]
 

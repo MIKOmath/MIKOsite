@@ -68,49 +68,49 @@
 
                 <div class="info-banner">
                     <h2>Najbliższe eventy i&nbsp;kółka:</h2>
-                    {% for kolo in eventy %}
+                    {% for event in eventy %}
                         <div class="event">
-                            <h3 style="color: var(--b2)"><strong>Temat:</strong> {{ kolo.theme }}</h3>
+                            <h3 style="color: var(--b2)"><strong>Temat:</strong> {{ event.theme }}</h3>
                             <div class="event-info">
-                                <strong>Data:</strong> {{ kolo.date }}<br>
-                                <strong>Czas zajęć:</strong> {{ kolo.time_range }}<br>
-                                {% if kolo.tutors %}
+                                <strong>Data:</strong> {{ event.date }}<br>
+                                <strong>Czas zajęć:</strong> {{ event.time_range }}<br>
+                                {% if event.tutors %}
                                 <div class="event-tutors">
-                                    {% if kolo.tutors|length > 1%}
+                                    {% if event.tutors|length > 1%}
                                     <strong>Prowadzą:</strong>
                                     {% else %}
                                     <strong>Prowadzi:</strong>
                                     {% endif %}
-                                    {% for tutor in kolo.tutors.all %}
+                                    {% for tutor in event.tutors.all %}
                                         {{ tutor.name }} {{ tutor.surname }}
                                     {% if not forloop.last %}, {% endif %}
                                     {% endfor %}
                                 </div>
                                 {% endif %}
                                 <strong>Opis: </strong>
-                                {{ kolo.description }}
+                                {{ event.description }}
                                 <strong>Poziom zaawansowania:</strong>
-                                {% if kolo.level == 0 %}
+                                {% if event.level == 0 %}
                                     Grupa początkująca
-                                {% elif kolo.level == 1  %}
+                                {% elif event.level == 1  %}
                                     Grupa średnia
-                                {% elif kolo.level == 2  %}
+                                {% elif event.level == 2  %}
                                     Grupa Finał ++
-                                {% elif kolo.level == 3  %}
+                                {% elif event.level == 3  %}
                                     Poziom olimpiad międzynarodowych
                                 {% endif %}
                             </div>
                             <div class="event-description">
 
                             </div>
-                            {% if kolo.image %}
+                            {% if event.image %}
                                 <div class="event-image">
-                                    <img src="{{ kolo.image.url }}" alt="{{ kolo.theme }}" style="max-width: 100%; height: auto;">
+                                    <img src="{{ event.image.url }}" alt="{{ event.theme }}" style="max-width: 100%; height: auto;">
                                 </div>
                             {% endif %}
-                            {% if kolo.file %}
+                            {% if event.file %}
                                 <div class="event-file">
-                                    <a href="{{ kolo.file.url }}" download>Plik do pobrania</a>
+                                    <a href="{{ event.file.url }}" download>Plik do pobrania</a>
                                 </div>
                             {% endif %}
                         </div>

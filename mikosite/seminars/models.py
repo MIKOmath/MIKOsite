@@ -2,7 +2,7 @@ from django.db import models
 from accounts.models import User
 
 
-class Kolo(models.Model):
+class Seminar(models.Model):
     date = models.DateField(blank=True, null=True)
     time = models.TimeField(blank=True, null=True)
     duration = models.DurationField(blank=True, null=True)
@@ -15,4 +15,4 @@ class Kolo(models.Model):
     finished = models.BooleanField(default=False, blank=True, null=True)
 
     def __str__(self):
-        return f"Kolo: {self.theme} on {self.date} at {self.time}"
+        return f"Seminar: {self.theme} on {self.date} at {self.time}"
