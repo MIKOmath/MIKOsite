@@ -8,14 +8,12 @@
   padding: 25px;
   border-bottom: 1px solid var(--b1);
 }
-
 .navbar a {
   color: var(--b1);
   text-decoration: none;
   font-size: 20px;
   font-weight: bold;
 }
-
 .navbar-center {
   list-style: none;
   display: flex;
@@ -23,19 +21,15 @@
   justify-content: center;
   align-items: center;
 }
-
 .navbar-center li {
-  /*display: flex;*/
   align-items: center;
 }
-
 .navbar-center li + li::before {
   content: "|";
   color: #06313E;
   font-weight: 900;
   margin: 0 15px;
 }
-
 .navbar a:hover {
   color: var(--y1);
 }
@@ -43,24 +37,19 @@
 #current {
   color: var(--r1);
 }
-
 #current:hover {
   color: var(--y1);
 }
 
-
-  .navbar-right{
-    display: block;
-  }
-
-
+.navbar-right{
+  display: block;
+}
 .navbar-toggle {
   display: none;
   background: none;
   border: none;
   cursor: pointer;
 }
-
 .navbar-toggle svg {
   fill: var(--b1);
 }
@@ -80,7 +69,6 @@
   .navbar-toggle {
     display: block;
     position: absolute;
-    /*top: 15px;*/
     right: 15px;
   }
 
@@ -107,8 +95,7 @@
   }
 
   .navbar-right {
-    margin: auto;
-    margin-top: 15px;
+    margin: 15px auto auto;
   }
 
   .profile-item{
