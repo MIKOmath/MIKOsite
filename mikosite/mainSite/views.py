@@ -2,61 +2,32 @@ from django.shortcuts import render
 from mainSite.models import Post
 from seminars.models import Seminar
 from datetime import datetime, date
-from babel.dates import format_date, format_time
 from babel import Locale
 
 
-# @cache_page(60*5)
 def index(request):
     today = date.today()
     now = datetime.now().time()
     locale = Locale('pl_PL')
 
-    # Get all future Seminar instances
-    future_seminars = [
-        seminar for seminar in Seminar.objects.all()
-        if seminar.date and seminar.time and (seminar.date > today or (seminar.date == today and seminar.time > now))
-    ]
+    # fetch all future seminars
+    future_seminars = Seminar.objects.filter(date__gt=today).union(
+        Seminar.objects.filter(date=today, time__gt=now)).order_by('date', 'time')
 
-    if not future_seminars:
-        next_seminars = []
-    else:
-        future_seminars.sort(key=lambda k: datetime.combine(k.date, k.time))
-        next_date = future_seminars[0].date
-        next_seminars = [seminar for seminar in future_seminars if seminar.date == next_date]
-
-    # If there are less than 3 events on the next date, try to get one more recent event
+    # get next 3 seminars or all that happen on the same (earliest) day
+    next_date = future_seminars[0].date if future_seminars else None
+    next_seminars = [kolo for kolo in future_seminars if kolo.date == next_date]
     if len(next_seminars) < 3:
-        remaining_seminars = [kolo for kolo in future_seminars if kolo.date > next_date]
-        if remaining_seminars:
-            next_seminars.append(remaining_seminars[0])
+        next_seminars = future_seminars[:3]
 
-    event_data = []
-    for seminar in next_seminars:
-        start_time = format_time(seminar.time, format='HH:mm', locale=locale)
-        end_time = format_time((datetime.combine(date.today(), seminar.time) + seminar.duration).time(), format='HH:mm',
-                               locale=locale)
-        polish_date = format_date(seminar.date, format='d MMMM y', locale=locale)
-
-        event_data.append({
-            'theme': seminar.theme,
-            'date': polish_date,
-            'time_range': f"{start_time} - {end_time}",
-            'duration': seminar.duration,
-            'tutors': seminar.tutors.all(),
-            'description': seminar.description,
-            'image': seminar.image,
-            'file': seminar.file,
-            'level': seminar.level,
-            'finished': seminar.finished,
-        })
+    event_data = [seminar.display_dict(locale) for seminar in next_seminars]
 
     post_data = [post.display_dict(locale) for post in Post.objects.all()]
     post_data.reverse()
 
     context = {
         "posts": post_data,
-        "eventy": event_data,
+        "events": event_data,
         "user": request.user
     }
     return render(request, "index.html", context)

@@ -88,23 +88,59 @@ function showEventPopup(date, eventsList) {
 
     eventsList.forEach(event => {
         const li = document.createElement('li');
-        const levelName = getLevelName(event.level);
         const timeDisplay = getTimeDisplay(event);
 
         li.style.color = '#06313E';
         li.style.fontFamily = '"Rubik", sans-serif';
 
         li.innerHTML = `
-            <a style="font-size: 20px; font-weight: bold">Temat:</a> ${event.theme || 'Brak.'}<br>
-            <span style="font-size: 20px;">
-                <a style="font-weight: bold">Czas zajęć:</a> ${timeDisplay}<br>
-                <a style="font-weight: bold">
-                ${event.tutors.length > 1 ? 'Prowadzą' : 'Prowadzi'}:</a> <span>${event.tutors ? event.tutors.join(', ') : 'Brak danych'}</span><br>
-                <a style="font-weight: bold">Opis:</a> ${event.description || 'Brak opisu'}<br>
-                <a style="font-weight: bold">Poziom zaawansowania:</a> ${levelName}<br>
-                ${event.image ? `<img src="/media/${event.image}" alt="Event image" style="max-width: 100px;">` : ''}
-                ${event.file ? `<a href="/media/${event.file}" download>Download attached file</a>` : ''}
-            </span>
+            <span style="color: var(--r1)"><strong>${timeDisplay}</strong></span>
+            <h3 class="seminar-theme"><strong> ${event.theme} </strong></h3>
+           
+            <div class="badge-container">
+                ${event.featured ? `
+                    <div class="badge badge-featured">
+                        <span class="material-symbols-rounded badge-icon">verified</span>
+                        polecane
+                    </div>` : ''}
+                ${event.special_guest ? `
+                    <div class="badge badge-featured">
+                        <span class="material-symbols-rounded badge-icon">person_alert</span>
+                        gość specjalny
+                    </div>` : ''}
+                ${event.group_name ? `
+                    <div class="badge badge-dark">
+                        <span class="material-symbols-rounded badge-icon">group</span>
+                        ${event.group_name}
+                    </div>` : ''}
+                ${event.difficulty_label ? `
+                    <div class="badge badge-light">
+                        <span class="material-symbols-rounded badge-icon">${event.difficulty_icon}</span>
+                        ${event.difficulty_label}
+                    </div>` : ''}
+            </div>
+    
+            <div class="event-info">
+                ${event.tutors.length ? `
+                    <div class="event-tutors">
+                        <strong>${event.tutors.length > 1 ? 'Prowadzą:' : 'Prowadzi:'}</strong>
+                        ${event.tutors.join(", ")}
+                    </div>` : ''}
+                ${event.description ? `
+                    <strong>Opis:</strong> ${event.description}<br>
+                ` : ''}
+            </div>
+    
+            ${event.image ? `
+                <div class="event-image">
+                    <img src="${event.image}" alt="${event.theme}" style="max-width: 250px;">
+                </div>` : ''}
+            ${event.file ? `
+                <div style="display: flex;">
+                    <a href="${event.file}" style="text-decoration: none"><div class="badge badge-light">
+                        <span class="material-symbols-rounded badge-icon">download</span>
+                        załącznik</div></a>
+                </div>` : ''}
         `;
 
         eventList.appendChild(li);
@@ -121,30 +157,14 @@ function getTimeDisplay(event) {
     let startTime = event.time.toLocaleTimeString('pl', { hour: '2-digit', minute: '2-digit' });
 
     if (!event.duration) {
-        return `${startTime} (czas trwania: brak danych)`;
+        return `${startTime} (nieznany czas trwania)`;
     }
 
     let endTime = new Date(event.time.getTime() + (event.duration.hours * 60 + event.duration.minutes) * 60000);
     endTime = endTime.toLocaleTimeString('pl', { hour: '2-digit', minute: '2-digit' });
 
-    return `${startTime} - ${endTime}`;
+    return `${startTime}-${endTime}`;
 }
-
-function getLevelName(level) {
-        switch(level) {
-            case 0:
-                return 'Grupa początkująca';
-            case 1:
-                return 'Grupa średnia';
-            case 2:
-                return 'Grupa Finał++';
-            case 3:
-                return 'Poziom olimpiad międzynarodowych';
-            default:
-                return 'Brak poziomu zaawansowania';
-        }
-    }
-
 
 
 closeBtn.onclick = function() {
@@ -152,7 +172,7 @@ closeBtn.onclick = function() {
 }
 
 window.onclick = function(event) {
-    if (event.target == eventPopup) {
+    if (event.target === eventPopup) {
         eventPopup.style.display = 'none';
     }
 }
@@ -168,7 +188,6 @@ nextMonthButton.addEventListener('click', () => {
 });
 
 
-
 updateCalendar();
 
 
@@ -181,11 +200,9 @@ document.addEventListener('DOMContentLoaded', function() {
         navbarCenter.classList.toggle('active');
     });
 
-    // Add event listener for keydown events
+    // close popup when Escape is pressed
     document.addEventListener('keydown', function(event) {
-        // Check if the pressed key is Escape (key code 27)
         if (event.key === 'Escape' || event.key === 'Esc') {
-            // Close the popup if it's open
             if (eventPopup && eventPopup.style.display === 'block') {
                 eventPopup.style.display = 'none';
             }
@@ -194,13 +211,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+// jump to current month
 const showCurrentMonthButton = document.getElementById('showCurrentMonth');
 
-// Add this function to reset the calendar to the current month
 function showCurrentMonth() {
     currentDate = new Date();
     updateCalendar();
 }
 
-// Add this event listener with your other event listeners
 showCurrentMonthButton.addEventListener('click', showCurrentMonth);

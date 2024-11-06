@@ -224,10 +224,12 @@ h3 {
 
 /* Info Banner */
 .info-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   background-color: #f1b239;
   padding: 20px;
   border-radius: 20px;
-  margin-top: 40px;
   width: 310px;
 }
 
@@ -237,12 +239,19 @@ h3 {
 
 /* Event */
 .event {
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 4px;
   border: #06313e 2px solid;
   padding: 10px;
   border-radius: 10px;
   color: var(--b2);
 }
+.event-info:not(:has(div)) {
+  margin-top: -4px;
+}
+
 
 /* Miscellaneous */
 hr {
@@ -305,9 +314,11 @@ hr {
     width: calc(100% - 390px);
   }
 .column_left {
+  display: flex;
   flex-direction: column;
   width: 310px;
   margin-right: 60px;
+  gap: 30px;
 }
 
 .profile {
@@ -330,11 +341,9 @@ hr {
   margin-bottom: 8px;
 }
 
-
-
-
-
-
+.seminar-theme {
+    color: var(--b2);
+}
 
 
 @media screen and (max-width: 1000px) {
@@ -352,9 +361,7 @@ hr {
   }
   .info-banner{
     width: 100%;
-    margin: 0;
     margin: auto;
-    /*display: flex;*/
   }
 
   .column_right{

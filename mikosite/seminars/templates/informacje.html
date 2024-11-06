@@ -9,9 +9,10 @@
     <meta name="description" content="Poznaj dostępne grupy koła matematycznego MIKO, wybierz najlepszą dla siebie i sprawdź termin najbliższego spotkania.">
     <meta name="author" content="Matematyczne Internetowe Koło Olimpijskie">
     <link rel="stylesheet" href="{% static 'informacje.css' %}">
+    <link rel="stylesheet" href="{% static 'badges.css' %}">
     <script defer src="{% static 'informacje.js' %}"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <meta property="og:type" content="website">
     <meta property="og:title" content="Koło matematyczne – MIKO">
     <meta property="og:description" content="Poznaj dostępne grupy koła matematycznego MIKO, wybierz najlepszą dla siebie i sprawdź termin najbliższego spotkania.">
@@ -28,10 +29,9 @@
 </head>
 <body>
 
-        {% include "header.html" %}
+    {% include "header.html" %}
 
-
-      <div class="introduction">
+    <div class="introduction">
         <h1 class="mobile-left-padding">Informacje</h1>
         <h3 style="font-weight: 450" class="mobile-left-padding">
             Do udziału w&nbsp;Matematycznym Internetowym Kole Olimpijskim zapraszamy wszystkich zainteresowanych nauką
@@ -49,12 +49,12 @@
             </div>
             <div class="column">
                 <h2><strong>Kółko przygotowujące do finału i&nbsp;olimpiad międzynarodowych</strong></h2>
-                <hr>    
+                <hr>
                 <h3>Przeznaczone jest dla doświadczonych olimpijczyków zainteresowanych zaawansowanymi technikami rozwiązywania
                     zadań. Zajęcia w&nbsp;tej grupie prowadzą uczestnicy koła, a&nbsp;tematy nierzadko inspirowane są najtrudniejszymi
                     zadaniami z&nbsp;olimpiad i&nbsp;zawodów międzynarodowych.</h3>
-                    <h3>Przykładowe tematy: metoda moving points, Viete’a jumping, mnożniki Lagrange’a.</h3>
-                    <h3>Czas trwania: około 2&nbsp;h.</h3>
+                <h3>Przykładowe tematy: metoda moving points, Viete’a jumping, mnożniki Lagrange’a.</h3>
+                <h3>Czas trwania: około 2&nbsp;h.</h3>
             </div>
             <div class="column">
                 <h2><strong>Kółko przygotowujące do olimpiady AI</strong></h2>
@@ -67,17 +67,19 @@
                 <h3> Czas trwania: około 1,5&nbsp;h.</h3>
             </div>
         </div>
-        <h3 style="font-weight: 450; margin-top: 30px;" class="mobile-left-padding">Wszystkie zajęcia odbywają się zdalnie na platformie Discord. Ważną częścią naszej społeczności jest możliwość prowadzenia dyskusji i&nbsp;wspólnej pracy nad zadaniami na&nbsp;chatach. Dołączając do naszego serwera na Discordzie uzyskasz także:</h3>
+        <h3 style="font-weight: 450; margin-top: 30px;" class="mobile-left-padding">Wszystkie zajęcia odbywają się zdalnie na platformie Discord. Ważną
+            częścią naszej społeczności jest możliwość prowadzenia dyskusji i&nbsp;wspólnej pracy nad zadaniami na&nbsp;chatach.
+            Dołączając do naszego serwera na Discordzie uzyskasz także:</h3>
         <div class="levels">
             <div class="column">
                 <h2><strong>Materiały</strong></h2>
                 <hr>
                 <h3>
                 Różnorodne materiały zgromadzone przez bardziej doświadczonych olimpijczyków oraz próbne zestawy zadań
-                    przypominające trudnością II&nbsp;i&nbsp;III etapy Olimpiady Matematycznej wraz z&nbsp;omówieniami.</h3>
+                przypominające trudnością II&nbsp;i&nbsp;III etapy Olimpiady Matematycznej wraz z&nbsp;omówieniami.</h3>
                 </h3>
             </div>
-            <div class="column">  
+            <div class="column">
                 <h2><strong>Konferencje</strong></h2>
                 <hr>
                 <h3>Możliwość udziału w&nbsp;konferencjach. Raz w&nbsp;roku organizujemy Giełdę Kierunków, konferencję online,
@@ -85,38 +87,34 @@
                     podczas studiów. Nie przegap tego wydarzenia, jeśli interesują Cię takie kierunki jak JSIM na Uniwersytecie
                     Warszawskim, matematyka lub TCS na Uniwersytecie Jagiellońskim, informatyka na Politechnice Warszawskiej
                     czy matematyka na University of&nbsp;Cambridge.</h3>
-            </div>
         </div>
-
-
-        <h1 style="margin-top: 50px;" class="mobile-left-padding">Kalendarz zajęć</h1>
-        <h3 style="font-weight: 450; margin-bottom: 30px;" class="mobile-left-padding">Poniżej znajdują się nadchodzące kółka i&nbsp;inne wydarzenia organizowane przez MIKO.</h3>
     </div>
-</div>
 
-
-   <div class="calendar">
-    <div class="header">
-        <button id="prevMonth">◀</button>
-        <h2 id="currentMonth"></h2>
-        <button id="nextMonth">▶</button>
+    <h1 style="margin-top: 50px;" class="mobile-left-padding">Kalendarz zajęć</h1>
+    <h3 style="font-weight: 450; margin-bottom: 30px;" class="mobile-left-padding">Poniżej znajdują się nadchodzące kółka i&nbsp;inne wydarzenia organizowane przez MIKO.</h3>
     </div>
-       <button id="showCurrentMonth" style="width: auto; margin: auto; margin-bottom: 5px; margin-top: 5px; border: 3px solid #F24535;border-radius: 15px; background-color: transparent; color: #F24535; cursor: pointer"><h2 style="color: var(--r1); padding: 5px 10px;">Dzisiaj</h2> </button>
-    <div class="days" id="calendarDays"></div>
-</div>
+
+    <div class="calendar">
+        <div class="header">
+            <button id="prevMonth">◀</button>
+            <h2 id="currentMonth"></h2>
+            <button id="nextMonth">▶</button>
+        </div>
+        <button id="showCurrentMonth" style="width: auto; margin: auto; margin-bottom: 5px; margin-top: 5px; border: 3px solid #F24535;border-radius: 15px; background-color: transparent; color: #F24535; cursor: pointer"><h2 style="color: var(--r1); padding: 5px 10px;">Dzisiaj</h2> </button>
+        <div class="days" id="calendarDays"></div>
+    </div>
 
     <div id="eventPopup" class="event-popup">
         <div class="popup-content">
-            <span class="close-btn">&times;</span>
             <h3 id="popupDate"></h3>
+            <span class="close-btn">&times;</span>
             <ul id="eventList"></ul>
         </div>
     </div>
 
-     {% include "footer.html" %}
+    {% include "footer.html" %}
 
-
-    <script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     {% for seminar in seminars %}
     try {
@@ -124,43 +122,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isNaN(eventDate.getTime())) {
             throw new Error("Invalid date");
         }
-
         const eventTime = new Date("{{ seminar.date|date:'Y-m-d' }}T{{ seminar.time|time:'H:i' }}");
         if (isNaN(eventTime.getTime())) {
             throw new Error("Invalid time");
         }
-
         const durationSeconds = parseInt("{{ seminar.duration.total_seconds }}");
         if (isNaN(durationSeconds)) {
             throw new Error("Invalid duration");
         }
 
-        const tutors = [{% for tutor in seminar.tutors.all %}"{{ tutor.username }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
-
-
-        const theme = "{{ seminar.theme|escapejs }}";
+        const theme = "{{ seminar.display.theme|escapejs }}";
         if (!theme) {
             throw new Error("Invalid theme");
         }
 
-        const description = "{{ seminar.description|escapejs }}";
-        // Description can be empty, so we don't throw an error if it's missing
+        const tutors = [{% for tutor in seminar.display.tutors %}"{{ tutor }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
 
-        const image = "{{ seminar.image }}";
-        // Image can be empty, so we don't throw an error if it's missing
-
-        const file = "{{ seminar.file }}";
-        // File can be empty, so we don't throw an error if it's missing
-
-        const level = {{ seminar.level|default_if_none:"null" }};
-        if (level !== null && (isNaN(level) || level < 0 || level > 3)) {
-            throw new Error("Invalid level");
-        }
-
-        const finished = {{ seminar.finished|yesno:"true,false" }};
-        if (typeof finished !== 'boolean') {
-            throw new Error("Invalid finished status");
-        }
+        const featured = {{ seminar.display.featured|yesno:"true,false" }};
+        const special_guest = {{ seminar.display.special_guest|yesno:"true,false" }};
 
         addEvent({
             date: eventDate,
@@ -169,13 +148,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 hours: Math.floor(durationSeconds / 3600),
                 minutes: Math.floor((durationSeconds % 3600) / 60)
             },
-            tutors: tutors,
             theme: theme,
-            description: description,
-            image: image,
-            file: file,
-            level: level,
-            finished: finished
+            tutors: tutors,
+            description: "{{ seminar.display.description|escapejs }}",
+            image: "{{ seminar.display.image_url|default_if_none:'' }}",
+            file: "{{ seminar.display.file_url|default_if_none:'' }}",
+            group_name: "{{ seminar.display.group_name|escapejs }}",
+            difficulty_label: "{{ seminar.display.difficulty_label|escapejs }}",
+            difficulty_icon: "{{ seminar.display.difficulty_icon|escapejs }}",
+            featured: featured,
+            special_guest: special_guest,
         });
     } catch (error) {
         console.warn(`Event skipped: ${error.message}`);

@@ -18,18 +18,16 @@ body, html {
     padding: 0;
     height: 100%;
     font-optical-sizing: auto;
-
-
 }
+
 .calendar {
     display: flex;
     flex-direction: column;
     height: auto;
     width: 70%;
     top: 100px;
-    margin: auto;
     border: 1px solid var(--b1);
-    margin-bottom: 50px;
+    margin: auto auto 50px;
     border-radius: 20px;
 }
 .header {
@@ -55,16 +53,15 @@ body, html {
     padding: 10px;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    /*gap: 1px;*/
     flex-grow: 1;
 }
 .days div {
     display: flex;
-    padding: 25px 0px;
+    padding: 25px 0;
     justify-content: center;
     align-items: center;
     font-size: 18px;
-    margin: 10px 0px;
+    margin: 10px 0;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -80,7 +77,7 @@ body, html {
     font-weight: bold;
     background-color: var(--b1);
     color: #ffffff;
-    margin: 0px;
+    margin: 0;
 }
 
 .days .current-day {
@@ -102,10 +99,12 @@ body, html {
 }
 #eventList li{
     border: 2px var(--b1) solid;
-    margin: 10px;
-    margin-left: 0px;
+    margin: 10px 0;
     padding: 10px;
     border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .event-indicator {
@@ -131,6 +130,10 @@ body, html {
     background-color: rgba(0,0,0,0.4);
 }
 
+.event-info:not(:has(div)) {
+  margin-top: -4px;
+}
+
 .popup-content {
     background-color: #fefefe;
     margin: 15% auto;
@@ -143,19 +146,21 @@ body, html {
 }
 
 .day-number{
-    color: whitesmoke;
+    z-index: 2;
+    color: var(--b1);
     font-weight: bold;
 }
 
-
 .close-btn {
     color: #aaa;
-    float: right;
+    position: absolute;
+    right: 20px;
+    top: 14px;
+    vertical-align: top;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
 }
-
 .close-btn:hover,
 .close-btn:focus {
     color: black;
@@ -164,15 +169,8 @@ body, html {
 }
 
 #popupDate {
-    margin-top: 0;
     text-align: center;
-}
-
-
-
-.day-number {
-    z-index: 2;
-    color: var(--b1);
+    margin: 0 20px;
 }
 
 
@@ -186,7 +184,6 @@ body, html {
     --y1: #F2B544;
     --w1: #ffffff;
     --bcg: #f0faff;
-    /* --bcg: #ffffff; */
   }
 
 
@@ -196,10 +193,8 @@ body, html {
     justify-content: center;
     text-align: left;
     margin: auto;
-        margin-top: 50px;
+    margin-top: 50px;
     width: 70%;
-
-    /*border: 1px var(--b1) solid;*/
 }
 
 
@@ -229,7 +224,6 @@ body, html {
 }
 
 .navbar-center li {
-  /*display: flex;*/
   align-items: center;
 }
 
@@ -253,9 +247,9 @@ body, html {
 }
 
 
-  .navbar-right{
+.navbar-right{
     display: block;
-  }
+}
 
 
 .navbar-toggle {
@@ -270,48 +264,47 @@ body, html {
 }
 
 @media screen and (max-width: 900px) {
-.days div
-{
-  padding: 12px 5px;
-}
+    .days div
+    {
+      padding: 12px 5px;
+    }
 
-  .day-nuberw:hover {
-    border-radius: 15px;
-}
+      .day-nuberw:hover {
+        border-radius: 15px;
+    }
 
-.days .current-day {
-    border-radius: 15px;
-}
-.days .current-day:hover{
-    border-radius: 15px;
-}
+    .days .current-day {
+        border-radius: 15px;
+    }
+    .days .current-day:hover{
+        border-radius: 15px;
+    }
 
 
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .profile-item{
-    display: block;
-  }
-  .navbar-right{
-    display: none;
-  }
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .profile-item{
+        display: block;
+    }
+    .navbar-right{
+        display: none;
+    }
 
-  .navbar-toggle {
-    display: block;
-    position: absolute;
-    /*top: 15px;*/
-    right: 15px;
-  }
+    .navbar-toggle {
+        display: block;
+        position: absolute;
+        right: 15px;
+    }
 
-  .navbar-center {
-    display: none;
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-top: 15px;
-  }
+    .navbar-center {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 15px;
+    }
 
   .navbar-center.active {
     display: flex;
@@ -328,8 +321,7 @@ body, html {
   }
 
   .navbar-right {
-    margin: auto;
-    margin-top: 15px;
+      margin: 15px auto auto;
   }
 
   .profile-item{
@@ -338,15 +330,14 @@ body, html {
   .introduction{
     width: 100%;
     text-align: left;
-    margin: auto;
-    margin-top: 50px;
-    padding: 0px 20px;
+    margin: 50px auto auto;
+    padding: 0 20px;
   }
   .calendar{
       width: 97%;
   }
   .days{
-      padding: 0px;
+      padding: 0;
   }
   .popup-content{
       width: 90%;
@@ -381,7 +372,7 @@ hr
     background-color: var(--b1);
     height: 1px;
     width: 50px;
-    margin: 1rem 0rem ;
+    margin: 1rem 0;
 }
 
 .levels{
@@ -412,8 +403,9 @@ hr
       padding: 0; /* Remove padding to make it fit better on small screens */
   }
   .column {
-      margin: 0; /* Remove margin between columns on small screens */
-      margin-bottom: 30px; /* Add bottom margin to separate stacked columns */
+      /* Remove margin between columns on small screens */
+      /* Add bottom margin to separate stacked columns */
+      margin: 0 0 30px;
   }
   .mobile-left-padding
   {
@@ -428,7 +420,6 @@ hr
   padding: 20px 20px;
   margin: 10px;
 
-  
   background-color: #f5f5f5;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

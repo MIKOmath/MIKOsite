@@ -49,7 +49,6 @@
                 </div>
             </div>
             <div id="background-image" style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0),rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.webp' %}');">
-<!--.-->
             </div>
         </div>
     </main>
@@ -59,64 +58,80 @@
         <div class="row">
             <div class="column_left">
 
-                    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer" class="profile">
-                        <img src="{% static 'dsclogo.webp' %}" alt="Ikona z logo Discord"
-                            style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
-                        <h3 id="profile_name" style="color: white; text-align: center;">
-                            Dołącz do&nbsp;społeczności MIKO na&nbsp;Discordzie!
-                            <span style="vertical-align: bottom;" class="material-symbols-outlined">open_in_new</span></h3>
-                    </a>
+                <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer" class="profile">
+                    <img src="{% static 'dsclogo.webp' %}" alt="Ikona z logo Discord"
+                        style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
+                    <h3 id="profile_name" style="color: white; text-align: center;">
+                        Dołącz do&nbsp;społeczności MIKO na&nbsp;Discordzie!
+                        <span style="vertical-align: bottom;" class="material-symbols-rounded">open_in_new</span></h3>
+                </a>
 
                 <div class="info-banner">
-                    <h2>Najbliższe eventy i&nbsp;kółka:</h2>
-                    {% for event in eventy %}
+                    <h2>Nadchodzące eventy:</h2>
+                    {% for seminar in events %}
                         <div class="event">
-                            <h3 style="color: var(--b2)"><strong>Temat:</strong> {{ event.theme }}</h3>
-                            <div class="event-info">
-                                <strong>Data:</strong> {{ event.date }}<br>
-                                <strong>Czas zajęć:</strong> {{ event.time_range }}<br>
-                                {% if event.tutors %}
-                                <div class="event-tutors">
-                                    {% if event.tutors|length > 1%}
-                                    <strong>Prowadzą:</strong>
-                                    {% else %}
-                                    <strong>Prowadzi:</strong>
-                                    {% endif %}
-                                    {% for tutor in event.tutors.all %}
-                                        {{ tutor.name }} {{ tutor.surname }}
-                                    {% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
-                                <strong>Opis: </strong>
-                                {{ event.description }}
-                                <strong>Poziom zaawansowania:</strong>
-                                {% if event.level == 0 %}
-                                    Grupa początkująca
-                                {% elif event.level == 1  %}
-                                    Grupa średnia
-                                {% elif event.level == 2  %}
-                                    Grupa Finał ++
-                                {% elif event.level == 3  %}
-                                    Poziom olimpiad międzynarodowych
-                                {% endif %}
+                            <h3 class="seminar-theme"><strong> {{ seminar.theme }} </strong></h3>
+                            <div class="event-date">
+                                {{ seminar.date_string }}, {{ seminar.time_string }}<br>
                             </div>
-                            <div class="event-description">
 
+                            <div class="badge-container">
+                                {% if seminar.featured %}
+                                    <div class="badge badge-featured">
+                                        <span class="material-symbols-rounded badge-icon">verified</span>
+                                        polecane
+                                    </div>
+                                {% endif %}
+                                {% if seminar.special_guest %}
+                                    <div class="badge badge-featured">
+                                        <span class="material-symbols-rounded badge-icon">person_alert</span>
+                                        gość specjalny
+                                    </div>
+                                {% endif %}
+                                {% if seminar.group_name %}
+                                    <div class="badge badge-dark">
+                                        <span class="material-symbols-rounded badge-icon">group</span>
+                                        {{ seminar.group_name }}</div>
+                                {% endif %}
+                                {% if seminar.difficulty_label %}
+                                    <div class="badge badge-light">
+                                        <span class="material-symbols-rounded badge-icon">{{ seminar.difficulty_icon }}</span>
+                                        {{ seminar.difficulty_label }}
+                                    </div>
+                                {% endif %}
                             </div>
-                            {% if event.image %}
+
+                            <div class="event-info">
+                                {% if seminar.tutors %}
+                                    <div class="event-tutors">
+                                        {% if seminar.tutors|length > 1%}
+                                            <strong>Prowadzą:</strong>
+                                        {% else %}
+                                            <strong>Prowadzi:</strong>
+                                        {% endif %}
+                                        {{ seminar.tutors|join:", " }}
+                                    </div>
+                                {% endif %}
+                                {% if seminar.description %}
+                                    <strong>Opis:</strong> {{ seminar.description }}<br>
+                                {% endif %}
+                            </div>
+
+                            {% if seminar.image_url %}
                                 <div class="event-image">
-                                    <img src="{{ event.image.url }}" alt="{{ event.theme }}" style="max-width: 100%; height: auto;">
+                                    <img src="{{ seminar.image_url }}" alt="{{ seminar.theme }}" style="max-width: 100%; height: auto;">
                                 </div>
                             {% endif %}
-                            {% if event.file %}
-                                <div class="event-file">
-                                    <a href="{{ event.file.url }}" download>Plik do pobrania</a>
+                            {% if seminar.file_url %}
+                                <div style="display: flex;">
+                                    <a href="{{ seminar.file_url }}" style="text-decoration: none"><div class="badge badge-light">
+                                        <span class="material-symbols-rounded badge-icon">download</span>
+                                        załącznik</div></a>
                                 </div>
                             {% endif %}
                         </div>
                     {% empty %}
-                        <h3>Brak eventów w najbliższym czasie ://</h3>
+                        <h3>Brak eventów w najbliższym czasie ;(</h3>
                     {% endfor %}
                 </div>
             </div>
