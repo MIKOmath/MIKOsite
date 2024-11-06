@@ -7,7 +7,6 @@
   --w1: #ffffff;
 }
 
-
 * {
   margin: 0;
   padding: 0;
@@ -35,8 +34,6 @@ h3 {
   font-weight: 400;
   color: var(--b1);
 }
-
-
 
 /* Landing Banner */
 #landing-banner-wrapper {
@@ -96,9 +93,8 @@ h3 {
   padding: 10px;
     transition: ease-in 0.2s;
 
-  margin: 0px 8px;
+  margin: 0 8px;
 }
-
 
 #landing-banner-wrapper a:hover {
   transition: ease-in 0.2s;
@@ -106,13 +102,10 @@ h3 {
   border-radius: 20px;
 }
 
-
 .post_content{
   margin-bottom: 10px;
   margin-top: 10px;
 }
-/* Navbar */
-
 
 /* Navbar */
 .navbar {
@@ -163,11 +156,9 @@ h3 {
   color: var(--y1);
 }
 
-
-  .navbar-right{
-    display: block;
-  }
-
+.navbar-right{
+  display: block;
+}
 
 .navbar-toggle {
   display: none;
@@ -231,8 +222,6 @@ h3 {
   }
 }
 
-
-
 /* Info Banner */
 .info-banner {
   background-color: #f1b239;
@@ -261,9 +250,6 @@ hr {
   background-color: var(--b1);
   height: 3px;
 }
-
-
-
 
 /* Feed */
 #feed {
@@ -295,6 +281,10 @@ hr {
   margin-bottom: 30px;
 }
 
+.images {
+  margin-top: 10px;
+}
+
 /* Profile */
 .profile {
   display: grid;
@@ -320,21 +310,25 @@ hr {
   margin-right: 60px;
 }
 
-  .profile {
-    width: 310px;
-  }
+.profile {
+  width: 310px;
+}
 
-  .row {
-    flex-direction: row;
-    margin-top: 50px;
-  }
-  .post {
-    padding: 40px;
-  }
-
-  .post {
-    padding: 50px 60px;
-  }
+.row {
+  flex-direction: row;
+  margin-top: 50px;
+}
+.post {
+  padding: 30px;
+}
+.post-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 20px;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
 
 
 

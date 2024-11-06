@@ -51,25 +51,11 @@ def index(request):
             'finished': seminar.finished,
         })
 
-    posts = Post.objects.all()
+    post_data = [post.display_dict(locale) for post in Post.objects.all()]
+    post_data.reverse()
 
-    formatted_posts = []
-    for post in posts:
-        formatted_post = {
-            'title': post.title,
-            'subtitle': post.subtitle,
-            'authors': post.authors.all(),
-            'file': post.file,
-            'images': post.images.all(),
-            'text_field_1': post.text_field_1,
-            'text_field_2': post.text_field_2,
-            'date': format_date(post.date, format='d MMMM y', locale=locale) if post.date else '',
-            'time': format_time(post.time, format='HH:mm', locale=locale) if post.time else '',
-        }
-        formatted_posts.append(formatted_post)
-    formatted_posts = reversed(formatted_posts)
     context = {
-        "posts": formatted_posts,
+        "posts": post_data,
         "eventy": event_data,
         "user": request.user
     }

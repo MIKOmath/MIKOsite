@@ -11,9 +11,10 @@
     <meta name="description" content="Społeczność, gdzie poznasz innych ambitnych młodych matematyków, poszerzysz swoją wiedzę i przygotujesz się do Olimpiady Matematycznej.">
     <meta name="author" content="Matematyczne Internetowe Koło Olimpijskie">
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'badges.css' %}">
     <script src="{% static 'script.js' %}"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <meta property="og:type" content="website">
     <meta property="og:title" content="Matematyczne Internetowe Koło Olimpijskie – MIKO">
     <meta property="og:description" content="Społeczność, gdzie poznasz innych ambitnych młodych matematyków, poszerzysz swoją wiedzę i przygotujesz się do Olimpiady Matematycznej.">
@@ -124,39 +125,44 @@
                 <hr style="margin-bottom: 20px">
                 {% for post in posts %}
                 <div class="post">
-                    <h2 id="post_title">{{ post.title }}</h2>
+                    <div class="post-header">
+                        <h2 id="post_title">{{ post.title }}</h2>
+                        <p>{{ post.date }}, {{ post.time }}</p>
+                    </div>
                     <h3 id="post_subtitle" style="margin-bottom: 0px;">{{ post.subtitle }}</h3>
-                    <p style="font-size: 15px; color: var(--b1); font-style: italic; text-align: end">{{ post.date }} {{ post.time }}</p>
+
                     <hr style="border: none; height: 2px; margin-bottom: 10px">
-                    <p><strong>Autor/autorzy:</strong>
+                    <p>{% if post.authors|length > 1%}
+                            <strong>Autorzy:</strong>
+                        {% else %}
+                            <strong>Autor:</strong>
+                        {% endif %}
                         {% for author in post.authors.all %}
-                        <a href="/publicprofile/{{ author.username }}">{{ author.name }} {{ author.surname }}</a>
-                        {% if not forloop.last %}; {% endif %}
+                            <a href="/publicprofile/{{ author.username }}">{{ author.name }} {{ author.surname }}</a>
+                            {% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </p>
 
                     <p class="post_content">{{ post.text_field_1 }}</p>
                     <p class="post_content">{{ post.text_field_2 }}</p>
-                    <hr style="border: none; height: 2px; margin-bottom: 10px">
-                    <p style="margin-bottom: 10px">
 
-                        {% if post.file %}
-                            <a href="{{ post.file.url }}">{{ post.file|filename  }}</a>
-                        {% else %}
-
-                        {% endif %}
-                    </p>
-                    <div class="images">
-                        <strong></strong>
-                        {% for image in post.images.all %}
-                        <img src="/media/{{ image }}" alt="{{ image.alt_text }}">
-                        {% empty %}
-
-                        {% endfor %}
-                    </div>
+                    {% if post.file %}
+                        <div style="display: flex;">
+                        <a href="{{ post.file.url }}" style="text-decoration: none"><div class="badge badge-light">
+                            <span class="material-symbols-rounded badge-icon">download</span>
+                            {{ post.file|filename }}</div></a>
+                        </div>
+                    {% endif %}
+                    {% if post.images|length > 0 %}
+                        <div class="images">
+                            {% for image in post.images.all %}
+                            <img src="/media/{{ image }}" alt="{{ image.alt_text }}">
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
                 {% empty %}
-                <p>Brak postów.</p>
+                    <p>Brak postów.</p>
                 {% endfor %}
 
             </div>
