@@ -4,6 +4,9 @@
     gap: 4px 4px;
     margin: 4px 0;
 }
+.badge-container:not(:has(div)) {
+    margin: 0;
+}
 
 .badge {
     display: flex;

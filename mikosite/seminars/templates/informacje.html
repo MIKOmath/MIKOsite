@@ -133,9 +133,9 @@ document.addEventListener('DOMContentLoaded', function() {
             description: "{{ seminar.display.description|escapejs }}",
             image: "{{ seminar.display.image_url|default_if_none:'' }}",
             file: "{{ seminar.display.file_url|default_if_none:'' }}",
-            group_name: "{{ seminar.display.group_name|escapejs }}",
-            difficulty_label: "{{ seminar.display.difficulty_label|escapejs }}",
-            difficulty_icon: "{{ seminar.display.difficulty_icon|escapejs }}",
+            group_name: "{{ seminar.display.group_name|default_if_none:''|escapejs }}",
+            difficulty_label: "{{ seminar.display.difficulty_label|default_if_none:''|escapejs }}",
+            difficulty_icon: "{{ seminar.display.difficulty_icon|default_if_none:''|escapejs }}",
             featured: featured,
             special_guest: special_guest,
         });
