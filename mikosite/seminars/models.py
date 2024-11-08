@@ -1,6 +1,7 @@
 from datetime import datetime, date
 from babel.dates import format_date, format_time
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from accounts.models import User
 
 
@@ -8,35 +9,45 @@ class SeminarGroup(models.Model):
     name = models.CharField(max_length=256, blank=False, null=False)
     lead = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    default_difficulty = models.IntegerField(blank=True, null=True)
     discord_role_id = models.CharField(max_length=128, blank=True, null=True)
+    default_difficulty = models.IntegerField(default=0, blank=False, null=False,
+                                             validators=[MinValueValidator(0), MaxValueValidator(5)])
 
     def __str__(self):
         return f"Group: {self.name} level {self.default_difficulty}"
 
 
 class Seminar(models.Model):
-    date = models.DateField(blank=True, null=True)
-    time = models.TimeField(blank=True, null=True)
-    duration = models.DurationField(blank=True, null=True)
+    date = models.DateField(blank=False, null=False)
+    time = models.TimeField(blank=False, null=False)
+    duration = models.DurationField(blank=False, null=False)
 
     discord_channel_id = models.CharField(max_length=128, blank=True, null=True)
-    started = models.BooleanField(default=False, blank=True, null=True)
-    finished = models.BooleanField(default=False, blank=True, null=True)
+    started = models.BooleanField(default=False, blank=False, null=False)
+    finished = models.BooleanField(default=False, blank=False, null=False)
 
     group = models.ForeignKey(SeminarGroup, on_delete=models.CASCADE, blank=True, null=True)
-    difficulty = models.IntegerField(blank=True, null=True)
+    difficulty = models.IntegerField(default=0, blank=False, null=False,
+                                     validators=[MinValueValidator(0), MaxValueValidator(5)])
 
-    featured = models.BooleanField(default=False, blank=True, null=True)
-    special_guest = models.BooleanField(default=False, blank=True, null=True)
+    featured = models.BooleanField(default=False, blank=False, null=False)
+    special_guest = models.BooleanField(default=False, blank=False, null=False)
 
     tutors = models.ManyToManyField(User, blank=True)
-    theme = models.CharField(max_length=256, blank=True, null=True)
+    theme = models.CharField(max_length=256, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
 
     image = models.ImageField(upload_to='kolo_images/', blank=True, null=True)
     file = models.FileField(upload_to='kolo_files/', blank=True, null=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["date"]),
+        ]
+        constraints = [
+            models.CheckConstraint(condition=models.Q(started=True) | models.Q(finished=False),
+                                   name="if_finished_then_started"),
+        ]
 
     def __str__(self):
         return f"Seminar: {self.theme} on {self.date} at {self.time}"
