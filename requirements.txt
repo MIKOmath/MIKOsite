@@ -2,6 +2,7 @@ babel~=2.16.0
 CairoSVG~=2.7.1
 django~=5.1.1
 django_formtools
+django-compressor
 django-redis
 django_taggit
 fuzzywuzzy~=0.18.0
