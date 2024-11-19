@@ -11,7 +11,6 @@
   --w1: #ffffff;
 }
 
-
 body, html {
     font-family: "Rubik", sans-serif;
     margin: 0;
@@ -26,7 +25,7 @@ body, html {
     height: auto;
     top: 100px;
     border: 1px solid var(--b1);
-    margin: auto auto 120px;
+    margin: auto auto 60px;
     border-radius: 20px;
 }
 .header {
