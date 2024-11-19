@@ -31,7 +31,21 @@
 
     {% include "header.html" %}
 
+
+    
     <div class="introduction">
+        <h1 style="margin-top: 50px;" class="mobile-left-padding">Kalendarz zajęć</h1>
+        <h3 style="font-weight: 450; margin-bottom: 30px;" class="mobile-left-padding">Poniżej znajdują się nadchodzące kółka i&nbsp;inne wydarzenia organizowane przez MIKO.</h3>
+        <div class="calendar">       
+    
+            <div class="header">
+                <button id="prevMonth">◀</button>
+                <h2 id="currentMonth"></h2>
+                <button id="nextMonth">▶</button>
+            </div>
+            <button id="showCurrentMonth" style="width: auto; margin: auto; margin-bottom: 5px; margin-top: 5px; border: 3px solid #F24535;border-radius: 15px; background-color: transparent; color: #F24535; cursor: pointer"><h2 style="color: var(--r1); padding: 5px 10px;">Dzisiaj</h2> </button>
+            <div class="days" id="calendarDays"></div>
+        </div>
         <h1 class="mobile-left-padding">Informacje</h1>
         <h3 style="font-weight: 450" class="mobile-left-padding">
             Do udziału w&nbsp;Matematycznym Internetowym Kole Olimpijskim zapraszamy wszystkich zainteresowanych nauką
@@ -88,20 +102,8 @@
                     czy matematyka na University of&nbsp;Cambridge.</h3>
         </div>
     </div>
-
-    <h1 style="margin-top: 50px;" class="mobile-left-padding">Kalendarz zajęć</h1>
-    <h3 style="font-weight: 450; margin-bottom: 30px;" class="mobile-left-padding">Poniżej znajdują się nadchodzące kółka i&nbsp;inne wydarzenia organizowane przez MIKO.</h3>
     </div>
 
-    <div class="calendar">
-        <div class="header">
-            <button id="prevMonth">◀</button>
-            <h2 id="currentMonth"></h2>
-            <button id="nextMonth">▶</button>
-        </div>
-        <button id="showCurrentMonth" style="width: auto; margin: auto; margin-bottom: 5px; margin-top: 5px; border: 3px solid #F24535;border-radius: 15px; background-color: transparent; color: #F24535; cursor: pointer"><h2 style="color: var(--r1); padding: 5px 10px;">Dzisiaj</h2> </button>
-        <div class="days" id="calendarDays"></div>
-    </div>
 
     <div id="eventPopup" class="event-popup">
         <div class="popup-content">

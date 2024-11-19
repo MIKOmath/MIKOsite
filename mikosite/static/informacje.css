@@ -24,10 +24,9 @@ body, html {
     display: flex;
     flex-direction: column;
     height: auto;
-    width: 70%;
     top: 100px;
     border: 1px solid var(--b1);
-    margin: auto auto 50px;
+    margin: auto auto 120px;
     border-radius: 20px;
 }
 .header {
@@ -194,6 +193,7 @@ body, html {
     text-align: left;
     margin: auto;
     margin-top: 50px;
+    margin-bottom: 60px;
     width: 70%;
 }
 
