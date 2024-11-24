@@ -22,7 +22,7 @@ class Post(models.Model):
         ]
 
     def __str__(self):
-        return f"Post: {self.title}"
+        return f"POST {self.title} PUBLISHED {self.date} {self.time}"
 
     def display_dict(self, locale) -> dict:
         return {

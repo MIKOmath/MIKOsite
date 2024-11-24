@@ -24,7 +24,7 @@ def informacje(request):
         group.lead = mark_safe(group.lead)
         group.desc_snippets = [mark_safe(snippet) for snippet in group.description.split('\n') if snippet]
 
-    seminars = Seminar.objects.all().order_by('date', 'time')
+    seminars = Seminar.objects.all().order_by('date', 'time').select_related('group').prefetch_related('tutors')
     for seminar in seminars:
         seminar.display = seminar.display_dict(locale)
 
