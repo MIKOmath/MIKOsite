@@ -19,6 +19,20 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
+from rest_framework.routers import DefaultRouter
+from seminars.api_views import SeminarGroupViewSet, SeminarViewSet
+from mainSite.api_views import PostImageViewSet, PostViewSet
+from accounts.api_views import UserViewSet, LinkedAccountViewSet, UserActivityViewSet, ActivityScoreViewSet
+
+router = DefaultRouter()
+router.register(r'seminar-groups', SeminarGroupViewSet)
+router.register(r'seminars', SeminarViewSet)
+router.register(r'posts', PostViewSet)
+router.register(r'post-images', PostImageViewSet)
+router.register(r'users', UserViewSet)
+router.register(r'linked-accounts', LinkedAccountViewSet)
+router.register(r'user-activity', UserActivityViewSet, basename='user-activity')
+router.register(r'activity-scores', ActivityScoreViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +40,5 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('kolo/', include('seminars.urls')),
     path("bazahintow/", include("hintBase.urls")),
+    path('api/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
