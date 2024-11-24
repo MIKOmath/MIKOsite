@@ -36,7 +36,6 @@ class User(AbstractUser):
     surname = models.CharField(max_length=50)
     region = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(5), MaxLengthValidator(30)])
     date_of_birth = models.DateField(blank=True, null=True)
-    problem_counter = models.IntegerField(default=0, blank=True)
     profile_image = models.ImageField(upload_to='media/profile_images/', blank=True, null=True)
     objects = CustomUserManager()
 
