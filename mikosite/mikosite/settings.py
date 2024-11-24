@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -62,6 +62,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'compressor',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
     "accounts",
     "mainSite",
     "hintBase",
@@ -70,6 +73,26 @@ INSTALLED_APPS = [
     "seminars",
     "cards",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  # For browser-based access
+        'rest_framework.authentication.TokenAuthentication',    # For API access with tokens
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'mikosite.permissions.IsAdminUserOrReadOnly',
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '1000/day',
+        'user': '12000/hour',
+    },
+    'DEFAULT_PAGINATION_CLASS': 'mikosite.pagination.CustomLimitOffsetPagination',
+    'PAGE_SIZE': 30,
+}
 
 USE_L10N = True
 TAGGIT_CASE_INSENSITIVE = True
