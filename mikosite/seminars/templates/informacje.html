@@ -1,3 +1,4 @@
+{% load cache %}
 {% load static %}
 {% load compress %}
 
@@ -54,6 +55,7 @@
             matematyki i&nbsp;nauk pokrewnych. Zajęcia podzielone są na&nbsp;grupy o&nbsp;zróżnicowanym poziomie i&nbsp;różnorodnej tematyce:
         </h3>
 
+        {% cache 900 seminar-levels %}
         <div class="levels">
             {% for group in groups %}
                 <div class="column">
@@ -65,6 +67,7 @@
                 </div>
             {% endfor %}
         </div>
+        {% endcache %}
 
         <hr style="margin-top: 60px;">
         <h3 style="font-weight: 450; " class="mobile-left-padding">Wszystkie zajęcia odbywają się zdalnie na platformie Discord. Ważną częścią naszej społeczności jest możliwość prowadzenia dyskusji i&nbsp;wspólnej pracy nad zadaniami na&nbsp;chatach. Dołączając do naszego serwera na Discordzie uzyskasz także:</h3>
@@ -99,6 +102,7 @@
 
     {% include "footer.html" %}
 
+{% cache 300 calendar-events %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     {% for seminar in seminars %}
@@ -151,5 +155,6 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCalendar();
 });
 </script>
+{% endcache %}
 </body>
 </html>

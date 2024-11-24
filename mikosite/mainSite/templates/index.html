@@ -1,3 +1,4 @@
+{% load cache %}
 {% load static %}
 {% load compress %}
 {% load custom_filters %}
@@ -71,6 +72,7 @@
                         <span style="vertical-align: bottom;" class="material-symbols-rounded">open_in_new</span></h3>
                 </a>
 
+                {% cache 300 upcoming-seminars %}
                 <div class="info-banner">
                     <h2>Nadchodzące eventy:</h2>
                     {% for seminar in events %}
@@ -139,6 +141,7 @@
                         <h3>Brak eventów w najbliższym czasie ;(</h3>
                     {% endfor %}
                 </div>
+                {% endcache %}
             </div>
             <div class="column_right" style="flex-wrap: wrap; word-break:break-word;">
                 <h1 style="margin-top: 0px;">Aktualności</h1>
