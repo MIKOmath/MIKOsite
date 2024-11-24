@@ -1,0 +1,16 @@
+{% if user %}
+    <div style="text-align: center; margin-top: 20px; font-family: 'Arial', sans-serif;">
+        <h1 style="color: #003f5c; font-size: 28px;">Witaj, {{ user.username }}!</h1>
+        <div style="margin-top: 15px;">
+            <a href="/discordauth/profile/" style="text-decoration: none; color: #ffffff; background-color: #f15a24; padding: 10px 20px; border-radius: 5px; font-size: 16px; margin-right: 10px;">Zobacz swój profil</a>
+            <a href="/discordauth/logout" style="text-decoration: none; color: #ffffff; background-color: #003f5c; padding: 10px 20px; border-radius: 5px; font-size: 16px;">Wyloguj się</a>
+        </div>
+    </div>
+{% else %}
+    <div style="text-align: center; margin-top: 20px; font-family: 'Arial', sans-serif;">
+        <h1 style="color: #003f5c; font-size: 28px;">Witaj</h1>
+        <div style="margin-top: 15px;">
+            <a href="/discordauth/login_view" style="text-decoration: none; color: #ffffff; background-color: #f15a24; padding: 10px 20px; border-radius: 5px; font-size: 16px;">Zaloguj się przez Discord</a>
+        </div>
+    </div>
+{% endif %}

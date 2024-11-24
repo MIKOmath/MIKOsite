@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "formtools",
     "seminars",
     "cards",
+    "discordauth",
 ]
 
 REST_FRAMEWORK = {
@@ -184,8 +185,8 @@ CACHES = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 CACHE_BACKEND = 'redis_cache.cache://127.0.0.1:6379/1'
 SESSION_CACHE_ALIAS = "default"
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
+ #Internationalization
+ #https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'pl-pl'
 
