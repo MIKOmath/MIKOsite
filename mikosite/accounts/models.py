@@ -1,4 +1,8 @@
+import uuid
+
 from django.db import models
+from django.db.models import Sum
+from django.utils import timezone
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 
@@ -42,3 +46,35 @@ class User(AbstractUser):
     @property
     def full_name(self):
         return f"{self.name} {self.surname}"
+
+    @property
+    def activity_score(self):
+        return self.activity_scores.aggregate(Sum('change'))['change__sum'] or 0
+
+
+class LinkedAccount(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, related_name='linked_accounts', on_delete=models.CASCADE)
+    external_id = models.CharField(max_length=128, blank=False, null=False)
+    platform = models.CharField(max_length=50, blank=False, null=False)
+    timestamp = models.DateTimeField(auto_now=True, blank=False, null=False)
+
+    class Meta:
+        unique_together = (('external_id', 'platform'), ('user', 'platform'))
+        indexes = [
+            models.Index(fields=['external_id']),
+        ]
+
+    def __str__(self):
+        return f"USER {self.user.username} IS {self.external_id} ON {self.platform}"
+
+
+class ActivityScore(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, related_name='activity_scores', on_delete=models.CASCADE)
+    change = models.IntegerField(blank=False, null=False)
+    reason = models.CharField(max_length=255, blank=False, null=False)
+    timestamp = models.DateTimeField(default=timezone.now, blank=False, null=False, editable=False)
+
+    def __str__(self):
+        return f"{self.change} POINTS FOR {self.user.username} REASON {self.reason}"
