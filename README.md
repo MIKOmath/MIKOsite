@@ -73,20 +73,35 @@ SECRET_KEY = '4b%nh=m5*7du0gmq2+h4%&wd%=ok#i0_jakiś_długi_token_do_szyfrowania
 DB_PASSWORD = 'hasło do użytkownika postgres w PostgreSQL'
 ```
 
-## Migracja bazy danych
+## Migracja bazy danych, pliki statyczne, konta
+Przed uruchomieniem serwera testowego trzeba utworzyć bazę danych poleceniami `makemigrations` oraz `migrate`.
+Aby poprawnie wyświetlać pliki statyczne w środowisku produkcyjnym, trzeba również odpalić "kompresję offline" styli i skryptów.
+Warto również utworzyć konto admina.
+
 ### Wykonaj następujące polecenia:
 ```
 Windows:
 python manage.py makemigrations
 python manage.py migrate
+python manage.py compress
 python manage.py createsuperuser
 
 Linux:
 python3 manage.py makemigrations
 python3 manage.py migrate
+python3 manage.py compress
 python3 manage.py createsuperuser
 ```
 
-Po wykonaniu tych kroków, projekt powinien być gotowy do uruchomienia lokalnie. 
-
+Po wykonaniu tych kroków projekt powinien być gotowy do uruchomienia lokalnie. 
 ``python manage.py runserver``
+
+## API
+Aby zobaczyć listę dostępnych endpointów, wejdź na `/api/`. Po zalogowaniu do Django można swobodnie prototypować w przeglądarce. 
+
+Produkcyjny dostęp do API powinien być autoryzowany tokenem uzyskanym komendą
+``python manage.py drf_create_token <username>``
+Autoryzacja przebiega wtedy poprzez podanie headera:
+```
+Authorization: Token <token>
+```
