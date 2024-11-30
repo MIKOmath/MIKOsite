@@ -20,8 +20,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from rest_framework.routers import DefaultRouter
-from tqdm.contrib import discord
-
 from seminars.api_views import SeminarGroupViewSet, SeminarViewSet
 from mainSite.api_views import PostImageViewSet, PostViewSet
 from accounts.api_views import UserViewSet, LinkedAccountViewSet, UserActivityViewSet, ActivityScoreViewSet
