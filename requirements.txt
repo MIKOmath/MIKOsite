@@ -13,4 +13,3 @@ psycopg2
 python-Levenshtein
 pytz~=2024.1
 tqdm~=4.66.5
-requests
