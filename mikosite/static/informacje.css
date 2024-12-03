@@ -128,8 +128,8 @@ body, html {
     background-color: rgba(0,0,0,0.4);
 }
 
-.event-info:not(:has(div)) {
-  margin-top: -4px;
+.event-info:not(:has(p)) {
+  margin-top: -8px;
 }
 
 .popup-content {

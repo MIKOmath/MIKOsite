@@ -122,13 +122,13 @@ function showEventPopup(date, eventsList) {
     
             <div class="event-info">
                 ${event.tutors.length ? `
-                    <div class="event-tutors">
-                        <strong>${event.tutors.length > 1 ? 'Prowadzą:' : 'Prowadzi:'}</strong>
-                        ${event.tutors.join(", ")}
-                    </div>` : ''}
+                    <p>
+                        <strong>${event.tutors.length > 1 ? 'Prowadzą: ' : 'Prowadzi: '}</strong>${event.tutors.join(", ")}
+                    </p>` : ''}
                 ${event.description ? `
-                    <strong>Opis:</strong> ${event.description}<br>
-                ` : ''}
+                    <p>
+                        <strong>Opis: </strong>${event.description}<br>
+                    </p>` : ''}
             </div>
     
             ${event.image ? `
