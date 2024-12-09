@@ -127,7 +127,7 @@ function showEventPopup(date, eventsList) {
                     </p>` : ''}
                 ${event.description ? `
                     <p>
-                        <strong>Opis: </strong>${event.description}<br>
+                        <strong>${'Opis: '}</strong>${event.description}<br>
                     </p>` : ''}
             </div>
     
