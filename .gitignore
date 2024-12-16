@@ -2,7 +2,7 @@
 mikosite/media/
 
 # Static files cache
-static/CACHE/
+mikosite/static/CACHE/
 
 # Secrets file
 mikosite/mikosite/secrets.py
