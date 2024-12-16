@@ -65,6 +65,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
+    'more_admin_filters',
+    'rangefilter',
     "accounts",
     "mainSite",
     "hintBase",

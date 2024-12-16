@@ -17,6 +17,10 @@ class SeminarGroup(models.Model):
     def __str__(self):
         return f"GROUP {self.name} LEVEL {self.default_difficulty}"
 
+    @property
+    def seminar_count(self):
+        return self.seminar_set.count()
+
 
 class Seminar(models.Model):
     date = models.DateField(blank=False, null=False)

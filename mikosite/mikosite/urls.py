@@ -42,3 +42,6 @@ urlpatterns = [
     path("bazahintow/", include("hintBase.urls")),
     path('api/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+admin.site.site_header = "Administracja MIKO"
+admin.site.site_title = "MIKO Admin"
