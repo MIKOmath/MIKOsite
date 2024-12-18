@@ -5,7 +5,7 @@ from babel.dates import format_date, format_time
 
 class Post(models.Model):
     title = models.CharField(max_length=200, blank=False, null=False)
-    subtitle = models.CharField(max_length=500, blank=True, null=True)
+    subtitle = models.CharField(max_length=500, blank=True)
     date = models.DateField(blank=False, null=False)
     time = models.TimeField(blank=False, null=False)
     authors = models.ManyToManyField(User, blank=False)
