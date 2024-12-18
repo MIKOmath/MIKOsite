@@ -43,5 +43,5 @@ urlpatterns = [
     path('api/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-admin.site.site_header = "Administracja MIKO"
+admin.site.site_header = "TEST Admin Panel MIKO" if settings.DEBUG else "Administracja MIKO"
 admin.site.site_title = "MIKO Admin"
