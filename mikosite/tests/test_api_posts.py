@@ -18,7 +18,7 @@ class PostViewSetTests(APITestCase):
             title="Post 1",
             date = date(2024, 1, 1),
             time = time(18, 0),
-            text_field_1="Post content.",
+            content="Post content.",
         )
         self.post2 = Post.objects.create(
             title="Post 2",
