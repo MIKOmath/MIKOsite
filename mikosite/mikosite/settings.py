@@ -155,6 +155,13 @@ else:
             'PASSWORD': DB_PASSWORD,
             'HOST': 'localhost',
             'PORT': '5432',
+            'OPTIONS': {
+                'pool': {
+                    'min_size': 2,
+                    'max_size': 4,
+                    'timeout': 10,
+                }
+            }
         }
     }
 
