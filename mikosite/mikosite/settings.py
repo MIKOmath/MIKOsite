@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
+from babel import Locale
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -184,7 +185,8 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+            "CONNECTION_POOL_KWARGS": {"max_connections": 8},
+        },
     }
 }
 
@@ -195,6 +197,7 @@ SESSION_CACHE_ALIAS = "default"
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'pl-pl'
+BABEL_LOCALE = Locale('pl_PL')
 
 TIME_ZONE = 'Europe/Warsaw'
 

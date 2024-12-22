@@ -1,5 +1,8 @@
+import os
 from babel.dates import format_date, format_time
 from markdown import Markdown
+
+from django.conf import settings
 from django.db import models
 from django.utils.safestring import mark_safe
 
@@ -30,13 +33,13 @@ class Post(models.Model):
     def __str__(self):
         return f"POST {self.title} PUBLISHED {self.date} {self.time}"
 
-    def display_dict(self, locale) -> dict:
+    def display_dict(self, locale=settings.BABEL_LOCALE) -> dict:
         return {
             'title': self.title,
             'subtitle': self.subtitle,
-            'authors': self.authors.all(),
-            'file': self.file,
-            'images': self.images.all(),
+            'authors': [{'username': author.username, 'full_name': author.full_name} for author in self.authors.all()],
+            'file': {'url': self.file.url, 'name': os.path.basename(self.file.name)} if self.file else {},
+            'images': [{'url': image, 'alt_text': 'obraz do posta'} for image in self.images.all()],
             'content': mark_safe(md.convert(self.content)),
             'date': format_date(self.date, format='d MMMM y', locale=locale) if self.date else '',
             'time': format_time(self.time, format='HH:mm', locale=locale) if self.time else '',

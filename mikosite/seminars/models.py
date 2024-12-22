@@ -3,6 +3,9 @@ from babel.dates import format_date, format_time
 from django.db import models
 from django.db.models import Q
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.conf import settings
+from django.utils.safestring import mark_safe
+
 from accounts.models import User
 
 
@@ -20,6 +23,13 @@ class SeminarGroup(models.Model):
     @property
     def seminar_count(self):
         return self.seminar_set.count()
+
+    def display_dict(self) -> dict:
+        return {
+            'lead': self.lead,
+            'desc_snippets': [mark_safe(snippet) for snippet in self.description.split('\n')
+                              if snippet and not snippet.isspace()],
+        }
 
 
 class Seminar(models.Model):
@@ -66,7 +76,7 @@ class Seminar(models.Model):
     }
 
     @classmethod
-    def fetch_upcoming(cls, start_date, start_time):
+    def fetch_upcoming(cls, start_date=datetime.now().date(), start_time=datetime.now().time()):
         future_seminars = Seminar.objects.filter(Q(date__gt=start_date)
                                                  | (Q(date=start_date) & Q(time__gt=start_time)))
         future_seminars = future_seminars.order_by('date', 'time')
@@ -82,6 +92,14 @@ class Seminar(models.Model):
         return next_seminars.select_related('group').prefetch_related('tutors')
 
     @property
+    def start_timestamp(self):
+        return datetime.combine(self.date, self.time)
+
+    @property
+    def end_timestamp(self):
+        return datetime.combine(self.date, self.time) + self.duration
+
+    @property
     def real_difficulty(self):
         default_difficulty = self.group.default_difficulty if self.group else None
         return self.difficulty or default_difficulty
@@ -90,13 +108,12 @@ class Seminar(models.Model):
     def difficulty_label(self):
         return self.difficulty_dict.get(self.real_difficulty, {'label': None, 'icon': None})['label']
 
-    def display_dict(self, locale) -> dict:
-        start_time = format_time(self.time, format='HH:mm', locale=locale)
-        end_time = format_time((datetime.combine(date.today(), self.time) + self.duration).time(),
-                               format='HH:mm', locale=locale)
-        polish_date = format_date(self.date, format='d MMMM', locale=locale)
-        difficulty_badge_content = self.difficulty_dict.get(self.real_difficulty,
-                                                            {'label': None, 'icon': None})
+    def display_dict(self, locale=settings.BABEL_LOCALE) -> dict:
+        polish_date = format_date(self.start_timestamp, format='d MMMM', locale=locale)
+        start_time = format_time(self.start_timestamp, format='HH:mm', locale=locale)
+        end_time = format_time(self.end_timestamp, format='HH:mm', locale=locale)
+
+        difficulty_badge_content = self.difficulty_dict.get(self.real_difficulty, {'label': None, 'icon': None})
 
         return {
             'theme': self.theme,
