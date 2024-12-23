@@ -29,8 +29,4 @@ def clear_seminar_groups_cache(sender, **kwargs):
 
 
 def informacje(request):
-    seminars = Seminar.objects.all().order_by('date', 'time').select_related('group').prefetch_related('tutors')
-    for seminar in seminars:
-        seminar.display = seminar.display_dict()
-
-    return render(request, "informacje.html", {"groups": get_seminar_group_data, "seminars": seminars})
+    return render(request, "informacje.html", {"groups": get_seminar_group_data})

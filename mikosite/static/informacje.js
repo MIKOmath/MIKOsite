@@ -1,26 +1,81 @@
-
 const currentMonthElement = document.getElementById('currentMonth');
 const calendarDaysElement = document.getElementById('calendarDays');
 const prevMonthButton = document.getElementById('prevMonth');
 const nextMonthButton = document.getElementById('nextMonth');
+const showCurrentMonthButton = document.getElementById('showCurrentMonth');
 const eventPopup = document.getElementById('eventPopup');
 const popupDate = document.getElementById('popupDate');
 const eventList = document.getElementById('eventList');
 const closeBtn = document.querySelector('.close-btn');
+const loadingBar = document.getElementById('loadingBar');
 
 let currentDate = new Date();
 let events = {};
+let eventsCache = {};
 
-function addEvent(eventDetails) {
-    if (!eventDetails.date) {
-        console.warn("Event skipped: No date specified");
+function showLoadingBar() {
+    prevMonthButton.disabled = true;
+    nextMonthButton.disabled = true;
+    showCurrentMonthButton.disabled = true;
+    loadingBar.style.display = 'block';
+}
+
+function hideLoadingBar() {
+    prevMonthButton.disabled = false;
+    nextMonthButton.disabled = false;
+    showCurrentMonthButton.disabled = false;
+    loadingBar.style.display = 'none';
+}
+
+function fetchEvents() {
+    const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
+    if (eventsCache[monthKey]) {
+        events = eventsCache[monthKey];
+        updateCalendar();
         return;
     }
-    const key = eventDetails.date.toDateString();
-    if (!events[key]) {
-        events[key] = [];
-    }
-    events[key].push(eventDetails);
+
+    events = {};
+    updateCalendar();
+    showLoadingBar();
+
+    const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toLocaleDateString("sv");
+    const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toLocaleDateString("sv");
+    const url = `/api/seminars/?limit=200&start_date=${startDate}&end_date=${endDate}&display_only=1`;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            events = {};
+            data.results.forEach(event => {
+                const eventDate = new Date(event.date);
+                const key = eventDate.toDateString();
+                if (!events[key]) {
+                    events[key] = [];
+                }
+                events[key].push({
+                    date: eventDate,
+                    time: new Date(`${event.date}T${event.time}`),
+                    duration: {
+                        hours: parseInt(event.duration.split(':')[0]),
+                        minutes: parseInt(event.duration.split(':')[1])
+                    },
+                    theme: event.theme,
+                    tutors: event.tutors,
+                    description: event.description,
+                    image: event.image,
+                    file: event.file,
+                    group_name: event.group_name,
+                    difficulty_label: event.difficulty_label,
+                    difficulty_icon: event.difficulty_icon,
+                    featured: event.featured,
+                    special_guest: event.special_guest
+                });
+            });
+            eventsCache[monthKey] = events;
+            updateCalendar();
+        })
+        .catch(error => console.error('Error fetching events:', error))
+        .finally(hideLoadingBar);
 }
 
 function updateCalendar() {
@@ -59,7 +114,7 @@ function updateCalendar() {
             dayElement.classList.add('event-day');
             const eventIndicator = document.createElement('span');
             eventIndicator.className = 'event-indicator';
-            eventIndicator.title = events[key].join(', ');
+            eventIndicator.title = events[key].map(event => event.theme).join(', ');
             dayElement.appendChild(eventIndicator);
             dayElement.addEventListener('click', () => showEventPopup(currentDay, events[key]));
         }
@@ -81,7 +136,6 @@ function updateCalendar() {
 }
 
 function showEventPopup(date, eventsList) {
-    const warsawTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Warsaw' }));
     popupDate.textContent = date.toLocaleDateString('pl', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     popupDate.style.fontWeight = "bold"
     eventList.innerHTML = '';
@@ -96,7 +150,7 @@ function showEventPopup(date, eventsList) {
         li.innerHTML = `
             <span style="color: var(--r1)"><strong>${timeDisplay}</strong></span>
             <h3 class="seminar-theme"><strong> ${event.theme} </strong></h3>
-           
+
             <div class="badge-container">
                 ${event.featured ? `
                     <div class="badge badge-featured">
@@ -119,7 +173,7 @@ function showEventPopup(date, eventsList) {
                         ${event.difficulty_label}
                     </div>` : ''}
             </div>
-    
+
             <div class="event-info">
                 ${event.tutors.length ? `
                     <p>
@@ -130,7 +184,7 @@ function showEventPopup(date, eventsList) {
                         <strong>${'Opis: '}</strong>${event.description}<br>
                     </p>` : ''}
             </div>
-    
+
             ${event.image ? `
                 <div class="event-image">
                     <img src="${event.image}" alt="${event.theme}" style="max-width: 250px;">
@@ -166,7 +220,6 @@ function getTimeDisplay(event) {
     return `${startTime}-${endTime}`;
 }
 
-
 closeBtn.onclick = function() {
     eventPopup.style.display = 'none';
 }
@@ -179,17 +232,13 @@ window.onclick = function(event) {
 
 prevMonthButton.addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
-    updateCalendar();
+    fetchEvents();
 });
 
 nextMonthButton.addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
-    updateCalendar();
+    fetchEvents();
 });
-
-
-updateCalendar();
-
 
 document.addEventListener('DOMContentLoaded', function() {
     const navbarToggle = document.querySelector('.navbar-toggle');
@@ -200,7 +249,6 @@ document.addEventListener('DOMContentLoaded', function() {
         navbarCenter.classList.toggle('active');
     });
 
-    // close popup when Escape is pressed
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape' || event.key === 'Esc') {
             if (eventPopup && eventPopup.style.display === 'block') {
@@ -208,15 +256,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    fetchEvents();
 });
-
-
-// jump to current month
-const showCurrentMonthButton = document.getElementById('showCurrentMonth');
 
 function showCurrentMonth() {
     currentDate = new Date();
-    updateCalendar();
+    fetchEvents();
 }
 
 showCurrentMonthButton.addEventListener('click', showCurrentMonth);

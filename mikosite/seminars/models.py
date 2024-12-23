@@ -108,6 +108,10 @@ class Seminar(models.Model):
     def difficulty_label(self):
         return self.difficulty_dict.get(self.real_difficulty, {'label': None, 'icon': None})['label']
 
+    @property
+    def difficulty_icon(self):
+        return self.difficulty_dict.get(self.real_difficulty, {'label': None, 'icon': None})['icon']
+
     def display_dict(self, locale=settings.BABEL_LOCALE) -> dict:
         polish_date = format_date(self.start_timestamp, format='d MMMM', locale=locale)
         start_time = format_time(self.start_timestamp, format='HH:mm', locale=locale)

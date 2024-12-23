@@ -92,6 +92,33 @@ body, html {
     position: relative;
 }
 
+.loading-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    overflow: hidden;
+    z-index: 10;
+}
+.loading-bar::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: var(--b1);
+    transform: translateX(-100%);
+    animation: loading 2s linear infinite;
+}
+@keyframes loading {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
 #eventList{
     padding: 10px 0 0;
     display: flex;

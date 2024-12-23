@@ -1,4 +1,3 @@
-{% load cache %}
 {% load static %}
 {% load compress %}
 
@@ -48,6 +47,7 @@
             </div>
             <button id="showCurrentMonth" style="width: auto; margin: auto; margin-bottom: 5px; margin-top: 5px; border: 3px solid #F24535;border-radius: 15px; background-color: transparent; color: #F24535; cursor: pointer"><h2 style="color: var(--r1); padding: 5px 10px;">Dzisiaj</h2> </button>
             <div class="days" id="calendarDays"></div>
+            <div id="loadingBar" class="loading-bar"></div>
         </div>
         <h1 class="mobile-left-padding">Informacje</h1>
         <h3 style="font-weight: 450" class="mobile-left-padding">
@@ -99,60 +99,5 @@
     </div>
 
     {% include "footer.html" %}
-
-{% cache 300 calendar-events %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    {% for seminar in seminars %}
-    try {
-        const eventDate = new Date("{{ seminar.date|date:'Y-m-d' }}");
-        if (isNaN(eventDate.getTime())) {
-            throw new Error("Invalid date");
-        }
-        const eventTime = new Date("{{ seminar.date|date:'Y-m-d' }}T{{ seminar.time|time:'H:i' }}");
-        if (isNaN(eventTime.getTime())) {
-            throw new Error("Invalid time");
-        }
-        const durationSeconds = parseInt("{{ seminar.duration.total_seconds }}");
-        if (isNaN(durationSeconds)) {
-            throw new Error("Invalid duration");
-        }
-
-        const theme = "{{ seminar.display.theme|escapejs }}";
-        if (!theme) {
-            throw new Error("Invalid theme");
-        }
-
-        const tutors = [{% for tutor in seminar.display.tutors %}"{{ tutor }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
-
-        const featured = {{ seminar.display.featured|yesno:"true,false" }};
-        const special_guest = {{ seminar.display.special_guest|yesno:"true,false" }};
-
-        addEvent({
-            date: eventDate,
-            time: eventTime,
-            duration: {
-                hours: Math.floor(durationSeconds / 3600),
-                minutes: Math.floor((durationSeconds % 3600) / 60)
-            },
-            theme: theme,
-            tutors: tutors,
-            description: "{{ seminar.display.description|escapejs }}",
-            image: "{{ seminar.display.image_url|default_if_none:'' }}",
-            file: "{{ seminar.display.file_url|default_if_none:'' }}",
-            group_name: "{{ seminar.display.group_name|default_if_none:''|escapejs }}",
-            difficulty_label: "{{ seminar.display.difficulty_label|default_if_none:''|escapejs }}",
-            difficulty_icon: "{{ seminar.display.difficulty_icon|default_if_none:''|escapejs }}",
-            featured: featured,
-            special_guest: special_guest,
-        });
-    } catch (error) {
-        console.warn(`Event skipped: ${error.message}`);
-    }
-    {% endfor %}
-    updateCalendar();
-});
-</script>
-{% endcache %}
 </body>
 </html>
