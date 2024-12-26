@@ -60,9 +60,6 @@ class LinkedAccount(models.Model):
 
     class Meta:
         unique_together = (('external_id', 'platform'), ('user', 'platform'))
-        indexes = [
-            models.Index(fields=['external_id']),
-        ]
 
     def __str__(self):
         return f"USER {self.user.username} IS {self.external_id} ON {self.platform}"
@@ -74,6 +71,9 @@ class ActivityScore(models.Model):
     change = models.IntegerField(blank=False, null=False)
     reason = models.CharField(max_length=255, blank=False, null=False)
     timestamp = models.DateTimeField(default=timezone.now, blank=False, null=False, editable=False)
+
+    class Meta:
+        indexes = [models.Index(name='activity_score_index', fields=['user', 'timestamp'], include=['change'])]
 
     def __str__(self):
         return f"{self.change} POINTS FOR {self.user.username} REASON {self.reason}"

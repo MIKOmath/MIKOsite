@@ -47,7 +47,7 @@ class Seminar(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=["date"]),
+            models.Index(fields=["date", "time"]),
         ]
         constraints = [
             models.CheckConstraint(condition=models.Q(started=True) | models.Q(finished=False),

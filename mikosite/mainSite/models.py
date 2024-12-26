@@ -24,7 +24,7 @@ class Post(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=["date"]),
+            models.Index(fields=["date", "time"]),
         ]
 
     def __str__(self):
