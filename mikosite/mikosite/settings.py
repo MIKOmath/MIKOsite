@@ -85,12 +85,10 @@ REST_FRAMEWORK = {
         'mikosite.permissions.IsAdminUserOrReadOnly',
     ],
     'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'mikosite.throttling.SessionUserThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '1000/day',
-        'user': '12000/hour',
+        'session_user': '1440/day',
     },
     'DEFAULT_PAGINATION_CLASS': 'mikosite.pagination.CustomLimitOffsetPagination',
     'PAGE_SIZE': 30,
