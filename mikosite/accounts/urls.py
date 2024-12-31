@@ -8,5 +8,5 @@ urlpatterns = [
     path("profile/", views.profile, name="profile"),
     path("publicprofile/<str:username>/", views.public_profile, name="publicprofile"),
     path("change_password/", views.change_password, name="change_password"),
-    path("zarzadzanie/", views.zarzadzanie, name="zarzadzanie"),
+    # path("zarzadzanie/", views.zarzadzanie, name="zarzadzanie"), # For now /zarzadzanie is not reachable.
 ]

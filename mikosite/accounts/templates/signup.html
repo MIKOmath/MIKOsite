@@ -1,11 +1,4 @@
 {% load static %}
-<!-- TODO -->
-<!-- extends "base.html" 
-
- block content 
-
- endblock content  
- procent nawias otacza kazde ofc-->
 <!DOCTYPE html>
 <html lang="pl">
 
@@ -37,36 +30,29 @@
             </div>
             <div class="form-group">
                 <input type="password" id="password" name="password" placeholder="Hasło" required>
-                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Potórz hasło" required>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Powtórz hasło" required>
             </div>
             <div class="form-group">
                 <select id="region" name="region">
                     <option value="">Województwo</option>
-                    <option value="Dolnośląskie">Dolnośląskie</option>
-                    <option value="Kujawsko-Pomorskie">Kujawsko-Pomorskie</option>
-                    <option value="Lubelskie">Lubelskie</option>
-                    <option value="Lubuskie">Lubuskie</option>
-                    <option value="Łódzkie">Łódzkie</option>
-                    <option value="Małopolskie">Małopolskie</option>
-                    <option value="Mazowieckie">Mazowieckie</option>
-                    <option value="Opolskie">Opolskie</option>
-                    <option value="Podkarpackie">Podkarpackie</option>
-                    <option value="Podlaskie">Podlaskie</option>
-                    <option value="Pomorskie">Pomorskie</option>
-                    <option value="Śląskie">Śląskie</option>
-                    <option value="Świętokrzyskie">Świętokrzyskie</option>
-                    <option value="Warmińsko-Mazurskie">Warmińsko-Mazurskie</option>
-                    <option value="Wielkopolskie">Wielkopolskie</option>
-                    <option value="Zachodniopomorskie">Zachodniopomorskie</option>
+                    <option value="Dolnośląskie">dolnośląskie</option>
+                    <option value="Kujawsko-Pomorskie">kujawsko-Pomorskie</option>
+                    <option value="Lubelskie">lubelskie</option>
+                    <option value="Lubuskie">lubuskie</option>
+                    <option value="Łódzkie">łódzkie</option>
+                    <option value="Małopolskie">małopolskie</option>
+                    <option value="Mazowieckie">mazowieckie</option>
+                    <option value="Opolskie">opolskie</option>
+                    <option value="Podkarpackie">podkarpackie</option>
+                    <option value="Podlaskie">podlaskie</option>
+                    <option value="Pomorskie">pomorskie</option>
+                    <option value="Śląskie">śląskie</option>
+                    <option value="Świętokrzyskie">świętokrzyskie</option>
+                    <option value="Warmińsko-Mazurskie">warmińsko-Mazurskie</option>
+                    <option value="Wielkopolskie">wielkopolskie</option>
+                    <option value="Zachodniopomorskie">zachodniopomorskie</option>
                 </select>
                 <input type="date" id="dateOfBirth" name="date_of_birth" placeholder="Data urodzenia">
-            </div>
-
-
-
-            <div class="form-group">
-                <label for="profileImage">Zdjęcie profilowe</label>
-                <input type="file" id="profileImage" name="profile_image" accept="image/*">
             </div>
             <button type="submit">Wyślij</button>
         </form>
