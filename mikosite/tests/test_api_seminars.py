@@ -9,8 +9,8 @@ from seminars.models import Seminar, SeminarGroup
 
 class SeminarViewSetTests(APITestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com')
-        self.regular_user = User.objects.create_user(username='user', password='userpass', email='user@test.com')
+        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com', name="Test1", surname="test2")
+        self.regular_user = User.objects.create_user(username='user1', password='userpass', email='user@test.com', name="Test1", surname="test2")
 
         self.group = SeminarGroup.objects.create(name='Test Group')
 
@@ -201,8 +201,8 @@ class SeminarViewSetTests(APITestCase):
 
 class SeminarGroupViewSetTests(APITestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com')
-        self.regular_user = User.objects.create_user(username='user', password='userpass', email='user@test.com')
+        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com', name="Test1", surname="test2")
+        self.regular_user = User.objects.create_user(username='user12', password='userpass', email='user@test.com', name="Test1", surname="test2")
 
         self.group1 = SeminarGroup.objects.create(
             name="Group A",

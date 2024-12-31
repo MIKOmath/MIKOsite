@@ -34,7 +34,7 @@ CSRF_TRUSTED_ORIGINS = [
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
@@ -56,6 +56,7 @@ APPEND_SLASH = True
 # Application definition
 
 INSTALLED_APPS = [
+    "accounts",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -68,7 +69,6 @@ INSTALLED_APPS = [
     'django_filters',
     'more_admin_filters',
     'rangefilter',
-    "accounts",
     "mainSite",
     "hintBase",
     "taggit",

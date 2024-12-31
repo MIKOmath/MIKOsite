@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import datetime
 from django.contrib import messages
-from accounts.models import User
+from .models import User
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -9,55 +9,61 @@ from django.contrib.auth.models import Group
 from mainSite.models import Post
 from hintBase.models import Problem, ProblemHint
 from django.http import HttpResponse
+from django.utils.dateparse import parse_date
+from django.core.exceptions import ValidationError
+from datetime import date
 
+
+def calculate_age(dob):
+    today = date.today()
+    return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
 
 def signup(request):
     if request.method == "POST":
         username = request.POST.get("username")
         email = request.POST.get("email")
-        password0 = request.POST.get("password")
-        password1 = request.POST.get("confirmPassword")
-
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirmPassword")
         name = request.POST.get("name")
         surname = request.POST.get("surname")
         date_of_birth = request.POST.get("date_of_birth")
         region = request.POST.get("region")
 
-        if User.objects.filter(email=email).exists():
-            return render(request, "signup.html", {"custom_message": "Konto z takim adresem e-mail już istnieje."})
-        if User.objects.filter(username=username).exists():
-            return render(request, "signup.html", {"custom_message": "Konto z taką nazwą użytkownika już istnieje."})
+        if password != confirm_password:
+            return render(request, "signup.html", {"custom_message": "Podane hasła się różnią."})
+
+        parsed_dob = parse_date(date_of_birth)
+        if not parsed_dob:
+            return render(request, "signup.html", {"custom_message": "Data nie jest poprawna."})
+
+        if calculate_age(parsed_dob) < 13:
+            return render(request, "signup.html", {"custom_message": "Musisz mieć co najmniej 13 lat, "
+                                                                     "aby się zarejestrować."})
 
         try:
-            # Attempt to parse the date (modify format string as needed)
-            datetime.datetime.strptime(date_of_birth, '%Y-%m-%d')
-        except ValueError:
-            # If invalid format, assign "default_date" and add an error message
-            date_of_birth = datetime.date.today()
+            new_user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                name=name,
+                surname=surname,
+                date_of_birth=parsed_dob,
+                region=region,
+            )
+            new_user.full_clean(validate_unique=False)
+            new_user.save()
 
-        if password0 != password1:
-            return render(request, "signup.html", {"custom_message": "Hasła nie są takie same."})
+            return redirect("signin")
 
-        newUser = User.objects.create_user(username=username, email=email, password=password0)
-
-        newUser.name = name
-        newUser.surname = surname
-        newUser.date_of_birth = date_of_birth
-        newUser.region = region
-
-        group, created = Group.objects.get_or_create(name='user')
-        newUser.groups.add(group)
-        newUser.save()
-
-        return redirect("../signin/")
+        except ValidationError as e:
+            return render(request, "signup.html", {"custom_message": str(e)})
 
     return render(request, "signup.html")
-
 
 def signin(request):
     if request.user.is_authenticated:
         return render(request, "signin.html", {
-            "custom_message": f"Jesteś zalogowany jako {request.user.username}. Musisz się wylogować, aby zalogować się ponownie."})
+            "custom_message": f"Już jesteś zalogowany jako {request.user.username}."})
 
     if request.method == "POST":
 
@@ -69,7 +75,7 @@ def signin(request):
             login(request, user)
             return redirect("/")
         else:
-            return render(request, "signin.html", {"custom_message": "Login laub hasło nie jest poprawne"})
+            return render(request, "signin.html", {"custom_message": "Login lub hasło nie jest poprawne"})
     return render(request, "signin.html")
 
 

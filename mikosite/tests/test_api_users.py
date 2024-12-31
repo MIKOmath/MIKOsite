@@ -6,9 +6,9 @@ from accounts.models import User, LinkedAccount
 
 class UserViewSetTests(APITestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com')
-        self.user1 = User.objects.create_user(username='user1', password='userpass', email='user1@test.com')
-        self.user2 = User.objects.create_user(username='user2', password='userpass', email='user2@test.com')
+        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com',name="Test1", surname="test2")
+        self.user1 = User.objects.create_user(username='user1', password='userpass', email='user1@test.com', name="Test1", surname="test2")
+        self.user2 = User.objects.create_user(username='user2', password='userpass', email='user2@test.com',name="Test1", surname="test2")
 
     # Viewing Users
     def test_list_users(self):
@@ -84,8 +84,8 @@ class UserViewSetTests(APITestCase):
 
 class LinkedAccountViewSetTests(APITestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com')
-        self.regular_user = User.objects.create_user(username='user', password='userpass', email='user@test.com')
+        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com', name="Test1", surname="test2")
+        self.regular_user = User.objects.create_user(username='user1', password='userpass', email='user@test.com', name="Test1", surname="test2")
 
         self.user_discord = LinkedAccount.objects.create(external_id='123', platform='discord', user=self.regular_user)
         self.user_yt = LinkedAccount.objects.create(external_id='456', platform='yt', user=self.regular_user)

@@ -8,8 +8,8 @@ from accounts.models import User, ActivityScore
 
 class ActivityScoreViewSetTests(APITestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com')
-        self.regular_user = User.objects.create_user(username='user', password='userpass', email='user@test.com')
+        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com', name="Imię11", surname="test2")
+        self.regular_user = User.objects.create_user(username='user_with_more_than_4_letters', password='userpass', email='user@test.com', name="Test2", surname="test3")
 
         self.score1 = ActivityScore.objects.create(user=self.admin_user, change=10)
         self.score2 = ActivityScore.objects.create(user=self.regular_user, change=20)
@@ -90,7 +90,7 @@ class ActivityScoreViewSetTests(APITestCase):
 
 class UserActivityViewSetTests(APITestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com')
+        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com', name="Test", surname="test")
 
         self.n_users = 10
         self.n_scores = int(3.5 * self.n_users)
@@ -129,7 +129,7 @@ class UserActivityViewSetTests(APITestCase):
         self.assertEqual(response.data['total_score'], manual_score)
 
         # test default score
-        dummy_user = User.objects.create_user(username='dummy', password='dummypass', email='dummy@test.com')
+        dummy_user = User.objects.create_user(username='dummy', password='dummypass', email='dummy@test.com', name="Test", surname="test")
         response = self.client.get(f'/api/user-activity/{dummy_user.id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['total_score'], 0)

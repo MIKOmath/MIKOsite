@@ -9,8 +9,8 @@ from mainSite.models import Post, Image
 
 class PostViewSetTests(APITestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com')
-        self.regular_user = User.objects.create_user(username='user', password='userpass', email='user@test.com')
+        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com', name="Test1", surname="test2")
+        self.regular_user = User.objects.create_user(username='user1', password='userpass', email='user@test.com', name="Test1", surname="test2")
 
         self.image = Image.objects.create(image='/path/to/image.jpg')
 
