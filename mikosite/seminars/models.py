@@ -14,6 +14,7 @@ class SeminarGroup(models.Model):
     lead = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     discord_role_id = models.CharField(max_length=128, blank=True, null=True)
+    discord_channel_id = models.CharField(max_length=128, blank=True, null=True)
     default_difficulty = models.IntegerField(default=0, blank=False, null=False,
                                              validators=[MinValueValidator(0), MaxValueValidator(5)])
 
@@ -103,6 +104,11 @@ class Seminar(models.Model):
     def real_difficulty(self):
         default_difficulty = self.group.default_difficulty if self.group else None
         return self.difficulty or default_difficulty
+
+    @property
+    def real_discord_channel_id(self):
+        default_channel = self.group.discord_channel_id if self.group else None
+        return self.discord_channel_id or default_channel
 
     @property
     def difficulty_label(self):

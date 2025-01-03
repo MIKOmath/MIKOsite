@@ -20,6 +20,7 @@ class DisplaySeminarSerializer(serializers.ModelSerializer):
     difficulty_icon = serializers.CharField(read_only=True)
     group_name = serializers.CharField(source='group.name', allow_null=True, read_only=True)
     group_role_id = serializers.CharField(source='group.discord_role_id', allow_null=True, read_only=True)
+    discord_channel_id = serializers.CharField(source='real_discord_channel_id', allow_null=True, read_only=True)
 
     class Meta:
         model = Seminar
