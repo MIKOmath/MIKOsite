@@ -26,7 +26,7 @@ class SeminarGroup(models.Model):
 
     def display_dict(self) -> dict:
         return {
-            'lead': self.lead,
+            'lead': mark_safe(self.lead),
             'desc_snippets': [mark_safe(snippet) for snippet in self.description.split('\n')
                               if snippet and not snippet.isspace()],
         }
