@@ -21,9 +21,10 @@ class DisplaySeminarSerializer(serializers.ModelSerializer):
     group_name = serializers.CharField(source='group.name', allow_null=True, read_only=True)
     group_role_id = serializers.CharField(source='group.discord_role_id', allow_null=True, read_only=True)
     discord_channel_id = serializers.CharField(source='real_discord_channel_id', allow_null=True, read_only=True)
+    discord_voice_channel_id = serializers.CharField(source='real_discord_voice_channel_id', allow_null=True, read_only=True)
 
     class Meta:
         model = Seminar
         fields = ['id', 'date', 'time', 'duration', 'group_name', 'theme', 'description', 'image', 'file',
-                  'discord_channel_id', 'group_role_id', 'started', 'finished', 'featured', 'special_guest',
+                  'discord_channel_id','discord_voice_channel_id', 'group_role_id', 'started', 'finished', 'featured', 'special_guest',
                   'tutors', 'difficulty_label', 'difficulty_icon']
