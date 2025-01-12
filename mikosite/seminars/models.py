@@ -15,6 +15,7 @@ class SeminarGroup(models.Model):
     description = models.TextField(blank=True, null=True)
     discord_role_id = models.CharField(max_length=128, blank=True, null=True)
     discord_channel_id = models.CharField(max_length=128, blank=True, null=True)
+    discord_voice_channel_id = models.CharField(max_length=128, blank=True, null=True)
     default_difficulty = models.IntegerField(default=0, blank=False, null=False,
                                              validators=[MinValueValidator(0), MaxValueValidator(5)])
 
