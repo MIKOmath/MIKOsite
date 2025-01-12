@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, LinkedAccount
+from .models import User, LinkedAccount, DiscordAccount
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -9,3 +9,4 @@ class UserAdmin(admin.ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(LinkedAccount)
+admin.site.register(DiscordAccount)

@@ -55,7 +55,7 @@ class Seminar(models.Model):
 
     image = models.ImageField(upload_to='kolo_images/', blank=True, null=True)
     file = models.FileField(upload_to='kolo_files/', blank=True, null=True)
-
+    number_of_attenders = models.IntegerField(default=0, blank=False, null=False)
     class Meta:
         indexes = [
             models.Index(fields=["date", "time"]),

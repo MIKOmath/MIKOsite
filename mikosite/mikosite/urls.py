@@ -22,7 +22,8 @@ from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from seminars.api_views import SeminarGroupViewSet, SeminarViewSet
 from mainSite.api_views import PostImageViewSet, PostViewSet
-from accounts.api_views import UserViewSet, LinkedAccountViewSet, UserActivityViewSet, ActivityScoreViewSet
+from accounts.api_views import UserViewSet, LinkedAccountViewSet, UserActivityViewSet, ActivityScoreViewSet, \
+    DiscordAccountViewSet
 
 router = DefaultRouter()
 router.register(r'seminar-groups', SeminarGroupViewSet)
@@ -31,6 +32,7 @@ router.register(r'posts', PostViewSet)
 router.register(r'post-images', PostImageViewSet)
 router.register(r'users', UserViewSet)
 router.register(r'linked-accounts', LinkedAccountViewSet)
+router.register(r'discord-accounts', DiscordAccountViewSet)
 router.register(r'user-activity', UserActivityViewSet, basename='user-activity')
 router.register(r'activity-scores', ActivityScoreViewSet)
 

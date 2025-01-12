@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, LinkedAccount, ActivityScore
+from .models import User, LinkedAccount, ActivityScore, DiscordAccount
 
 
 class LinkedAccountSerializer(serializers.ModelSerializer):
@@ -7,6 +7,10 @@ class LinkedAccountSerializer(serializers.ModelSerializer):
         model = LinkedAccount
         fields = '__all__'
 
+class DiscordAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DiscordAccount
+        fields = '__all__'
 
 class NestedLinkedAccountSerializer(serializers.ModelSerializer):
     class Meta:
