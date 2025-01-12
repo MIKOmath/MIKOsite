@@ -37,6 +37,7 @@ class User(AbstractUser):
     region = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(5), MaxLengthValidator(30)])
     date_of_birth = models.DateField(blank=True, null=True)
     profile_image = models.ImageField(upload_to='media/profile_images/', blank=True, null=True)
+    discord_account = models.CharField(max_length=18, blank=True, null=True)
     objects = CustomUserManager()
 
     def __str__(self):

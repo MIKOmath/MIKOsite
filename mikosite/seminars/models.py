@@ -15,6 +15,7 @@ class SeminarGroup(models.Model):
     description = models.TextField(blank=True, null=True)
     discord_role_id = models.CharField(max_length=128, blank=True, null=True)
     discord_channel_id = models.CharField(max_length=128, blank=True, null=True)
+    discord_voice_channel_id = models.CharField(max_length=128, blank=True, null=True)
     default_difficulty = models.IntegerField(default=0, blank=False, null=False,
                                              validators=[MinValueValidator(0), MaxValueValidator(5)])
 
@@ -39,6 +40,7 @@ class Seminar(models.Model):
     duration = models.DurationField(blank=False, null=False)
 
     discord_channel_id = models.CharField(max_length=128, blank=True, null=True)
+    discord_voice_channel_id = models.CharField(max_length=128, blank=True, null=True)
     started = models.BooleanField(default=False, blank=False, null=False)
     finished = models.BooleanField(default=False, blank=False, null=False)
 
@@ -55,7 +57,7 @@ class Seminar(models.Model):
 
     image = models.ImageField(upload_to='kolo_images/', blank=True, null=True)
     file = models.FileField(upload_to='kolo_files/', blank=True, null=True)
-
+    number_of_attenders = models.IntegerField(default=0, blank=False, null=False)
     class Meta:
         indexes = [
             models.Index(fields=["date", "time"]),
@@ -112,6 +114,11 @@ class Seminar(models.Model):
         return self.discord_channel_id or default_channel
 
     @property
+    def real_discord_voice_channel_id(self):
+        default_voice_channel = self.group.discord_voice_channel_id if self.group else None
+        return self.discord_voice_channel_id or default_voice_channel
+
+    @property
     def difficulty_label(self):
         return self.difficulty_dict.get(self.real_difficulty, {'label': None, 'icon': None})['label']
 
@@ -139,4 +146,5 @@ class Seminar(models.Model):
             'group_name': self.group.name if self.group else None,
             'difficulty_label': difficulty_badge_content['label'],
             'difficulty_icon': difficulty_badge_content['icon'],
+            'number_of_attenders':self.number_of_attenders,
         }
