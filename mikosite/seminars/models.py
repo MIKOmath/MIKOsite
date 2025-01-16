@@ -77,9 +77,10 @@ class Seminar(models.Model):
     }
 
     @classmethod
-    def fetch_upcoming(cls, start_date=datetime.now().date(), start_time=datetime.now().time()):
-        future_seminars = Seminar.objects.filter(Q(date__gt=start_date)
-                                                 | (Q(date=start_date) & Q(time__gt=start_time)))
+    def fetch_upcoming(cls, start_timestamp: datetime = None):
+        start_timestamp = start_timestamp or datetime.now()
+        future_seminars = Seminar.objects.filter((Q(date=start_timestamp.date()) & Q(time__gt=start_timestamp.time()))
+                                                 | Q(date__gt=start_timestamp.date()))
         future_seminars = future_seminars.order_by('date', 'time')
 
         first_seminar = future_seminars.first()
