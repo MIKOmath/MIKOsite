@@ -30,4 +30,4 @@ class DisplaySeminarSerializer(serializers.ModelSerializer):
         model = Seminar
         fields = ['id', 'date', 'time', 'duration', 'group_name', 'theme', 'description', 'image', 'file',
                   'discord_channel_id','discord_voice_channel_id', 'group_role_id', 'started', 'finished', 'featured', 'special_guest',
-                  'tutors', 'difficulty_label', 'difficulty_icon']
+                  'tutors', 'difficulty_label', 'difficulty_icon','form']
