@@ -4,8 +4,8 @@ from django_filters import UnknownFieldBehavior
 
 from babel import Locale
 
-from .models import SeminarGroup, Seminar
-from .serializers import SeminarGroupSerializer, SeminarSerializer, DisplaySeminarSerializer
+from .models import SeminarGroup, Seminar, GoogleFormsTemplate
+from .serializers import SeminarGroupSerializer, SeminarSerializer, DisplaySeminarSerializer, GoogleFormSerializer
 
 locale = Locale('pl_PL')
 
@@ -24,6 +24,9 @@ class SeminarFilter(filters.FilterSet):
         model = Seminar
         fields = ['group', 'date']
 
+class GoogleFormViewSet(viewsets.ModelViewSet):
+    queryset = GoogleFormsTemplate.objects.all()
+    serializer_class = GoogleFormSerializer
 
 class SeminarViewSet(viewsets.ModelViewSet):
     queryset = Seminar.objects.all()
