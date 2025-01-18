@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from rest_framework.routers import DefaultRouter
-from seminars.api_views import SeminarGroupViewSet, SeminarViewSet
+from seminars.api_views import SeminarGroupViewSet, SeminarViewSet, GoogleFormViewSet
 from mainSite.api_views import PostImageViewSet, PostViewSet
 from accounts.api_views import UserViewSet, LinkedAccountViewSet, UserActivityViewSet, ActivityScoreViewSet
 
@@ -33,6 +33,7 @@ router.register(r'users', UserViewSet)
 router.register(r'linked-accounts', LinkedAccountViewSet)
 router.register(r'user-activity', UserActivityViewSet, basename='user-activity')
 router.register(r'activity-scores', ActivityScoreViewSet)
+router.register(r'google-form-template', GoogleFormViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

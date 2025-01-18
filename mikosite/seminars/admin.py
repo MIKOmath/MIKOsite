@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from django.contrib import admin
-from .models import Seminar, SeminarGroup
+from .models import Seminar, SeminarGroup, GoogleFormsTemplate
 from rangefilter.filters import DateRangeFilterBuilder
 from more_admin_filters import MultiSelectRelatedOnlyFilter
 
@@ -22,5 +22,10 @@ class SeminarAdmin(admin.ModelAdmin):
     ordering = ('-date', '-time')
 
 
+class GoogleFormsTemplateAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+
 admin.site.register(SeminarGroup, SeminarGroupAdmin)
 admin.site.register(Seminar, SeminarAdmin)
+admin.site.register(GoogleFormsTemplate,GoogleFormsTemplateAdmin)

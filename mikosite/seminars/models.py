@@ -34,6 +34,13 @@ class SeminarGroup(models.Model):
         }
 
 
+class GoogleFormsTemplate(models.Model):
+    name = models.CharField(max_length=256, blank=False, null=False)
+    file = models.FileField(upload_to='google_forms_templates/', blank=False, null=False)
+    def __str__(self):
+        return f"Form {self.name}"
+
+
 class Seminar(models.Model):
     date = models.DateField(blank=False, null=False)
     time = models.TimeField(blank=False, null=False)
@@ -45,6 +52,7 @@ class Seminar(models.Model):
     finished = models.BooleanField(default=False, blank=False, null=False)
 
     group = models.ForeignKey(SeminarGroup, on_delete=models.CASCADE, blank=True, null=True)
+    form = models.ForeignKey(GoogleFormsTemplate, blank=True, null=True)
     difficulty = models.IntegerField(default=0, blank=False, null=False,
                                      validators=[MinValueValidator(0), MaxValueValidator(5)])
 
