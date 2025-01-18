@@ -37,7 +37,7 @@ class User(AbstractUser):
     region = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(5), MaxLengthValidator(30)])
     date_of_birth = models.DateField(blank=True, null=True)
     profile_image = models.ImageField(upload_to='media/profile_images/', blank=True, null=True)
-    discord_account = models.CharField(max_length=28, blank=True, null=True)
+    discord_account = models.CharField(max_length=18, blank=True, null=True)
     objects = CustomUserManager()
 
     def __str__(self):
@@ -65,12 +65,6 @@ class LinkedAccount(models.Model):
     def __str__(self):
         return f"USER {self.user.username} IS {self.external_id} ON {self.platform}"
 
-class DiscordAccount(models.Model):
-    external_id = models.CharField(max_length=18, blank=False, null=False, unique=True)
-    nick = models.CharField(max_length=50, blank=False, null=False)
-    points = models.IntegerField(default=0,blank=False, null=False)
-    def __str__(self):
-        return f"Discord account {self.nick} with id {self.external_id}"
 
 class ActivityScore(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

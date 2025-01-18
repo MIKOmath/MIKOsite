@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAdminUser
 from django_filters import rest_framework as filters
 from django_filters import UnknownFieldBehavior
 
-from .models import User, LinkedAccount, ActivityScore, DiscordAccount
-from .serializers import UserSerializer, SafeUserSerializer, LinkedAccountSerializer, ActivityScoreSerializer, DiscordAccountSerializer
+from .models import User, LinkedAccount, ActivityScore
+from .serializers import UserSerializer, SafeUserSerializer, LinkedAccountSerializer, ActivityScoreSerializer
 
 from mikosite.permissions import IsAdminUserOrDetailReadOnly
 
@@ -37,20 +37,6 @@ class LinkedAccountViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = LinkedAccountFilter
-
-class DiscordAccountFilter(filters.FilterSet):
-    unknown_field_behavior = UnknownFieldBehavior.IGNORE
-    class Meta:
-        model = DiscordAccount
-        fields = ['external_id', 'nick', 'points']
-
-
-class DiscordAccountViewSet(viewsets.ModelViewSet):
-    queryset = DiscordAccount.objects.all()
-    serializer_class = DiscordAccountSerializer
-    permission_classes = (IsAdminUser,)
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_class = DiscordAccountFilter
 
 class ActivityScoreFilter(filters.FilterSet):
     unknown_field_behavior = UnknownFieldBehavior.IGNORE
