@@ -33,7 +33,11 @@ class SeminarGroup(models.Model):
                               if snippet and not snippet.isspace()],
         }
 
-
+class GoogleFormsTemplate(models.Model):
+    name = models.CharField(max_length=256, blank=False, null=False)
+    file = models.FileField(upload_to='google_forms_templates/', blank=False, null=False)
+    def __str__(self):
+        return f"Form {self.name}"
 class Seminar(models.Model):
     date = models.DateField(blank=False, null=False)
     time = models.TimeField(blank=False, null=False)
@@ -45,6 +49,7 @@ class Seminar(models.Model):
     finished = models.BooleanField(default=False, blank=False, null=False)
 
     group = models.ForeignKey(SeminarGroup, on_delete=models.CASCADE, blank=True, null=True)
+    form = models.ForeignKey(GoogleFormsTemplate, on_delete=models.CASCADE, blank=True, null=True)
     difficulty = models.IntegerField(default=0, blank=False, null=False,
                                      validators=[MinValueValidator(0), MaxValueValidator(5)])
 
@@ -57,7 +62,6 @@ class Seminar(models.Model):
 
     image = models.ImageField(upload_to='kolo_images/', blank=True, null=True)
     file = models.FileField(upload_to='kolo_files/', blank=True, null=True)
-    number_of_attenders = models.IntegerField(default=0, blank=False, null=False)
     class Meta:
         indexes = [
             models.Index(fields=["date", "time"]),
