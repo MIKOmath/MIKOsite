@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import SeminarGroup, Seminar
+from .models import SeminarGroup, Seminar, GoogleFormsTemplate
 
 class SeminarGroupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,6 +10,10 @@ class SeminarGroupSerializer(serializers.ModelSerializer):
 class SeminarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seminar
+        fields = '__all__'
+class GoogleFormSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GoogleFormsTemplate
         fields = '__all__'
 
 
