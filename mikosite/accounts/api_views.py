@@ -38,6 +38,7 @@ class LinkedAccountViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = LinkedAccountFilter
 
+
 class ActivityScoreFilter(filters.FilterSet):
     unknown_field_behavior = UnknownFieldBehavior.IGNORE
     start_timestamp = filters.DateTimeFilter(field_name='timestamp', lookup_expr='gte')

@@ -5,15 +5,20 @@ from django.dispatch import receiver
 from .models import Seminar, Reminder
 from datetime import timedelta, datetime
 from django.utils.timezone import make_aware
-
+hours_before_seminar_to_invite = 1
+hours_after_seminar_to_feedback = 0
 @receiver(post_save, sender=Seminar)
 def create_reminders_for_seminar(sender, instance, created, **kwargs):
     if created:
-        reminder_date = make_aware(datetime.combine(instance.date, instance.time) - timedelta(days=1) )
+        reminder_date = datetime.combine(instance.date, instance.time)- timedelta(hours=hours_before_seminar_to_invite)
         Reminder.objects.create(seminar=instance,type="invite", date_time=reminder_date)
-@receiver(post_save, sender=Seminar)
-def update_reminders_on_seminar_change(sender, instance, created, **kwargs):
-    if not created:  # Only act if it's an update (not a new instance)
+        reminder_date = datetime.combine(instance.date, instance.time) + instance.duration + timedelta(hours=hours_after_seminar_to_feedback)
+        Reminder.objects.create(seminar=instance, type="feedback", date_time=reminder_date)
+    else:
         for reminder in instance.reminder.all():
-            reminder.date_time = make_aware(datetime.combine(instance.date,instance.time))
-            reminder.save()
+            if reminder.type == "invite":
+                reminder.date_time = datetime.combine(instance.date,instance.time) - timedelta(hours=hours_before_seminar_to_invite)
+                reminder.save()
+            if reminder.type == "feedback":
+                reminder.date_time = datetime.combine(instance.date, instance.time) + instance.duration + timedelta(hours=hours_after_seminar_to_feedback)
+                reminder.save()

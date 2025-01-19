@@ -17,14 +17,20 @@ class SeminarAdmin(admin.ModelAdmin):
                                         default_end=lambda r: datetime.now() + timedelta(days=30))),
         ('group', MultiSelectRelatedOnlyFilter),
         ('tutors', MultiSelectRelatedOnlyFilter),
-        ('form', MultiSelectRelatedOnlyFilter),
     ]
     search_fields = ['theme']
     ordering = ('-date', '-time')
+
+
 class GoogleFormsTemplateAdmin(admin.ModelAdmin):
     list_display = ('name',)
+
+
+class ReminderAdmin(admin.ModelAdmin):
+    list_display = ( 'type','seminar')
+
 
 admin.site.register(SeminarGroup, SeminarGroupAdmin)
 admin.site.register(Seminar, SeminarAdmin)
 admin.site.register(GoogleFormsTemplate,GoogleFormsTemplateAdmin)
-admin.site.register(Reminder)
+admin.site.register(Reminder, ReminderAdmin)
