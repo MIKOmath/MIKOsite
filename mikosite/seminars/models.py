@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.conf import settings
+from django.template.defaultfilters import length
 from django.utils.safestring import mark_safe
 
 from accounts.models import User
@@ -37,6 +38,7 @@ class SeminarGroup(models.Model):
 class GoogleFormsTemplate(models.Model):
     name = models.CharField(max_length=256, blank=False, null=False)
     file = models.FileField(upload_to='google_forms_templates/', blank=False, null=False)
+
     def __str__(self):
         return f"Form {self.name}"
 
@@ -52,7 +54,7 @@ class Seminar(models.Model):
     finished = models.BooleanField(default=False, blank=False, null=False)
 
     group = models.ForeignKey(SeminarGroup, on_delete=models.CASCADE, blank=True, null=True)
-    form = models.ForeignKey(GoogleFormsTemplate, blank=True, null=True)
+    form = models.ForeignKey(GoogleFormsTemplate, on_delete=models.SET_NULL, blank=True, null=True)
     difficulty = models.IntegerField(default=0, blank=False, null=False,
                                      validators=[MinValueValidator(0), MaxValueValidator(5)])
 
@@ -155,3 +157,13 @@ class Seminar(models.Model):
             'difficulty_label': difficulty_badge_content['label'],
             'difficulty_icon': difficulty_badge_content['icon'],
         }
+
+
+class Reminder(models.Model):
+    seminar = models.ForeignKey(Seminar, on_delete=models.CASCADE, related_name='reminder')
+    type = models.CharField(max_length=256, blank=False, null=False)
+    date_time = models.DateTimeField()
+    pinged = models.BooleanField(default=False)
+
+    class Meta:
+        indexes = [models.Index(name='reminder_index', fields=['date_time'])]
