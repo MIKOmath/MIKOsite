@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import SeminarGroup, Seminar, GoogleFormsTemplate
+from .models import SeminarGroup, Seminar, GoogleFormsTemplate, Reminder
+
 
 class SeminarGroupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,7 +16,10 @@ class GoogleFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = GoogleFormsTemplate
         fields = '__all__'
-
+class RemindersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reminder
+        fields = '__all__'
 
 class DisplaySeminarSerializer(serializers.ModelSerializer):
     queryset = Seminar.objects.all().select_related('group').prefetch_related('tutors')
