@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from django.contrib import admin
-from .models import Seminar, SeminarGroup, GoogleFormsTemplate
+from .models import Seminar, SeminarGroup, GoogleFormsTemplate, Reminder
 from rangefilter.filters import DateRangeFilterBuilder
 from more_admin_filters import MultiSelectRelatedOnlyFilter
 
@@ -27,3 +27,4 @@ class GoogleFormsTemplateAdmin(admin.ModelAdmin):
 admin.site.register(SeminarGroup, SeminarGroupAdmin)
 admin.site.register(Seminar, SeminarAdmin)
 admin.site.register(GoogleFormsTemplate,GoogleFormsTemplateAdmin)
+admin.site.register(Reminder)

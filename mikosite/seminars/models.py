@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.conf import settings
+from django.template.defaultfilters import length
 from django.utils.safestring import mark_safe
 
 from accounts.models import User
@@ -150,5 +151,10 @@ class Seminar(models.Model):
             'group_name': self.group.name if self.group else None,
             'difficulty_label': difficulty_badge_content['label'],
             'difficulty_icon': difficulty_badge_content['icon'],
-            'number_of_attenders':self.number_of_attenders,
         }
+class Reminder(models.Model):
+    seminar = models.ForeignKey(Seminar, on_delete=models.CASCADE, related_name='reminder')
+    type = models.CharField(max_length=256, blank=False, null=False)
+    date_time = models.DateTimeField()
+    pinged = models.BooleanField(default=False)
+

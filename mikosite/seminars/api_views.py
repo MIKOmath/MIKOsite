@@ -1,11 +1,13 @@
 from rest_framework import viewsets
 from django_filters import rest_framework as filters
 from django_filters import UnknownFieldBehavior
-
+from django.db.models.functions import Cast
+from django.db.models import DateField
+import django.utils.timezone
 from babel import Locale
 
-from .models import SeminarGroup, Seminar, GoogleFormsTemplate
-from .serializers import SeminarGroupSerializer, SeminarSerializer, DisplaySeminarSerializer, GoogleFormSerializer
+from .models import SeminarGroup, Seminar, GoogleFormsTemplate, Reminder
+from .serializers import SeminarGroupSerializer, SeminarSerializer, DisplaySeminarSerializer, GoogleFormSerializer, RemindersSerializer
 
 locale = Locale('pl_PL')
 
@@ -27,6 +29,18 @@ class SeminarFilter(filters.FilterSet):
 class GoogleFormViewSet(viewsets.ModelViewSet):
     queryset = GoogleFormsTemplate.objects.all()
     serializer_class = GoogleFormSerializer
+class ReminderViewSet(viewsets.ModelViewSet):
+    queryset = Reminder.objects.all()
+    serializer_class = RemindersSerializer
+
+    def get_queryset(self):
+        # Filter reminders with `date_time` greater than now and order by `date_time`
+        only_next = self.request.query_params.get('only_next', None)
+        if only_next:
+            base_reminder = Reminder.objects.filter(date_time__gt=django.utils.timezone.now()).order_by('date_time')[:1]
+            return Reminder.objects.filter(date_time__date=base_reminder[0].date_time)
+        else:
+            return Reminder.objects.all()
 
 class SeminarViewSet(viewsets.ModelViewSet):
     queryset = Seminar.objects.all()
