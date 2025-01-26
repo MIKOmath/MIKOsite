@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.conf import settings
+from django.template.defaultfilters import length
 from django.utils.safestring import mark_safe
 
 from accounts.models import User
@@ -15,6 +16,7 @@ class SeminarGroup(models.Model):
     description = models.TextField(blank=True, null=True)
     discord_role_id = models.CharField(max_length=128, blank=True, null=True)
     discord_channel_id = models.CharField(max_length=128, blank=True, null=True)
+    discord_voice_channel_id = models.CharField(max_length=128, blank=True, null=True)
     default_difficulty = models.IntegerField(default=0, blank=False, null=False,
                                              validators=[MinValueValidator(0), MaxValueValidator(5)])
 
@@ -32,17 +34,23 @@ class SeminarGroup(models.Model):
                               if snippet and not snippet.isspace()],
         }
 
-
+class GoogleFormsTemplate(models.Model):
+    name = models.CharField(max_length=256, blank=False, null=False)
+    file = models.FileField(upload_to='google_forms_templates/', blank=False, null=False)
+    def __str__(self):
+        return f"Form {self.name}"
 class Seminar(models.Model):
     date = models.DateField(blank=False, null=False)
     time = models.TimeField(blank=False, null=False)
     duration = models.DurationField(blank=False, null=False)
 
     discord_channel_id = models.CharField(max_length=128, blank=True, null=True)
+    discord_voice_channel_id = models.CharField(max_length=128, blank=True, null=True)
     started = models.BooleanField(default=False, blank=False, null=False)
     finished = models.BooleanField(default=False, blank=False, null=False)
 
     group = models.ForeignKey(SeminarGroup, on_delete=models.CASCADE, blank=True, null=True)
+    form = models.ForeignKey(GoogleFormsTemplate, on_delete=models.CASCADE, blank=True, null=True)
     difficulty = models.IntegerField(default=0, blank=False, null=False,
                                      validators=[MinValueValidator(0), MaxValueValidator(5)])
 
@@ -55,7 +63,6 @@ class Seminar(models.Model):
 
     image = models.ImageField(upload_to='kolo_images/', blank=True, null=True)
     file = models.FileField(upload_to='kolo_files/', blank=True, null=True)
-
     class Meta:
         indexes = [
             models.Index(fields=["date", "time"]),
@@ -112,6 +119,11 @@ class Seminar(models.Model):
         return self.discord_channel_id or default_channel
 
     @property
+    def real_discord_voice_channel_id(self):
+        default_voice_channel = self.group.discord_voice_channel_id if self.group else None
+        return self.discord_voice_channel_id or default_voice_channel
+
+    @property
     def difficulty_label(self):
         return self.difficulty_dict.get(self.real_difficulty, {'label': None, 'icon': None})['label']
 
@@ -140,3 +152,9 @@ class Seminar(models.Model):
             'difficulty_label': difficulty_badge_content['label'],
             'difficulty_icon': difficulty_badge_content['icon'],
         }
+class Reminder(models.Model):
+    seminar = models.ForeignKey(Seminar, on_delete=models.CASCADE, related_name='reminder')
+    type = models.CharField(max_length=256, blank=False, null=False)
+    date_time = models.DateTimeField()
+    pinged = models.BooleanField(default=False)
+

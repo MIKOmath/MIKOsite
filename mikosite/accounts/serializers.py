@@ -7,7 +7,6 @@ class LinkedAccountSerializer(serializers.ModelSerializer):
         model = LinkedAccount
         fields = '__all__'
 
-
 class NestedLinkedAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = LinkedAccount
