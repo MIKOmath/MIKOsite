@@ -142,7 +142,7 @@
             </div>
             <div class="column_right" style="flex-wrap: wrap; word-break:break-word;">
                 <h1 style="margin-top: 0px;">Aktualności</h1>
-                <hr style="margin-bottom: 20px">
+                <hr style="margin-bottom: 20px">           
                 {% for post in posts %}
                 <div class="post">
                     <div class="post-header">
@@ -185,7 +185,31 @@
                 {% empty %}
                     <p>Brak postów.</p>
                 {% endfor %}
+                <div class="pagination">
+                    {% if posts.has_previous %}
+                        <a href="?page={{ posts.previous_page_number }}">
+                            <span class="material-symbols-rounded" style="vertical-align: middle;">arrow_back</span>
+                        </a>
+                    {% endif %}
 
+                    {% for num in posts.paginator.page_range %}
+                        {% if num == posts.number %}
+                            <span class="current-page" style="font-weight: bold; color: #333;">{{ num }}</span>
+                        {% elif num >= posts.number|add:'-2' and num <= posts.number|add:'2' %}
+                            <a href="?page={{ num }}">{{ num }}</a>
+                        {% elif num == 1 or num == posts.paginator.num_pages %}
+                            <a href="?page={{ num }}">{{ num }}</a>
+                        {% elif num == posts.number|add:'-3' or num == posts.number|add:'3' %}
+                            <span>…</span>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if posts.has_next %}
+                        <a href="?page={{ posts.next_page_number }}">
+                            <span class="material-symbols-rounded" style="vertical-align: middle;">arrow_forward</span>
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </section>

@@ -8,6 +8,9 @@ from mainSite.models import Post
 from seminars.models import Seminar
 
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
 UPCOMING_SEMINARS_CACHE_KEY = 'upcoming-seminars-display-data'
 UPCOMING_SEMINARS_MAX_TTL = 86400  # 1 day
 MAINSITE_POSTS_CACHE_KEY = 'mainsite-posts-display-data'
@@ -55,8 +58,20 @@ def clear_posts_cache(sender, **kwargs):
 
 
 def index(request):
+    
+    posts_list = get_posts_data()
+    paginator = Paginator(posts_list, 5)
+    
+    page = request.GET.get('page')
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1) # If page is not an integer, show the first page
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages) # If page is out of range / doesn't exist, show the last page
+    
     context = {
-        "posts": get_posts_data,
+        "posts": posts,
         "events": get_upcoming_seminars_data,
         "user": request.user
     }
