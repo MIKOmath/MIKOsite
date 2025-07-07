@@ -41,7 +41,7 @@ urlpatterns = [
     path("", include("mainSite.urls")),
     path('', include('accounts.urls')),
     path('kolo/', include('seminars.urls')),
-    path("bazahintow/", include("hintBase.urls")),
+    # path("bazahintow/", include("hintBase.urls")),
     path('api/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
