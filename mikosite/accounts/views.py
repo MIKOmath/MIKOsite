@@ -122,27 +122,6 @@ def profile(request):
     return render(request, "profile.html", messages)
 
 
-def public_profile(request, username):
-    return HttpResponse("Update soon :))")
-    user = User.objects.get(username=username)
-
-    parameters_to_pass = {}
-
-    _username = username
-    name = user.name
-    surname = user.surname
-    user_problems = Problem.objects.filter(author=user)
-    user_hints = ProblemHint.objects.filter(author=user)
-
-    parameters_to_pass["problems"] = user_problems
-    parameters_to_pass["hints_ids"] = [hint.problem.problem_id for hint in user_hints]
-    parameters_to_pass["surname"] = surname
-    parameters_to_pass["name"] = name
-    parameters_to_pass["username"] = _username
-
-    return render(request, "publicprofile.html", parameters_to_pass)
-
-
 @login_required(login_url='../signin')
 def change_password(request):
     if request.method == 'POST':
