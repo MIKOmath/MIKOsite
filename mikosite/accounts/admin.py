@@ -3,7 +3,7 @@ from .models import User, LinkedAccount
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'full_name', 'is_staff')
+    list_display = ('username', 'full_name', 'is_staff', 'UUID', )
     search_fields = ('username', 'name', 'surname', 'email')
     ordering = ('-is_staff',)
 

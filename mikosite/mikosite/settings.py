@@ -56,6 +56,7 @@ APPEND_SLASH = True
 # Application definition
 
 INSTALLED_APPS = [
+    "accounts",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -68,7 +69,6 @@ INSTALLED_APPS = [
     'django_filters',
     'more_admin_filters',
     'rangefilter',
-    "accounts",
     "mainSite",
     "hintBase",
     "taggit",
@@ -98,13 +98,6 @@ REST_FRAMEWORK = {
 USE_L10N = True
 TAGGIT_CASE_INSENSITIVE = True
 
-TEMPLATES = [
-    {
-        'NAME': 'tex',
-        'BACKEND': 'django_tex.engine.TeXEngine',
-        'APP_DIRS': True,
-    },
-]
 
 MIDDLEWARE = [
     # 'django.middleware.security.SecurityMiddleware',

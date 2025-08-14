@@ -5,46 +5,107 @@ from django.db.models import Sum
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.utils.translation import gettext_lazy as _
+from .validators import validate_not_future_date, validate_min_age_13
+
+REGION_CHOICES = [
+    ('DS', _('Dolnośląskie')),
+    ('KP', _('Kujawsko-Pomorskie')),
+    ('LB', _('Lubelskie')),
+    ('LS', _('Lubuskie')),
+    ('LD', _('Łódzkie')),
+    ('ML', _('Małopolskie')),
+    ('MZ', _('Mazowieckie')),
+    ('OP', _('Opolskie')),
+    ('PK', _('Podkarpackie')),
+    ('PL', _('Podlaskie')),
+    ('PM', _('Pomorskie')),
+    ('SL', _('Śląskie')),
+    ('SK', _('Świętokrzyskie')),
+    ('WM', _('Warmińsko-Mazurskie')),
+    ('WP', _('Wielkopolskie')),
+    ('ZP', _('Zachodniopomorskie')),
+    ('NS', _('Nieznany')),  # default region 
+]
+
+class UserManager(BaseUserManager):
+    def create_user(self, username, email, password, date_of_birth, region='NS', **extra_fields):
 
 
-class CustomUserManager(BaseUserManager):
-    # Method to create a normal user
-    def create_user(self, username, email, password, **extra_fields):
         if not email:
-            raise ValueError('The email address is required')
-        email = self.normalize_email(email)
-        user = self.model(username=username, email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+            raise ValueError(_('The Email must be set'))
+        if not date_of_birth:
+            date_of_birth = timezone.now().date()
+        
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
 
-    # Method to create a superuser
-    def create_superuser(self, username, email, password, **extra_fields):
-        user = self.model(username=username, email=email, **extra_fields)
+        email = email.strip().lower()
+
+        user = self.model(
+            username=username, 
+            email=email,
+            date_of_birth=date_of_birth,
+            region=region,
+            **extra_fields
+        )
+
         user.set_password(password)
-        user.is_superuser = True
-        user.is_staff = True
         user.save(using=self._db)
         return user
+    
+    def create_superuser(self, username, email, password, date_of_birth, region='NS', **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        return self.create_user(username, email, password, date_of_birth, region, **extra_fields)
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=30, unique=True, validators=[MinLengthValidator(5)])
-    email = models.EmailField(max_length=255, unique=True)
-    password = models.CharField(max_length=128)
-    name = models.CharField(max_length=50)
-    surname = models.CharField(max_length=50)
-    region = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(5), MaxLengthValidator(30)])
-    date_of_birth = models.DateField(blank=True, null=True)
-    profile_image = models.ImageField(upload_to='media/profile_images/', blank=True, null=True)
-    objects = CustomUserManager()
+
+    UUID = models.UUIDField(
+        primary_key=   True, 
+        default=       uuid.uuid4, 
+        editable=      False,
+        verbose_name=  _("Unique User ID"),
+        help_text=     _("A unique identifier for the user, automatically generated.")
+    )
+
+    region         = models.CharField(
+        max_length=    2, 
+        choices=       REGION_CHOICES,
+        verbose_name=  _("Region"),
+        help_text=     _("Select the user's region"),
+        blank=         False, 
+        null=          False,  
+    )
+
+    date_of_birth = models.DateField(
+        verbose_name=  _("Date of Birth"),
+        help_text=     _("Enter the user's date of birth (YYYY-MM-DD)."),   
+        validators=[
+            validate_not_future_date,       
+            validate_min_age_13,   # For now let's assume that the 
+            # minimum age is 13 (7-8th year of school)
+        ],
+        blank=         False,
+        null=          False,
+    )
+
+    profile_image = models.ImageField(
+        upload_to=     'media/profile_images/',
+        blank=         True,
+        null=          True
+    )
+
+    objects = UserManager()
 
     def __str__(self):
-        return f"{self.username} ({self.name} {self.surname})"
+        return f"{self.username} ({self.first_name} {self.last_name})"
 
     @property
     def full_name(self):
-        return f"{self.name} {self.surname}"
+        return f"{self.first_name} {self.last_name}"
 
     @property
     def activity_score(self):
@@ -53,7 +114,8 @@ class User(AbstractUser):
 
 class LinkedAccount(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, related_name='linked_accounts', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='linked_accounts',
+                              on_delete=models.CASCADE)
     external_id = models.CharField(max_length=128, blank=False, null=False)
     platform = models.CharField(max_length=50, blank=False, null=False)
     timestamp = models.DateTimeField(auto_now=True, blank=False, null=False)

@@ -28,8 +28,8 @@
             {% csrf_token %}
 
             <div class="form-group">
-                <input type="text" id="name" name="name" placeholder="Imię" required>
-                <input type="text" id="surname" name="surname" placeholder="Nazwisko" required>
+                <input type="text" id="first_name" name="first_name" placeholder="Imię" required>
+                <input type="text" id="last_name" name="last_name" placeholder="Nazwisko" required>
             </div>
             <div class="form-group">
                 <input type="text" id="username" name="username" placeholder="Nazwa użytkownika" required>
@@ -40,26 +40,26 @@
                 <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Potórz hasło" required>
             </div>
             <div class="form-group">
-                <select id="region" name="region">
-                    <option value="">Województwo</option>
-                    <option value="Dolnośląskie">Dolnośląskie</option>
-                    <option value="Kujawsko-Pomorskie">Kujawsko-Pomorskie</option>
-                    <option value="Lubelskie">Lubelskie</option>
-                    <option value="Lubuskie">Lubuskie</option>
-                    <option value="Łódzkie">Łódzkie</option>
-                    <option value="Małopolskie">Małopolskie</option>
-                    <option value="Mazowieckie">Mazowieckie</option>
-                    <option value="Opolskie">Opolskie</option>
-                    <option value="Podkarpackie">Podkarpackie</option>
-                    <option value="Podlaskie">Podlaskie</option>
-                    <option value="Pomorskie">Pomorskie</option>
-                    <option value="Śląskie">Śląskie</option>
-                    <option value="Świętokrzyskie">Świętokrzyskie</option>
-                    <option value="Warmińsko-Mazurskie">Warmińsko-Mazurskie</option>
-                    <option value="Wielkopolskie">Wielkopolskie</option>
-                    <option value="Zachodniopomorskie">Zachodniopomorskie</option>
-                </select>
-                <input type="date" id="dateOfBirth" name="date_of_birth" placeholder="Data urodzenia">
+                    <select id="region" name="region">
+                        <option value="NS">Województwo</option>
+                        <option value="DS">Dolnośląskie</option>
+                        <option value="KP">Kujawsko-Pomorskie</option>
+                        <option value="LB">Lubelskie</option>
+                        <option value="LS">Lubuskie</option>
+                        <option value="LD">Łódzkie</option>
+                        <option value="ML">Małopolskie</option>
+                        <option value="MZ">Mazowieckie</option>
+                        <option value="OP">Opolskie</option>
+                        <option value="PK">Podkarpackie</option>
+                        <option value="PL">Podlaskie</option>
+                        <option value="PM">Pomorskie</option>
+                        <option value="SL">Śląskie</option>
+                        <option value="SK">Świętokrzyskie</option>
+                        <option value="WM">Warmińsko-Mazurskie</option>
+                        <option value="WP">Wielkopolskie</option>
+                        <option value="ZP">Zachodniopomorskie</option>
+                    </select>
+                <input type="date" id="dateOfBirth" name="date_of_birth" pattern="\d{4}-\d{2}-\d{2}"  placeholder="Data urodzenia">
             </div>
 
 

@@ -22,6 +22,7 @@ mikoenv/
 .mikoenv
 env/
 venv/
+venvWin/
 ENV/
 env.bak/
 venv.bak/
