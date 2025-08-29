@@ -40,6 +40,15 @@
 #current:hover {
   color: var(--y1);
 }
+#highlighted {
+  color: #fff;
+  background-color: var(--b1);
+  border-radius: 3px;
+  padding: 2px 5px;
+}
+#highlighted:hover {
+  background-color: var(--y1);
+}
 
 .navbar-right{
   display: block;
