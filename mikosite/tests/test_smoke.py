@@ -14,6 +14,6 @@ class WebsiteTest(TestCase):
         self.assertTemplateUsed(response, 'about.html')
 
     def test_seminars_response(self):
-        response = self.client.get('/kolo/')
+        response = self.client.get('/kola/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'informacje.html')

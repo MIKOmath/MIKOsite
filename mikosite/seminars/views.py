@@ -10,11 +10,12 @@ from .models import Seminar, SeminarGroup
 SEMINAR_GROUPS_CACHE_KEY = 'seminar-groups-display-data'
 SEMINAR_GROUPS_MAX_TTL = 604800  # 1 week
 
+
 def get_seminar_group_data():
     data = cache.get(SEMINAR_GROUPS_CACHE_KEY)
     if data is None:
-        groups = (SeminarGroup.objects.all().exclude(
-            Q(lead__isnull=True) | Q(lead='') | Q(description__isnull=True) | Q(description=''))
+        groups = (SeminarGroup.objects.all().exclude(Q(featured=False) |
+                                                     Q(lead__isnull=True) | Q(lead='') | Q(description__isnull=True) | Q(description=''))
                   .order_by('default_difficulty', 'lead'))
         data = [group.display_dict() for group in groups]
         cache.set(SEMINAR_GROUPS_CACHE_KEY, data, SEMINAR_GROUPS_MAX_TTL)
@@ -29,4 +30,8 @@ def clear_seminar_groups_cache(sender, **kwargs):
 
 
 def informacje(request):
-    return render(request, "informacje.html", {"groups": get_seminar_group_data})
+    return render(request, "informacje.html", {"groups": get_seminar_group_data()})
+
+
+def calendar(request):
+    return render(request, "calendar.html", {"groups": get_seminar_group_data()})
