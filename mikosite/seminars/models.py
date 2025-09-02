@@ -19,7 +19,8 @@ class SeminarGroup(models.Model):
     discord_voice_channel_id = models.CharField(max_length=128, blank=True, null=True)
     default_difficulty = models.IntegerField(default=0, blank=False, null=False,
                                              validators=[MinValueValidator(0), MaxValueValidator(5)])
-
+    featured = models.BooleanField(default=False, blank=False, null=False)  # Should it be displayed on the our seminars page
+    
     def __str__(self):
         return f"GROUP {self.name} LEVEL {self.default_difficulty}"
 
