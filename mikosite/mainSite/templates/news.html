@@ -33,20 +33,35 @@
     <meta property="twitter:description" content="Społeczność, gdzie poznasz innych ambitnych młodych matematyków, poszerzysz swoją wiedzę i przygotujesz się do Olimpiady Matematycznej.">
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:image" content="https://mikomath.org/media/cards/index.png">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 
 <body>
     {% include "header.html" %} 
 
-    <section id="feed" style="display: flex; flex-direction: row; gap: 32px;">
+    <section id="feed" style="display: flex; flex-direction: row; gap: 32px; align-items: flex-start; justify-content: center;">
         <div class="column_right" style="flex: 1; flex-wrap: wrap; word-break:break-word;">
             <h1 style="margin-top: 0px;">Aktualności</h1>
             <hr style="margin-bottom: 20px">
             {% for post in posts %}
             <div class="post">
-                <div class="post-header">
-                    <h2 id="post_title">{{ post.title }}</h2>
-                    <p>{{ post.date }}, {{ post.time }}</p>
+                <div class="post-header" style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <h2 id="post_title">{{ post.title }}</h2>
+                    </div>
+                    <div style="min-width: 160px; text-align: right; margin-left: 24px;">
+                        <div style="font-size: 0.98em; color: #1976d2; font-weight: 500;">{{ post.date }}, {{ post.time }}</div>
+                        {% if post.authors|length > 1%}
+                            <span style="font-size: 0.95em; color: #666;"><strong>Autorzy:</strong>
+                        {% else %}
+                            <span style="font-size: 0.95em; color: #666;"><strong>Autor:</strong>
+                        {% endif %}
+                        {% for author in post.authors %}
+                            <a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                        </span>
+                    </div>
                 </div>
                 <h3 id="post_subtitle">{{ post.subtitle }}</h3>
                 <div style="margin-bottom: 8px;">
@@ -59,31 +74,23 @@
                     {% endif %}
                 </div>
                 <hr style="border: none; height: 2px; margin-bottom: 10px">
-                <p>{% if post.authors|length > 1%}
-                        <strong>Autorzy:</strong>
-                    {% else %}
-                        <strong>Autor:</strong>
-                    {% endif %}
-                    {% for author in post.authors %}
-                        <a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a>
-                        {% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
                 <div class="post_content">
                     {{ post.content }}
                 </div>
-                {% if post.file %}
-                    <div style="display: flex; margin-top: 10px;">
-                    <a href="{{ post.file.url }}" style="text-decoration: none"><div class="badge badge-light">
-                        <span class="material-symbols-rounded badge-icon">download</span>
-                        {{ post.file.name }}</div></a>
+                {% if post.images|length > 0 %}
+                    <div class="images" style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 12px;">
+                        {% for image in post.images %}
+                        <img src="/media/{{ image.url }}" alt="{{ image.alt_text }}" style="display: block; width: 100%; max-width: 100%; height: auto; margin: 0; border-radius: 18px; object-fit: cover; box-shadow: 0 2px 8px #e0e0e0; background: #fff;">
+                        {% endfor %}
                     </div>
                 {% endif %}
-                {% if post.images|length > 0 %}
-                    <div class="images">
-                        {% for image in post.images %}
-                        <img src="/media/{{ image.url }}" alt="{{ image.alt_text }}">
-                        {% endfor %}
+                {% if post.file %}
+                    <div style="margin: 0 -30px 0 -30px; border-radius: 0; background: rgba(7,74,89,0.08); padding: 7px 30px 7px 30px; box-shadow: none; border-top: 2px solid var(--b1); display: flex; flex-direction: column; align-items: flex-start; width: calc(100% + 60px);">
+                        <div style="font-weight: 500; color: #074A59; margin-bottom: 4px; font-size: 0.98em; letter-spacing: 0.2px;">Załączone pliki</div>
+                        <a href="{{ post.file.url }}" class="file-link" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #074A59; font-weight: 500; padding: 3px 0; font-size: 0.97em; transition: color 0.2s;">
+                            <span class="material-symbols-rounded badge-icon file-link-icon" style="color: #074A59; transition: color 0.2s;">download</span>
+                            {{ post.file.name }}
+                        </a>
                     </div>
                 {% endif %}
             </div>
@@ -91,29 +98,34 @@
                 <p>Brak postów.</p>
             {% endfor %}
 
-            <!-- Paginacja -->
+            <!-- Spójna paginacja -->
             {% if page_obj.has_other_pages %}
-            <nav aria-label="Paginacja" style="margin-top: 24px; text-align: center;">
-                <ul class="pagination" style="display: inline-flex; list-style: none; padding: 0;">
+            <nav aria-label="Paginacja" style="margin-top: 32px; text-align: center;">
+                <ul class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 6px; list-style: none; padding: 0; margin: 0;">
                     {% if page_obj.has_previous %}
-                        <li><a href="?{% if active_tag %}tag={{ active_tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ page_obj.previous_page_number }}" style="padding: 6px 12px;">&laquo; Poprzednia</a></li>
+                        <li><a href="?{% if active_tag %}tag={{ active_tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ page_obj.previous_page_number }}" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #074A59; color: #fff; font-size: 1.3em; text-decoration: none; box-shadow: 0 1px 4px #e0e0e0; border: none; transition: background 0.2s;" title="Poprzednia strona"><span class="material-symbols-rounded" style="color: #fff;">chevron_left</span></a></li>
                     {% endif %}
                     {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <li><span style="padding: 6px 12px; font-weight: bold; color: #1976d2;">{{ num }}</span></li>
+                        {% if num == page_obj.number %}
+                            <li><span style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #074A59; color: #fff; font-weight: bold; font-size: 1.1em; box-shadow: 0 1px 4px #e0e0e0; border: 2px solid #fff;">{{ num }}</span></li>
                         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                            <li><a href="?{% if active_tag %}tag={{ active_tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ num }}" style="padding: 6px 12px;">{{ num }}</a></li>
+                            <li><a href="?{% if active_tag %}tag={{ active_tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ num }}" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #074A59; color: #fff; font-size: 1.1em; text-decoration: none; box-shadow: 0 1px 4px #e0e0e0; border: none;">{{ num }}</a></li>
+                        {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                            <li><a href="?{% if active_tag %}tag={{ active_tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ num }}" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #074A59; color: #fff; font-size: 1.1em; text-decoration: none; box-shadow: 0 1px 4px #e0e0e0; border: none;">{{ num }}</a></li>
+                            {% if num < page_obj.number|add:'-3' or num > page_obj.number|add:'3' %}
+                                <li><span style="padding: 0 6px; color: #888;">...</span></li>
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
                     {% if page_obj.has_next %}
-                        <li><a href="?{% if active_tag %}tag={{ active_tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ page_obj.next_page_number }}" style="padding: 6px 12px;">Następna &raquo;</a></li>
+                        <li><a href="?{% if active_tag %}tag={{ active_tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ page_obj.next_page_number }}" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #074A59; color: #fff; font-size: 1.3em; text-decoration: none; box-shadow: 0 1px 4px #e0e0e0; border: none; transition: background 0.2s;" title="Następna strona"><span class="material-symbols-rounded" style="color: #fff;">chevron_right</span></a></li>
                     {% endif %}
                 </ul>
             </nav>
             {% endif %}
         </div>
         <!-- Panel filtrów i sortowania po prawej stronie -->
-        <aside style="min-width: 220px; max-width: 260px; background: #f7f7f7; border-radius: 12px; padding: 18px 16px; margin-top: 0.5em; height: fit-content; box-shadow: 0 2px 8px rgba(0,0,0,0.07);">
+    <aside style="min-width: 260px; max-width: 320px; background: #f7f7f7; border-radius: 12px; padding: 18px 10px; margin-top: 0.5em; margin-left: 16px; margin-right: 16px; height: fit-content; box-shadow: 0 2px 8px rgba(0,0,0,0.07); overflow-x: hidden; align-self: flex-start; display: flex; flex-direction: column; align-items: center;">
             <h3 style="margin-top: 0; font-size: 1.15em; color: #1976d2; letter-spacing: 0.5px;">Filtruj aktualności</h3>
             <form method="get" id="filterForm">
                 <div style="margin-bottom: 1em;">
@@ -132,32 +144,28 @@
                         <option value="date_asc" {% if sort == 'date_asc' %}selected{% endif %}>Najstarsze</option>
                     </select>
                 </div>
+                <button type="submit" style="width: 100%; padding: 6px 0; border-radius: 6px; background: #1976d2; color: #fff; border: none; font-weight: 500;">Filtruj</button>
             </form>
         </aside>
     </section>
     {% include "footer.html" %}
 
+
+<style>
+.file-link:hover {
+    color: #fff !important;
+}
+.file-link:hover .file-link-icon {
+    color: #fff !important;
+}
+</style>
 </body>
 
-<script>function toggleImageSize() {
-  const images = document.querySelectorAll('div.images img');
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+// ...existing code...
 
-  images.forEach(img => {
-    img.style.cursor = 'pointer';
-    img.style.width = '40%';
-
-    img.addEventListener('click', function() {
-      if (this.style.width === '40%') {
-        this.style.width = '100%';
-      } else {
-        this.style.width = '40%';
-      }
-    });
-  });
-}
-
-// Call the function when the page loads
-document.addEventListener('DOMContentLoaded', toggleImageSize);</script>
+});
+</script>
 
 <script>const backgroundDiv = document.getElementById('background-image');
 const images = ['MIKO_BG1.webp', 'MIKO_PICTURE.webp'];
