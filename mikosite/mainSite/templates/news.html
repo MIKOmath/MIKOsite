@@ -38,57 +38,102 @@
 <body>
     {% include "header.html" %} 
 
-    <section id="feed">
-
-        
-            <div class="column_right" style="flex-wrap: wrap; word-break:break-word;">
-                <h1 style="margin-top: 0px;">Aktualności</h1>
-                <hr style="margin-bottom: 20px">
-                {% for post in posts %}
-                <div class="post">
-                    <div class="post-header">
-                        <h2 id="post_title">{{ post.title }}</h2>
-                        <p>{{ post.date }}, {{ post.time }}</p>
-                    </div>
-                    <h3 id="post_subtitle">{{ post.subtitle }}</h3>
-
-                    <hr style="border: none; height: 2px; margin-bottom: 10px">
-                    <p>{% if post.authors|length > 1%}
-                            <strong>Autorzy:</strong>
-                        {% else %}
-                            <strong>Autor:</strong>
-                        {% endif %}
-                        {% for author in post.authors %}
-                            <a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a>
-                            {% if not forloop.last %}, {% endif %}
+    <section id="feed" style="display: flex; flex-direction: row; gap: 32px;">
+        <div class="column_right" style="flex: 1; flex-wrap: wrap; word-break:break-word;">
+            <h1 style="margin-top: 0px;">Aktualności</h1>
+            <hr style="margin-bottom: 20px">
+            {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <h2 id="post_title">{{ post.title }}</h2>
+                    <p>{{ post.date }}, {{ post.time }}</p>
+                </div>
+                <h3 id="post_subtitle">{{ post.subtitle }}</h3>
+                <div style="margin-bottom: 8px;">
+                    {% if post.tags %}
+                        <span style="font-size: 0.95em; color: #666;">Tagi:
+                        {% for tag in post.tags %}
+                            <a href="?tag={{ tag.slug }}" style="background: #e0e0e0; border-radius: 8px; padding: 2px 8px; margin-right: 4px; text-decoration: none; color: #333; font-size: 0.95em;">#{{ tag.name }}</a>
                         {% endfor %}
-                    </p>
-
-                    <div class="post_content">
-                        {{ post.content }}
-                    </div>
-
-                    {% if post.file %}
-                        <div style="display: flex; margin-top: 10px;">
-                        <a href="{{ post.file.url }}" style="text-decoration: none"><div class="badge badge-light">
-                            <span class="material-symbols-rounded badge-icon">download</span>
-                            {{ post.file.name }}</div></a>
-                        </div>
-                    {% endif %}
-                    {% if post.images|length > 0 %}
-                        <div class="images">
-                            {% for image in post.images %}
-                            <img src="/media/{{ image.url }}" alt="{{ image.alt_text }}">
-                            {% endfor %}
-                        </div>
+                        </span>
                     {% endif %}
                 </div>
-                {% empty %}
-                    <p>Brak postów.</p>
-                {% endfor %}
-
+                <hr style="border: none; height: 2px; margin-bottom: 10px">
+                <p>{% if post.authors|length > 1%}
+                        <strong>Autorzy:</strong>
+                    {% else %}
+                        <strong>Autor:</strong>
+                    {% endif %}
+                    {% for author in post.authors %}
+                        <a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a>
+                        {% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <div class="post_content">
+                    {{ post.content }}
+                </div>
+                {% if post.file %}
+                    <div style="display: flex; margin-top: 10px;">
+                    <a href="{{ post.file.url }}" style="text-decoration: none"><div class="badge badge-light">
+                        <span class="material-symbols-rounded badge-icon">download</span>
+                        {{ post.file.name }}</div></a>
+                    </div>
+                {% endif %}
+                {% if post.images|length > 0 %}
+                    <div class="images">
+                        {% for image in post.images %}
+                        <img src="/media/{{ image.url }}" alt="{{ image.alt_text }}">
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
+            {% empty %}
+                <p>Brak postów.</p>
+            {% endfor %}
+
+            <!-- Paginacja -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Paginacja" style="margin-top: 24px; text-align: center;">
+                <ul class="pagination" style="display: inline-flex; list-style: none; padding: 0;">
+                    {% if page_obj.has_previous %}
+                        <li><a href="?{% if active_tag %}tag={{ active_tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ page_obj.previous_page_number }}" style="padding: 6px 12px;">&laquo; Poprzednia</a></li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li><span style="padding: 6px 12px; font-weight: bold; color: #1976d2;">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li><a href="?{% if active_tag %}tag={{ active_tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ num }}" style="padding: 6px 12px;">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li><a href="?{% if active_tag %}tag={{ active_tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ page_obj.next_page_number }}" style="padding: 6px 12px;">Następna &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
         </div>
+        <!-- Panel filtrów i sortowania po prawej stronie -->
+        <aside style="min-width: 220px; max-width: 260px; background: #f7f7f7; border-radius: 12px; padding: 18px 16px; margin-top: 0.5em; height: fit-content; box-shadow: 0 2px 8px rgba(0,0,0,0.07);">
+            <h3 style="margin-top: 0; font-size: 1.15em; color: #1976d2; letter-spacing: 0.5px;">Filtruj aktualności</h3>
+            <form method="get" id="filterForm">
+                <div style="margin-bottom: 1em;">
+                    <label for="tag" style="font-weight: 500;">Tag:</label>
+                    <select name="tag" id="tag" onchange="document.getElementById('filterForm').submit();" style="width: 100%; padding: 4px 8px; border-radius: 6px; border: 1px solid #ccc;">
+                        <option value="">Wszystkie</option>
+                        {% for tag in tags %}
+                        <option value="{{ tag.slug }}" {% if tag.slug == active_tag %}selected{% endif %}>{{ tag.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="margin-bottom: 1em;">
+                    <label for="sort" style="font-weight: 500;">Sortuj:</label>
+                    <select name="sort" id="sort" onchange="document.getElementById('filterForm').submit();" style="width: 100%; padding: 4px 8px; border-radius: 6px; border: 1px solid #ccc;">
+                        <option value="date_desc" {% if sort == 'date_desc' %}selected{% endif %}>Najnowsze</option>
+                        <option value="date_asc" {% if sort == 'date_asc' %}selected{% endif %}>Najstarsze</option>
+                    </select>
+                </div>
+            </form>
+        </aside>
     </section>
     {% include "footer.html" %}
 
