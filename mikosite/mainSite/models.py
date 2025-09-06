@@ -5,8 +5,10 @@ from markdown import Markdown
 from django.conf import settings
 from django.db import models
 from django.utils.safestring import mark_safe
+from taggit.managers import TaggableManager
 
 from accounts.models import User
+from django.utils.text import slugify
 from mainSite.markdown import DisallowHeadersExtension
 
 
@@ -19,6 +21,7 @@ class Post(models.Model):
     date = models.DateField(blank=False, null=False)
     time = models.TimeField(blank=False, null=False)
     authors = models.ManyToManyField(User, blank=False)
+    tags = TaggableManager()
 
     content = models.TextField(max_length=5000, blank=True)
 
@@ -43,8 +46,17 @@ class Post(models.Model):
             'content': mark_safe(md.convert(self.content)),
             'date': format_date(self.date, format='d MMMM y', locale=locale) if self.date else '',
             'time': format_time(self.time, format='HH:mm', locale=locale) if self.time else '',
+            'tags': [{'name': tag.name, 'slug': tag.slug} for tag in self.tags.all()],
         }
 
+class Testimonial(models.Model):
+    author = models.CharField(max_length=200, blank=False, null=False)
+    badge = models.CharField(max_length=200, blank=False, null=False)
+    content = models.TextField(max_length=2000, blank=False, null=False)
+    date = models.DateField(blank=False, null=False)
+
+    def __str__(self):
+        return f"Testimonial by {self.author} on {self.date}"
 
 class Image(models.Model):
     image = models.ImageField(upload_to='post_images/', blank=True)

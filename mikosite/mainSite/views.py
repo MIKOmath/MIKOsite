@@ -3,8 +3,10 @@ from django.core.cache import cache
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.shortcuts import render
+from django.core.paginator import Paginator
+from taggit.models import Tag
 
-from mainSite.models import Post
+from mainSite.models import Post, Testimonial
 from seminars.models import Seminar
 
 
@@ -50,6 +52,7 @@ def get_posts_data():
 @receiver(post_delete, sender=Post)
 @receiver(m2m_changed, sender=Post.authors.through)
 @receiver(m2m_changed, sender=Post.images.through)
+@receiver(m2m_changed, sender=Post.tags.through)
 def clear_posts_cache(sender, **kwargs):
     cache.delete(MAINSITE_POSTS_CACHE_KEY)
 
@@ -58,6 +61,7 @@ def index(request):
     context = {
         "posts": get_posts_data,
         "events": get_upcoming_seminars_data,
+        "testimonials": Testimonial.objects.order_by('-date')[:3],  # Get latest 3 testimonials
         "user": request.user
     }
     return render(request, "index.html", context)
@@ -69,3 +73,34 @@ def about(request):
 
 def roadmap(request):
     return render(request, "roadmap.html")
+
+def news(request):
+    tag_slug = request.GET.get('tag')
+    sort = request.GET.get('sort', 'date_desc')
+    page_number = request.GET.get('page', 1)
+
+    posts_qs = Post.objects.all()
+    if tag_slug:
+        posts_qs = posts_qs.filter(tags__slug=tag_slug)
+
+    if sort == 'date_asc':
+        posts_qs = posts_qs.order_by('date', 'time')
+    else:
+        posts_qs = posts_qs.order_by('-date', '-time')
+
+    paginator = Paginator(posts_qs.prefetch_related('authors', 'images', 'tags'), 8)
+    page_obj = paginator.get_page(page_number)
+    posts = [post.display_dict() for post in page_obj.object_list]
+
+    tags = Tag.objects.all().order_by('name')
+
+    context = {
+        "posts": posts,
+        "events": get_upcoming_seminars_data(),
+        "user": request.user,
+        "tags": tags,
+        "active_tag": tag_slug,
+        "sort": sort,
+        "page_obj": page_obj,
+    }
+    return render(request, "news.html", context)
