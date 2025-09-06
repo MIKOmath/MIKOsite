@@ -48,8 +48,21 @@
     <section id="team">
         <h1>Nasz zespół</h1>
         <div class="team-tiles">
-
+             {% for member in team_members %}
             <div class="team-member">
+                <img class="photo-placeholder" src="{{ member.photo.url }}">
+                <h2>{{ member.name }}</h2>
+                <h3 class="role">{{ member.role }}</h3>
+                <hr>
+                <h3 class="description">{{ member.bio|linebreaksbr }}</h3>
+            </div>
+            {% endfor %}
+
+        </div>
+    </section>
+
+            <!-- Dotychczasowe opisy. Usunąć je, gdy baza danych będzie gotowa. -->
+            <!-- <div class="team-member">
                 <img class="photo-placeholder" src="/static/aboutPhotos/Oleksii.webp"> 
                 <h2>Oleksii Iermolenko</h2>
                 <h3 class="role">Administrator strony; Prowadzący zajęć matematycznych; Finalista OM</h3>
@@ -129,10 +142,8 @@
                 <h3 class="description">Serdecznie dziękujemy każdej osobie, która poświęciła chociaż trochę swojego czasu na
                 przygotowanie wykładu, organizację eventu lub pomogła nam w&nbsp;inny sposób!</h3>
             </div>
+ -->
 
-
-        </div>
-    </section>
 
 
 {% include "footer.html" %}
