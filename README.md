@@ -8,7 +8,7 @@ Aby uruchomić projekt lokalnie, należy wykonać następujące kroki:
 
 1. Sklonuj repozytorium:
 
-``git clone https://github.com/MIKOmath/MIKOprod``
+``git clone https://github.com/MIKOmath/MIKOsite``
 
 2. Utwórz wirtualne środowisko (venv):
 - Windows: `python -m venv venv`
