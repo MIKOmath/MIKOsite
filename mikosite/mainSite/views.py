@@ -20,7 +20,7 @@ TEAM_MEMBERS_MAX_TTL = 86400
 def get_team_members_data():
     data = cache.get(TEAM_MEMBERS_CACHE_KEY)
     if data is None:
-        groups = (TeamMemberTile.objects.all())
+        groups = TeamMemberTile.objects.all().order_by('name')
         data = list(groups)
         cache.set(TEAM_MEMBERS_CACHE_KEY, data, TEAM_MEMBERS_MAX_TTL)
 
