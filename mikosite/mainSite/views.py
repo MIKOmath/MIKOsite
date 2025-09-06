@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.shortcuts import render
 
-from mainSite.models import Post
+from mainSite.models import Post, Testimonial
 from seminars.models import Seminar
 
 
@@ -58,6 +58,7 @@ def index(request):
     context = {
         "posts": get_posts_data,
         "events": get_upcoming_seminars_data,
+        "testimonials": Testimonial.objects.order_by('-date')[:3],  # Get latest 3 testimonials
         "user": request.user
     }
     return render(request, "index.html", context)

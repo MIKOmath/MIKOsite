@@ -189,7 +189,6 @@ CACHES = {
         },
     }
 }
-
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 CACHE_BACKEND = 'redis_cache.cache://127.0.0.1:6379/1'
 SESSION_CACHE_ALIAS = "default"
@@ -216,7 +215,7 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 COMPRESS_OFFLINE = True
-
+COMPRESS_ENABLED = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
