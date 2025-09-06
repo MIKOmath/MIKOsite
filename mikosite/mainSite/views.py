@@ -69,3 +69,12 @@ def about(request):
 
 def roadmap(request):
     return render(request, "roadmap.html")
+
+def news(request):
+    context = {
+        "posts": get_posts_data(),
+        "events": get_upcoming_seminars_data(),
+        "user": request.user
+    }
+    return render(request, "news.html", context)
+    

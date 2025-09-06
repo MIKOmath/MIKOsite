@@ -26,6 +26,7 @@
     </button>
     <ul class="navbar-center">
         <li><a href="/" {% if request.path == '/' %}id="current"{% endif %}>HOME</a></li>
+        <li><a href="/news/" {% if request.path == '/news/' %}id="current"{% endif %}>AKTUALNOSCI</a></li>
         <li><a href="/kola/" {% if request.path == '/kola/' %}id="current"{% endif %}>NASZE KOŁA</a></li>
         <li><a href="/calendar/" {% if request.path == '/calendar/' %}id="current"{% endif %}>KALENDARZ</a></li>
         <li><a href="/about" {% if request.path == '/about/' %}id="current"{% endif %}>O NAS</a></li>
