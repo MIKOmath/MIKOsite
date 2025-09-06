@@ -7,6 +7,18 @@ from django.db import models
 from django.utils.safestring import mark_safe
 
 from accounts.models import User
+from django.utils.text import slugify
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=60, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
 from mainSite.markdown import DisallowHeadersExtension
 
 
@@ -19,6 +31,7 @@ class Post(models.Model):
     date = models.DateField(blank=False, null=False)
     time = models.TimeField(blank=False, null=False)
     authors = models.ManyToManyField(User, blank=False)
+    tags = models.ManyToManyField('Tag', blank=True)
 
     content = models.TextField(max_length=5000, blank=True)
 
@@ -43,6 +56,7 @@ class Post(models.Model):
             'content': mark_safe(md.convert(self.content)),
             'date': format_date(self.date, format='d MMMM y', locale=locale) if self.date else '',
             'time': format_time(self.time, format='HH:mm', locale=locale) if self.time else '',
+            'tags': [{'name': tag.name, 'slug': tag.slug} for tag in self.tags.all()],
         }
 
 class Testimonial(models.Model):
