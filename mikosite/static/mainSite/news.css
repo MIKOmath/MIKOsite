@@ -1,0 +1,214 @@
+
+#feed {
+    display: flex;
+    flex-direction: row;
+    gap: 32px;
+}
+
+.column_right {
+    flex: 1;
+    flex-wrap: wrap;
+    word-break: break-word;
+}
+
+.news-title {
+    margin-top: 0;
+}
+
+.news-hr {
+    margin-bottom: 20px;
+}
+
+.post-header-hr {
+    border: none;
+    height: 2px;
+    margin-bottom: 10px;
+}
+
+.post-tags {
+    font-size: 0.95em;
+    color: #666;
+}
+
+.post-tag-link {
+    background: #e0e0e0;
+    border-radius: 8px;
+    padding: 2px 8px;
+    margin-right: 4px;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.95em;
+}
+
+.post-file {
+    display: flex;
+    margin-top: 10px;
+}
+
+.post-file-link {
+    text-decoration: none;
+    display: block;
+}
+
+/* New: footer container for files at bottom of each post */
+.post-footer {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 2px solid rgba(6,49,62,0.08);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Make file badge teal with white text and truncate long names */
+.post-file-link .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: #06313e; /* site accent */
+    color: #fff; /* make text white */
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(6,49,62,0.08);
+}
+
+.post-file-link .file-name {
+    display: inline-block;
+    max-width: 420px; /* reasonable max to avoid overflow */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    font-weight: 600;
+    color: #fff; /* ensure white text */
+}
+
+/* Invert icon colors so icon sits on white circle */
+.post-file-link .material-symbols-rounded {
+    background: #fff;
+    border-radius: 50%;
+    color: #06313e;
+    padding: 6px;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.images {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.images img {
+    width: 100%;
+    max-width: 720px;
+    transition: all 0.18s ease;
+    height: auto;
+    margin: 8px auto;
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(6,49,62,0.07);
+    display: block;
+}
+
+.post .images {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.post .images img {
+    margin: 8px;
+    display: block;
+    max-width: 90%;
+    transition: all 0.18s ease;
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(6,49,62,0.07);
+}
+
+.images img.img-small {
+    width: 40%;
+}
+
+.images img.img-full {
+    width: 100%;
+}
+
+.post .images img.img-small {
+    flex: 0 0 40% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.post .images img.img-full {
+    flex: 0 0 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+@media (max-width: 900px) {
+    .images img {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+.pagination {
+    display: inline-flex;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination-current {
+    padding: 6px 12px;
+    font-weight: bold;
+    color: #1976d2;
+}
+
+.pagination-link {
+    padding: 6px 12px;
+}
+
+.filter-aside {
+    min-width: 220px;
+    max-width: 260px;
+    background: #f7f7f7;
+    border-radius: 12px;
+    padding: 18px 16px;
+    margin-top: 0.5em;
+    height: fit-content;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.filter-title {
+    margin-top: 0;
+    font-size: 1.15em;
+    color: #1976d2;
+    letter-spacing: 0.5px;
+}
+
+.filter-label {
+    font-weight: 500;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 1em;
+}
+
+.news-mb-8 {
+    margin-bottom: 8px;
+}
+
+.news-pagination-nav {
+    margin-top: 24px;
+    text-align: center;
+}

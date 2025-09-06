@@ -279,7 +279,8 @@ hr {
   border: 2px solid var(--b1);
   border-radius: 20px;
   color: var(--b1);
-  padding: 20px 30px;
+  background: rgba(7,74,89,0.08);
+  padding: 20px 30px 0 30px;
   margin-bottom: 30px;
 }
 .post a {
