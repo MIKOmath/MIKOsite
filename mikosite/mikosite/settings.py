@@ -77,6 +77,12 @@ INSTALLED_APPS = [
     "seminars",
     "cards",
 ]
+if DEBUG:
+    INSTALLED_APPS = ['debug_toolbar'] + INSTALLED_APPS
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -108,6 +114,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+if DEBUG:
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
 
 ROOT_URLCONF = 'mikosite.urls'
 

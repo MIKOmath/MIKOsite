@@ -3,6 +3,8 @@ mikosite/media/
 
 # Static files cache
 mikosite/static/CACHE/
+# Auto-generated static files
+mikosite/static/debug_toolbar/
 
 # Secrets file
 mikosite/mikosite/secrets.py

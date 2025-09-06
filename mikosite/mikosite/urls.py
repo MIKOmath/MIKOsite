@@ -45,5 +45,9 @@ urlpatterns = [
     path('api/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+if settings.DEBUG:
+    from debug_toolbar.toolbar import debug_toolbar_urls
+    urlpatterns.extend(debug_toolbar_urls())
+
 admin.site.site_header = "TEST Admin Panel MIKO" if settings.DEBUG else "Administracja MIKO"
 admin.site.site_title = "MIKO Admin"

@@ -3,6 +3,7 @@ CairoSVG~=2.7.1
 django~=5.1.1
 django-admin-rangefilter~=0.13.2
 django-compressor
+django-debug-toolbar>=4.4.6
 django-filter~=24.3
 django_formtools
 django-more-admin-filters~=1.9.0
