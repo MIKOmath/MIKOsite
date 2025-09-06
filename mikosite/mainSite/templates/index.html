@@ -38,193 +38,195 @@
 <body>
     {% include "header.html" %}
 
-    <main>
-        <div id="landing-banner-wrapper">
-            <div id="info-wrapper">
-                <img src="{% static 'logoDark.svg' %}" alt="Logo Matematycznego Internetowego Koła Olimpijskiego"
-                    style="    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    user-select: none;">
-                <h2 id="welcome-text">Dołącz do&nbsp;nas, rozwiązuj ciekawe zadania, rozwijając z&nbsp;nami pasję do&nbsp;matematyki!</h2>
-                <div style="display: flex; justify-content: center; font-weight: 400; margin-top: 20px;">
-                    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer">Dołączam!</a>
-                    <a href={% url 'informacje' %} style="text-decoration: none; cursor: pointer">O kole</a>
-                </div>
+    <div class="hero-section">
+        <div class="hero-bg-container">
+            <img src="{% static 'MIKO_BG2.jpg' %}" alt="Background" class="hero-bg-image">
+            <div class="hero-overlay"></div>
+        </div>
+
+        <div class="hero-inner">
+            <!-- Logo Section -->
+            <div class="hero-logo-wrapper">
+                <img src="{% static 'logoDark.svg' %}" alt="MIKO Logo" class="hero-logo">
             </div>
-            <div id="background-image" style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0),rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.webp' %}');">
+
+            <!-- Text Section -->
+            <div class="hero-text">
+                <h1 class="hero-title">MIKO</h1>
+                <h2 class="hero-subtitle">Matematyczne Internetowe Koło Olimpijskie</h2>
+                <h2 class="hero-subtitle--small">Ucz się z najlepszymi!</h2>
+                <a href="https://discord.gg/nA8CjrPqGM" class="hero-cta">Dołącz do nas!</a>
             </div>
         </div>
-    </main>
+    </div>
 
-    <section id="feed">
-
-        <div class="row">
-            <div class="column_left">
-
-                <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer" class="profile">
-                    <img src="{% static 'dsclogo.webp' %}" alt="Ikona z logo Discord"
-                        style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
-                    <h3 id="profile_name" style="color: white; text-align: center;">
-                        Dołącz do&nbsp;społeczności MIKO na&nbsp;Discordzie!
-                        <span style="vertical-align: bottom;" class="material-symbols-rounded">open_in_new</span></h3>
-                </a>
-
-                <div class="info-banner">
-                    <h2>Nadchodzące eventy:</h2>
-                    {% for seminar in events %}
-                        <div class="event">
-                            <h3 class="seminar-theme"><strong> {{ seminar.theme }} </strong></h3>
-                            <div class="event-date">
-                                {{ seminar.date_string }}, {{ seminar.time_string }}<br>
-                            </div>
-
-                            <div class="badge-container">
-                                {% if seminar.featured %}
-                                    <div class="badge badge-featured">
-                                        <span class="material-symbols-rounded badge-icon">verified</span>
-                                        polecane
-                                    </div>
-                                {% endif %}
-                                {% if seminar.special_guest %}
-                                    <div class="badge badge-featured">
-                                        <span class="material-symbols-rounded badge-icon">person_alert</span>
-                                        gość specjalny
-                                    </div>
-                                {% endif %}
-                                {% if seminar.group_name %}
-                                    <div class="badge badge-dark">
-                                        <span class="material-symbols-rounded badge-icon">group</span>
-                                        {{ seminar.group_name }}</div>
-                                {% endif %}
-                                {% if seminar.difficulty_label %}
-                                    <div class="badge badge-light">
-                                        <span class="material-symbols-rounded badge-icon">{{ seminar.difficulty_icon }}</span>
-                                        {{ seminar.difficulty_label }}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="event-info">
-                                {% if seminar.tutors %}
-                                    <div class="event-tutors">
-                                        {% if seminar.tutors|length > 1%}
-                                            <strong>Prowadzą:</strong>
-                                        {% else %}
-                                            <strong>Prowadzi:</strong>
-                                        {% endif %}
-                                        {{ seminar.tutors|join:", " }}
-                                    </div>
-                                {% endif %}
-                                {% if seminar.description %}
-                                    <strong>Opis:</strong> {{ seminar.description }}<br>
-                                {% endif %}
-                            </div>
-
-                            {% if seminar.image_url %}
-                                <div class="event-image">
-                                    <img src="{{ seminar.image_url }}" alt="{{ seminar.theme }}" style="max-width: 100%; height: auto;">
-                                </div>
-                            {% endif %}
-                            {% if seminar.file_url %}
-                                <div style="display: flex;">
-                                    <a href="{{ seminar.file_url }}" style="text-decoration: none"><div class="badge badge-light">
-                                        <span class="material-symbols-rounded badge-icon">download</span>
-                                        załącznik</div></a>
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% empty %}
-                        <h3>Brak eventów w najbliższym czasie ;(</h3>
-                    {% endfor %}
-                </div>
+    <!-- Call to Actions Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <div class="cta-item">
+                <h3>Sprawdź nasze eventy!</h3>
+                <p>Nasza społeczność organizuje regularne koła, warsztaty i inne wydarzenia wspierające olimpijczyków i nie tylko.</p>
+                <a href="/news/" class="cta-button">Eksploruj eventy &gt;</a>
             </div>
-            <div class="column_right" style="flex-wrap: wrap; word-break:break-word;">
-                <h1 style="margin-top: 0px;">Aktualności</h1>
-                <hr style="margin-bottom: 20px">
-                {% for post in posts %}
-                <div class="post">
-                    <div class="post-header">
-                        <h2 id="post_title">{{ post.title }}</h2>
-                        <p>{{ post.date }}, {{ post.time }}</p>
-                    </div>
-                    <h3 id="post_subtitle">{{ post.subtitle }}</h3>
-
-                    <hr style="border: none; height: 2px; margin-bottom: 10px">
-                    <p>{% if post.authors|length > 1%}
-                            <strong>Autorzy:</strong>
-                        {% else %}
-                            <strong>Autor:</strong>
-                        {% endif %}
-                        {% for author in post.authors %}
-                            <a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a>
-                            {% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </p>
-
-                    <div class="post_content">
-                        {{ post.content }}
-                    </div>
-
-                    {% if post.file %}
-                        <div style="display: flex; margin-top: 10px;">
-                        <a href="{{ post.file.url }}" style="text-decoration: none"><div class="badge badge-light">
-                            <span class="material-symbols-rounded badge-icon">download</span>
-                            {{ post.file.name }}</div></a>
-                        </div>
-                    {% endif %}
-                    {% if post.images|length > 0 %}
-                        <div class="images">
-                            {% for image in post.images %}
-                            <img src="/media/{{ image.url }}" alt="{{ image.alt_text }}">
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                {% empty %}
-                    <p>Brak postów.</p>
-                {% endfor %}
-
+            <div class="cta-item">
+                <h3>Znajdź koło dla siebie!</h3>
+                <p>Prowadzimy koła z matematyki, AI, informatyki oraz fizyki. Spotkania podzielone są na grupy zaawansowania, tak że każdy znajdzie coś dla siebie!</p>
+                <a href="/kola/" class="cta-button">Przeglądaj koła &gt;</a>
+            </div>
+            <div class="cta-item">
+                <h3>Poznaj nas!</h3>
+                <p>Jesteśmy społecznością pasjonatów matematyki i nauk ścisłych. Działamy od ponad 2 lat zrzeszając ponad 1400 członków!</p>
+                <a href="/about/" class="cta-button">Dołącz teraz</a>
             </div>
         </div>
     </section>
+
+    <!-- Main Content Section -->
+    <main class="main-content">
+        <div class="content-grid">
+            <!-- Left Column: Recent Events -->
+            <aside class="sidebar-left">
+                <div class="sidebar-section">
+                    <h2>Najbliższe wydarzenia</h2>
+                    <div class="events-list">
+                        {% for seminar in events|slice:":3" %}
+                            <div class="event-item">
+                                <h4>{{ seminar.theme }}</h4>
+                                <p class="event-date">{{ seminar.date_string }}, {{ seminar.time_string }}</p>
+                                
+                                {% if seminar.description %}
+                                    <p class="event-description">{{ seminar.description }}</p>
+                                {% endif %}
+                                
+                                <div class="badge-container">
+                                    {% if seminar.featured %}
+                                        <span class="badge badge-featured">Polecane</span>
+                                    {% endif %}
+                                    {% if seminar.special_guest %}
+                                        <span class="badge badge-special-guest">Gość specjalny</span>
+                                    {% endif %}
+                                    {% if seminar.difficulty_label %}
+                                        <span class="badge badge-difficulty">{{ seminar.difficulty_label }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p>Brak nadchodzących eventów</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center Column: Other Projects -->
+            <section class="main-section">
+                <div class="projects-header">
+                    <h2>Nasze Projekty</h2>
+                    <p class="projects-description">
+                        Oprócz <strong>cotygodniowych spotkań</strong>, organizujemy również różnorodne projekty, 
+                        które pozwalają naszym członkom na <em>rozwijanie swoich umiejętności i pasji</em>.
+                    </p>
+                </div>
+                <div class="projects-grid">
+                    <a href="https://mikomath.org/pozdro/" class="project-link">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="{% static 'Pozdro.png' %}" alt="Pozdro 2026">
+                            </div>
+                            <div class="project-content">
+                                <h3>Zawody Pozdro</h3>
+                                <p><strong>Zbierz drużynę</strong> i zmierz się z najlepszymi w zawodach matematycznych <em>POZDRO</em>! Zawody składają się z 2 etapów, na których uczestnicy w drużynach rozwiązują zadania podobne do tych z Olimpiady Matematycznej!</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/lko/" class="project-link">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="{% static 'lko.png' %}" alt="Lokalne Koła Olimpijskie">
+                            </div>
+                            <div class="project-content">
+                                <h3>Lokalne Koła Olimpijskie</h3>
+                                <p>Chciałbyś wziąć udział w <strong>kołach olimpijskich</strong> w twoim mieście? A może chciałbyś <em>założyć własne</em>? Dobrze trafiłeś! Możemy wesprzeć cię materiałami i ekspercką wiedzą!</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/oboz/" class="project-link">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="{% static 'MIKO_BG2.jpg' %}" alt="Obóz">
+                            </div>
+                            <div class="project-content">
+                                <h3>Obóz wakacyjny</h3>
+                                <p>Co roku organizujemy <strong>10-dniowy obóz matematyczny</strong> dla naszych członków! Jest to idealna okazja do <em>rozwinięcia swoich umiejętności</em> i poznania znajomych z podobnymi zainteresowaniami.</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/zjazdy/" class="project-link">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="{% static 'logo.png' %}" alt="Project 2">
+                            </div>
+                            <div class="project-content">
+                                <h3>Zjazdy Olimpijskie</h3>
+                                <p>Co kilka miesięcy, organizujemy <strong>Zjazdy Olimpijskie</strong>, czyli całodniowe spotkania, pełne atrakcji i wykładów dla olimpijczyków.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Right Column: Testimonials -->
+            <aside class="sidebar-right">
+                <div class="sidebar-section">
+                    <h2>Opinie naszych członków</h2>
+                    <div class="testimonials-list">
+                        {% for testimonial in testimonials %}
+                            <div class="testimonial-item">
+                                <blockquote>
+                                    "{{ testimonial.content }}"
+                                </blockquote>
+                                <cite>- {{ testimonial.author }}</cite>
+                                {% if testimonial.badge %}
+                                    <div class="testimonial-badge">
+                                        <span class="badge badge-yellow">{{ testimonial.badge }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% empty %}
+                            <div class="testimonial-item">
+                                <blockquote>
+                                    "MIKO pomogło mi w przygotowaniach do Olimpiady Matematycznej. Świetna społeczność!"
+                                </blockquote>
+                                <cite>- Anna K.</cite>
+                            </div>
+                            <div class="testimonial-item">
+                                <blockquote>
+                                    "Fantastyczne seminaria i ciekawe zadania. Polecam wszystkim!"
+                                </blockquote>
+                                <cite>- Michał S.</cite>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Join Discord Section -->
+    <footer class="discord-section">
+        <div class="discord-container">
+            <div class="discord-content">
+                <img src="{% static 'dsclogo.webp' %}" alt="Discord Logo" class="discord-logo">
+                <h2>Join Discord</h2>
+                <p>Dołącz do społeczności MIKO na Discordzie i poznaj innych ambitnych olimpijczyków!</p>
+                <a href="https://discord.gg/nA8CjrPqGM" class="discord-button">
+                    Dołącz teraz
+                    <span class="material-symbols-rounded">open_in_new</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
     {% include "footer.html" %}
 
 </body>
-
-<script>function toggleImageSize() {
-  const images = document.querySelectorAll('div.images img');
-
-  images.forEach(img => {
-    img.style.cursor = 'pointer';
-    img.style.width = '40%';
-
-    img.addEventListener('click', function() {
-      if (this.style.width === '40%') {
-        this.style.width = '100%';
-      } else {
-        this.style.width = '40%';
-      }
-    });
-  });
-}
-
-// Call the function when the page loads
-document.addEventListener('DOMContentLoaded', toggleImageSize);</script>
-
-<script>const backgroundDiv = document.getElementById('background-image');
-const images = ['MIKO_BG1.webp', 'MIKO_PICTURE.webp'];
-let currentIndex = 0;
-
-function changeBackground() {
-    currentIndex = (currentIndex + 1) % images.length;
-    const nextImage = `/static/${images[currentIndex]}`; // Direct string concatenation
-
-    backgroundDiv.style.transition = 'background-image 1s ease-in-out';
-    backgroundDiv.style.backgroundImage = `linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0), rgba(255,255,255,0), rgba(255,255,255,0)), url('${nextImage}')`; // Template literal here
-}
-
-// Change background every 5 seconds
-setInterval(changeBackground, 5000);</script>
 </html>
