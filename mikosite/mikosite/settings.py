@@ -57,6 +57,7 @@ APPEND_SLASH = True
 # Application definition
 
 INSTALLED_APPS = [
+    "accounts",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -69,7 +70,6 @@ INSTALLED_APPS = [
     'django_filters',
     'more_admin_filters',
     'rangefilter',
-    "accounts",
     "mainSite",
     "hintBase",
     "taggit",
