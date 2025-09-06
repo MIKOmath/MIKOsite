@@ -45,6 +45,14 @@ class Post(models.Model):
             'time': format_time(self.time, format='HH:mm', locale=locale) if self.time else '',
         }
 
+class Testimonial(models.Model):
+    author = models.CharField(max_length=200, blank=False, null=False)
+    badge = models.CharField(max_length=200, blank=False, null=False)
+    content = models.TextField(max_length=2000, blank=False, null=False)
+    date = models.DateField(blank=False, null=False)
+
+    def __str__(self):
+        return f"Testimonial by {self.author} on {self.date}"
 
 class Image(models.Model):
     image = models.ImageField(upload_to='post_images/', blank=True)
