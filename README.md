@@ -8,19 +8,25 @@ Aby uruchomić projekt lokalnie, należy wykonać następujące kroki:
 
 1. Sklonuj repozytorium:
 
-``git clone https://github.com/MIKOmath/MIKOsite``
+- ``git clone https://github.com/MIKOmath/MIKOsite``
 
 2. Utwórz wirtualne środowisko (venv):
-- Windows: `python -m venv venv`
-- Linux: `python3 -m venv venv`
+- `python -m venv venv`
 
 3. Aktywuj wirtualne środowisko:
 - Windows: `venv\Scripts\activate.bat`
 - Linux: `source venv/bin/activate`
 
 4. Zainstaluj zależności:
-- Windows: `python -m pip install -r requirements.txt`
-- Linux: `python3 -m pip install -r requirements.txt`
+- `python -m pip install -r requirements.txt`
+
+## Tryb deweloperski
+Aby uruchomić projekt w trybie deweloperskim, należy ustawić w pliku `settings.py`:
+```python
+DEBUG = True
+```
+Ustawienie to jest szczególnie polecane podczas pierwszego uruchomienia projektu lokalnie.
+Pamiętaj, aby nie używać tego ustawienia w środowisku produkcyjnym oraz nie dodawać go do repozytorium.
 
 ## Konfiguracja baz danych
 
@@ -74,7 +80,7 @@ USE_REDIS_WITH_DEBUG = True
 ```
 
 ## Konfiguracja haseł i tokenów
-Utwórz plik secrets.py w tym samym folderze co plik settings.py:
+Utwórz plik `secrets.py` w tym samym folderze co plik `settings.py`:
 ```
 SECRET_KEY = '4b%nh=m5*7du0gmq2+h4%&wd%=ok#i0_jakiś_długi_token_do_szyfrowania'
 ```
@@ -84,26 +90,30 @@ DB_PASSWORD = 'hasło użytkownika postgres w PostgreSQL'
 ```
 
 ## Migracja bazy danych, pliki statyczne, konta
-Przed uruchomieniem serwera testowego trzeba utworzyć bazę danych poleceniami `makemigrations` oraz `migrate`.
-Aby poprawnie wyświetlać pliki statyczne w środowisku produkcyjnym, trzeba również odpalić "kompresję offline" styli i skryptów.
-Warto również utworzyć konto admina.
+Przed uruchomieniem serwera testowego należy utworzyć bazę danych poleceniem `migrate`.
+Następnie należy wygenerować automatyczne pliki statyczne oraz wykonać kompresję django-compressor.
+
+### Tryb debug
+Zanim przejdziesz dalej, upewnij się, że w `settings.py` jest ustawione (o ile chcesz używać tego ustawienia):
+```python
+DEBUG = True
+```
 
 ### Wykonaj następujące polecenia:
 ```
-Windows:
-python manage.py makemigrations
-python manage.py migrate
-python manage.py compress
-python manage.py createsuperuser
-
-Linux:
-python3 manage.py makemigrations
-python3 manage.py migrate
-python3 manage.py compress
-python3 manage.py createsuperuser
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
+python manage.py compress --force
 ```
 
-Po wykonaniu tych kroków projekt powinien być gotowy do uruchomienia lokalnie. 
+### Konto administratora
+Przed pierwszym uruchomieniem warto utworzyć konto administratora:
+```
+python manage.py createsuperuser
+```
+
+### Uruchomienie
+Po wykonaniu tych kroków projekt jest gotowy do uruchomienia lokalnie:
 ``python manage.py runserver``
 
 ## API
