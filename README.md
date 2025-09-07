@@ -77,7 +77,10 @@ USE_REDIS_WITH_DEBUG = True
 Utwórz plik secrets.py w tym samym folderze co plik settings.py:
 ```
 SECRET_KEY = '4b%nh=m5*7du0gmq2+h4%&wd%=ok#i0_jakiś_długi_token_do_szyfrowania'
-DB_PASSWORD = 'hasło do użytkownika postgres w PostgreSQL'
+```
+Jeśli używasz PostgreSQL, dodaj również:
+```
+DB_PASSWORD = 'hasło użytkownika postgres w PostgreSQL'
 ```
 
 ## Migracja bazy danych, pliki statyczne, konta

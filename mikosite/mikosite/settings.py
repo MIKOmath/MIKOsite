@@ -19,9 +19,10 @@ from babel import Locale
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 try:
-    from .secrets import SECRET_KEY, DB_PASSWORD
+    # Used for securing signed data, must be protected
+    from .secrets import SECRET_KEY
 except ImportError:
-    raise ImportError("Create a secrets.py file with SECRET_KEY and DB_PASSWORD")
+    raise ImportError("Create a secrets.py file with the SECRET_KEY.")
 
 CSRF_TRUSTED_ORIGINS = [
     'https://mikomath.org',
@@ -138,6 +139,11 @@ if sqlite_db_path.exists():
         }
     }
 else:
+    try:
+        from .secrets import DB_PASSWORD
+    except ImportError:
+        raise ImportError("You must create a SQLite db or provide the Postgres password in secrets.py as DB_PASSWORD.")
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
