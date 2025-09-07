@@ -98,14 +98,6 @@ REST_FRAMEWORK = {
 USE_L10N = True
 TAGGIT_CASE_INSENSITIVE = True
 
-TEMPLATES = [
-    {
-        'NAME': 'tex',
-        'BACKEND': 'django_tex.engine.TeXEngine',
-        'APP_DIRS': True,
-    },
-]
-
 MIDDLEWARE = [
     # 'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
