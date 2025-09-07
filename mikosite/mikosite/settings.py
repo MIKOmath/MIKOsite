@@ -171,20 +171,23 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {"max_connections": 8},
-        },
+USE_REDIS_WITH_DEBUG = False
+if not DEBUG or USE_REDIS_WITH_DEBUG:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/1",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "CONNECTION_POOL_KWARGS": {"max_connections": 8},
+            },
+        }
     }
-}
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-CACHE_BACKEND = 'redis_cache.cache://127.0.0.1:6379/1'
-SESSION_CACHE_ALIAS = "default"
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    CACHE_BACKEND = 'redis_cache.cache://127.0.0.1:6379/1'
+    SESSION_CACHE_ALIAS = "default"
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
