@@ -1,0 +1,44 @@
+name: Django Critical Settings
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Create secrets.py Configuration File
+        run: |
+          echo -e 'SECRET_KEY = "THISISADUMMYSECRETKEYFORTESTING"\nDB_PASSWORD = "DUMMYDBPASSWORD"' > ./mikosite/mikosite/secrets.py
+      - name: Django deploy checks (fail on ERROR+)
+        run: |
+          cd mikosite
+          python manage.py check --deploy --fail-level ERROR
+      - name: Detect DEBUG=True
+        shell: bash
+        run: |
+          cd mikosite
+          python manage.py shell <<'PY'
+          from django.conf import settings
+          import sys
+          print(f"DEBUG = {settings.DEBUG}")
+          if settings.DEBUG:
+              print("::error title=DEBUG=True detected::settings.DEBUG is True under current CI environment.")
+              sys.exit(1)
+          PY
