@@ -6,12 +6,37 @@ from django.shortcuts import render
 
 from mainSite.models import Post
 from seminars.models import Seminar
+from mainSite.models import TeamMemberTile
 
 
 UPCOMING_SEMINARS_CACHE_KEY = 'upcoming-seminars-display-data'
 UPCOMING_SEMINARS_MAX_TTL = 86400  # 1 day
 MAINSITE_POSTS_CACHE_KEY = 'mainsite-posts-display-data'
 MAINSITE_POSTS_MAX_TTL = 86400
+
+TEAM_MEMBERS_CACHE_KEY = 'seminar-groups-display-data'
+TEAM_MEMBERS_MAX_TTL = 86400
+
+def get_team_members_data():
+    data = cache.get(TEAM_MEMBERS_CACHE_KEY)
+    if data is None:
+        groups = TeamMemberTile.objects.all().order_by('name')
+        data = list(groups)
+        cache.set(TEAM_MEMBERS_CACHE_KEY, data, TEAM_MEMBERS_MAX_TTL)
+
+    return data
+
+
+@receiver(post_save, sender=TeamMemberTile)
+@receiver(post_delete, sender=TeamMemberTile)
+def clear_seminar_groups_cache(sender, **kwargs):
+    cache.delete(TEAM_MEMBERS_CACHE_KEY)
+
+def about(request):
+    return render(request, 'about.html', {'team_members': get_team_members_data()})
+
+
+
 
 
 def get_upcoming_seminars_data():
@@ -61,11 +86,6 @@ def index(request):
         "user": request.user
     }
     return render(request, "index.html", context)
-
-
-def about(request):
-    return render(request, "about.html")
-
 
 def roadmap(request):
     return render(request, "roadmap.html")
