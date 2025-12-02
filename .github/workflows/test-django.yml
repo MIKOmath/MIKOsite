@@ -18,6 +18,8 @@ jobs:
       postgres:
         image: postgres
         env:
+          POSTGRES_USER: mikouser
+          POSTGRES_DB: mikodb
           POSTGRES_PASSWORD: DUMMYDBPASSWORD
         options: >-
           --health-cmd pg_isready
@@ -35,6 +37,10 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
+
+    env:
+      DB_HOST: localhost
+      REDIS_HOST: localhost
 
     steps:
     - name: Checkout The Repo

@@ -1,0 +1,15 @@
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.sqlite3
+
+# media folder
+mikosite/media/
+
+.git
+.github
+.gitignore
+Dockerfile
+README.md
+LICENSE
+probe_website.py
