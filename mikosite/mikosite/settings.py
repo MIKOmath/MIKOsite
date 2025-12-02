@@ -156,9 +156,9 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'mikodb',
-            'USER': 'postgres',
+            'USER': 'mikouser',
             'PASSWORD': DB_PASSWORD,
-            'HOST': 'localhost',
+            'HOST': os.getenv('DB_HOST', 'postgres'),
             'PORT': '5432',
             'OPTIONS': {
                 'pool': {
@@ -187,10 +187,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 USE_REDIS_WITH_DEBUG = False
 if not DEBUG or USE_REDIS_WITH_DEBUG:
+    REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": "redis://127.0.0.1:6379/1",
+            "LOCATION": f"redis://{REDIS_HOST}:6379/1",
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "CONNECTION_POOL_KWARGS": {"max_connections": 8},
@@ -199,7 +200,7 @@ if not DEBUG or USE_REDIS_WITH_DEBUG:
     }
 
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-    CACHE_BACKEND = 'redis_cache.cache://127.0.0.1:6379/1'
+    CACHE_BACKEND = f'redis_cache.cache://{REDIS_HOST}:6379/1'
     SESSION_CACHE_ALIAS = "default"
 
 # Internationalization

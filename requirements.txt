@@ -11,6 +11,7 @@ django-redis
 django-taggit~=6.1.0
 djangorestframework~=3.15.2
 fuzzywuzzy~=0.18.0
+hypercorn[uvloop]~=0.18.0
 markdown~=3.7
 Pillow~=10.4.0
 psycopg[pool]~=3.2.3
