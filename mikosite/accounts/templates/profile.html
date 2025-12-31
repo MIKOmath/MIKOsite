@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,9 +10,8 @@
     <link rel="stylesheet" href="{% static 'styleProfile.css' %}">
 </head>
 <body>
-       {% include "header.html" %}
-
-
+    {% include "header.html" %}
+       
     <div class="container">
         <h1>Profil</h1>
         <form action="" method="post">
@@ -22,22 +22,20 @@
             {% endif %}
 
             <div class="field">
-                <label for="username">Nazwa</label>
+                <label for="username">Nazwa użytkownika</label>
                 <span id="username">{{ user.username }}</span>
             </div>
             <div class="field">
                 <label for="email">Email</label>
                 <span id="email">{{ user.email }}</span>
             </div>
-            
-
             <div class="field">
-                <label for="name">Imie</label>
-                <input type="text" id="name" name="name" value="{{ user.name }}">
+                <label for="first_name">Imię</label>
+                <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
             </div>
             <div class="field">
-                <label for="surname">Nazwisko</label>
-                <input type="text" id="surname" name="surname" value="{{ user.surname }}" required>
+                <label for="last_name">Nazwisko</label>
+                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
             </div>
             <div class="field">
                 <label for="region">Województwo</label>
@@ -61,27 +59,17 @@
                         <option value="Zachodniopomorskie" {% if user.region == "Zachodniopomorskie" %}selected{% endif %}>Zachodniopomorskie</option>
                     </select>
             </div>
-
             <div class="field">
                 <label for="date_of_birth">Data urodzenia</label>
                 <input class="input" type="date" id="date_of_birth" name="date_of_birth"
                        value="{% if user.date_of_birth %}{{ user.date_of_birth|date:"Y-m-d" }}{% endif %}"
                        min="1900-01-01">
             </div>
-            <div class="field">
-                <label for="problem_counter">Dodane zadania</label>
-                <span id="problem_counter">{{ user.problem_counter }}</span>
-            </div>
             <div id="buttons">
                 <a href="/signout/"><button type="button">Wyloguj</button></a> 
                 <a href="/change_password/"><button type="button">Zmień hasło</button></a>
-                <a href="../publicprofile/{{ user.username }}"><button type="button">Zobacz swoje zadania i rozwiązania</button></a>
                 <button type="submit">Zapisz</button>
-            </div>     
-
-            {% if user_belongs_to_moderator_group %}
-                <a href="/zarzadzanie/"><button type="button">Zarządzanie</button></a>
-            {% endif %}
+            </div>
             
             <p style="color: red">{{ custom_message }}</p>
         </form>

@@ -1,10 +1,15 @@
 import uuid
 
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Q, Sum, CheckConstraint
+from django.db.models.functions import Length
+from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.utils.translation import gettext_lazy as _
+
+models.CharField.register_lookup(Length)
 
 
 class CustomUserManager(BaseUserManager):
@@ -30,26 +35,37 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.CharField(max_length=30, unique=True, validators=[MinLengthValidator(5)])
     email = models.EmailField(max_length=255, unique=True)
     password = models.CharField(max_length=128)
-    name = models.CharField(max_length=50)
-    surname = models.CharField(max_length=50)
     region = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(5), MaxLengthValidator(30)])
     date_of_birth = models.DateField(blank=True, null=True)
     profile_image = models.ImageField(upload_to='media/profile_images/', blank=True, null=True)
     objects = CustomUserManager()
 
     def __str__(self):
-        return f"{self.username} ({self.name} {self.surname})"
+        return f"{self.username} ({self.first_name} {self.last_name})"
 
     @property
     def full_name(self):
-        return f"{self.name} {self.surname}"
+        return f"{self.first_name} {self.last_name}"
 
     @property
     def activity_score(self):
         return self.activity_scores.aggregate(Sum('change'))['change__sum'] or 0
+
+    class Meta:
+        constraints = [
+            CheckConstraint(
+                check=Q(username__length__gte=settings.MIN_USERNAME_LENGTH),
+                violation_error_message=_(f'Nazwa użytkownika jest za krótka. Wymagana liczba znaków: {settings.MIN_USERNAME_LENGTH}.'),
+                name='username_min_length',
+            ),
+            CheckConstraint(
+                check=Q(username__length__lte=settings.MAX_USERNAME_LENGTH),
+                violation_error_message=_(f'Nazwa użytkownika jest za długa. Dopuszczalna liczba znaków: {settings.MAX_USERNAME_LENGTH}.'),
+                name='username_max_length',
+            ),
+        ]
 
 
 class LinkedAccount(models.Model):

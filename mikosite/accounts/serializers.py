@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'name', 'surname', 'region', 'profile_image', 'linked_accounts']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'region', 'profile_image', 'linked_accounts']
 
 
 class SafeUserSerializer(serializers.ModelSerializer):

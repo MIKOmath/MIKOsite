@@ -64,7 +64,7 @@ class UserActivityViewSet(GenericViewSet):
     def list(self, request):
         users_with_scores = (
             User.objects.all()
-            .only('id', 'username', 'name', 'surname')
+            .only('id', 'username', 'first_name', 'last_name')
             .annotate(total_score=Sum('activity_scores__change'))
             .filter(total_score__isnull=False)
             .order_by('-total_score')

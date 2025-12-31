@@ -1,11 +1,5 @@
 {% load static %}
-<!-- TODO -->
-<!-- extends "base.html" 
 
- block content 
-
- endblock content  
- procent nawias otacza kazde ofc-->
 <!DOCTYPE html>
 <html lang="pl">
 
@@ -19,21 +13,20 @@
     <title>Rejestracja</title>
     <link rel="stylesheet" href="{% static 'accounts/styleSignup.css' %}">
 </head>
-
 <body>
     <div id="container">
         <h1>Rejestracja</h1>
-        <div id="comment">Utwórz konto aby dodawać zadania oraz rozwiązania do bazy hintów!</div>
+        <div id="comment">Utwórz konto, aby korzystać z&nbsp;systemu MIKO!</div>
         <form id="registrationForm" method="POST" enctype="multipart/form-data" action="/signup/">
             {% csrf_token %}
 
             <div class="form-group">
-                <input type="text" id="name" name="name" placeholder="Imię" required>
-                <input type="text" id="surname" name="surname" placeholder="Nazwisko" required>
+                <input type="text" id="first_name" name="first_name" placeholder="Imię" required>
+                <input type="text" id="last_name" name="last_name" placeholder="Nazwisko" required>
             </div>
             <div class="form-group">
                 <input type="text" id="username" name="username" placeholder="Nazwa użytkownika" required>
-                <input type="email" id="email" name="email" placeholder="Adres e-mail" required>
+                <input type="email" id="email" name="email" placeholder="Email" required>
             </div>
             <div class="form-group">
                 <input type="password" id="password" name="password" placeholder="Hasło" required>
@@ -61,20 +54,18 @@
                 </select>
                 <input type="date" id="dateOfBirth" name="date_of_birth" placeholder="Data urodzenia">
             </div>
-
-
-
+            
             <div class="form-group">
                 <label for="profileImage">Zdjęcie profilowe</label>
                 <input type="file" id="profileImage" name="profile_image" accept="image/*">
             </div>
+            
             <button type="submit">Wyślij</button>
         </form>
         <br>
-        <p>Masz już konto? <a href="../signin/">Zaloguj</a></p>
+        <p>Masz już konto? <a href="../signin/">Zaloguj się!</a></p>
 
         <p style="color: red">{{ custom_message }}</p>
-
     </div>
 
     <script>

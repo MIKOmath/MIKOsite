@@ -24,7 +24,7 @@ class UserViewSetTests(APITestCase):
         self.assertEqual(response.data['username'], self.user1.username)
 
         # test if correct serializer is used
-        for field in ['email', 'surname', 'region', 'linked_accounts']:
+        for field in ['email', 'last_name', 'region', 'linked_accounts']:
             self.assertTrue(field in response.data)
 
     # Permission tests
@@ -43,7 +43,7 @@ class UserViewSetTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # test if correct serializer is used
-        for field in ['email', 'surname', 'region', 'linked_accounts']:
+        for field in ['email', 'last_name', 'region', 'linked_accounts']:
             self.assertFalse(field in response.data)
 
     def test_anonymous_can_retrieve_user(self):
@@ -51,7 +51,7 @@ class UserViewSetTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # test if correct serializer is used
-        for field in ['email', 'surname', 'region', 'linked_accounts']:
+        for field in ['email', 'last_name', 'region', 'linked_accounts']:
             self.assertFalse(field in response.data)
 
     def test_regular_user_cannot_create_user(self):
