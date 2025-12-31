@@ -15,6 +15,7 @@ User = get_user_model()
 def signup(request):
     ctx = {
         "region_choices": User._meta.get_field('region').choices,
+        "pwd_help_texts": password_validators_help_texts(),
     }
 
     if request.method == "POST":
@@ -140,7 +141,9 @@ def profile(request):
 
 @login_required(login_url='../signin')
 def change_password(request):
-    ctx = {}
+    ctx = {
+        "pwd_help_texts": password_validators_help_texts(),
+    }
 
     if request.method == 'POST':
         old_password = request.POST.get('old_password')
