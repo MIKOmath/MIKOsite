@@ -11,7 +11,7 @@
 </head>
 <body>
     {% include "header.html" %}
-       
+
     <div class="container">
         <h1>Profil</h1>
         <form action="" method="post">
@@ -39,24 +39,13 @@
             </div>
             <div class="field">
                 <label for="region">Województwo</label>
-                    <select class="input"  id="region" name="region" required>
-                        <option value="" {% if user.region == "" %}selected{% endif %} disabled selected>Wybierz z listy</option>
-                        <option value="Dolnośląskie" {% if user.region == "Dolnośląskie" %}selected{% endif %}>Dolnośląskie</option>
-                        <option value="Kujawsko-pomorskie" {% if user.region == "Kujawsko-pomorskie" %}selected{% endif %}>Kujawsko-pomorskie</option>
-                        <option value="Lubelskie" {% if user.region == "Lubelskie" %}selected{% endif %}>Lubelskie</option>
-                        <option value="Lubuskie" {% if user.region == "Lubuskie" %}selected{% endif %}>Lubuskie</option>
-                        <option value="Łódzkie" {% if user.region == "Łódzkie" %}selected{% endif %}>Łódzkie</option>
-                        <option value="Małopolskie" {% if user.region == "Małopolskie" %}selected{% endif %}>Małopolskie</option>
-                        <option value="Mazowieckie" {% if user.region == "Mazowieckie" %}selected{% endif %}>Mazowieckie</option>
-                        <option value="Opolskie" {% if user.region == "Opolskie" %}selected{% endif %}>Opolskie</option>
-                        <option value="Podkarpackie" {% if user.region == "Podkarpackie" %}selected{% endif %}>Podkarpackie</option>
-                        <option value="Podlaskie" {% if user.region == "Podlaskie" %}selected{% endif %}>Podlaskie</option>
-                        <option value="Pomorskie" {% if user.region == "Pomorskie" %}selected{% endif %}>Pomorskie</option>
-                        <option value="Śląskie" {% if user.region == "Śląskie" %}selected{% endif %}>Śląskie</option>
-                        <option value="Świętokrzyskie" {% if user.region == "Świętokrzyskie" %}selected{% endif %}>Świętokrzyskie</option>
-                        <option value="Warmińsko-mazurskie" {% if user.region == "Warmińsko-mazurskie" %}selected{% endif %}>Warmińsko-mazurskie</option>
-                        <option value="Wielkopolskie" {% if user.region == "Wielkopolskie" %}selected{% endif %}>Wielkopolskie</option>
-                        <option value="Zachodniopomorskie" {% if user.region == "Zachodniopomorskie" %}selected{% endif %}>Zachodniopomorskie</option>
+                    <select class="input" id="region" name="region" required>
+                        <option value="" disabled {% if not user.region %}selected{% endif %}>Wybierz z listy</option>
+                        {% for code, label in region_choices %}
+                        <option value="{{ code }}" {% if user.region == code %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
                     </select>
             </div>
             <div class="field">

@@ -1,3 +1,4 @@
+import datetime
 from random import seed, randint
 
 from rest_framework.test import APITestCase
@@ -97,7 +98,7 @@ class UserActivityViewSetTests(APITestCase):
 
         seed(42)
         self.users = User.objects.bulk_create(
-            [User(username=f'user{i}', password='userpass', email=f'user{i}@test.com') for i in range(self.n_users)]
+            [User(username=f'user{i}', password='userpass', email=f'user{i}@test.com', date_of_birth=datetime.date.today()) for i in range(self.n_users)]
         )
         self.scores = ActivityScore.objects.bulk_create(
             [ActivityScore(user=self.users[i % self.n_users], change=randint(-10, 100)) for i in range(self.n_scores)]
