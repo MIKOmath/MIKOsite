@@ -33,28 +33,16 @@
                 <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Potórz hasło" required>
             </div>
             <div class="form-group">
-                <select id="region" name="region">
-                    <option value="">Województwo</option>
-                    <option value="Dolnośląskie">Dolnośląskie</option>
-                    <option value="Kujawsko-Pomorskie">Kujawsko-Pomorskie</option>
-                    <option value="Lubelskie">Lubelskie</option>
-                    <option value="Lubuskie">Lubuskie</option>
-                    <option value="Łódzkie">Łódzkie</option>
-                    <option value="Małopolskie">Małopolskie</option>
-                    <option value="Mazowieckie">Mazowieckie</option>
-                    <option value="Opolskie">Opolskie</option>
-                    <option value="Podkarpackie">Podkarpackie</option>
-                    <option value="Podlaskie">Podlaskie</option>
-                    <option value="Pomorskie">Pomorskie</option>
-                    <option value="Śląskie">Śląskie</option>
-                    <option value="Świętokrzyskie">Świętokrzyskie</option>
-                    <option value="Warmińsko-Mazurskie">Warmińsko-Mazurskie</option>
-                    <option value="Wielkopolskie">Wielkopolskie</option>
-                    <option value="Zachodniopomorskie">Zachodniopomorskie</option>
+                <select id="region" name="region" required>
+                    <option value="" disabled selected>Województwo</option>
+                    {% for code, label in region_choices %}
+                        <option value="{{ code }}">{{ label }}</option>
+                    {% endfor %}
                 </select>
-                <input type="date" id="dateOfBirth" name="date_of_birth" placeholder="Data urodzenia">
+                <input class="input" type="date" id="date_of_birth" name="date_of_birth" required
+                       min="1900-01-01">
             </div>
-            
+        
             <div class="form-group">
                 <label for="profileImage">Zdjęcie profilowe</label>
                 <input type="file" id="profileImage" name="profile_image" accept="image/*">

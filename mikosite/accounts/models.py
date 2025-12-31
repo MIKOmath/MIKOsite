@@ -5,42 +5,91 @@ from django.db.models import Q, Sum, CheckConstraint
 from django.db.models.functions import Length
 from django.conf import settings
 from django.utils import timezone
-from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+
+from .validators import ValidateMinAge
 
 models.CharField.register_lookup(Length)
 
+REGION_CHOICES = [
+    ("DS", "dolnośląskie"),
+    ("KP", "kujawsko-pomorskie"),
+    ("LU", "lubelskie"),
+    ("LB", "lubuskie"),
+    ("LD", "łódzkie"),
+    ("MA", "małopolskie"),
+    ("MZ", "mazowieckie"),
+    ("OP", "opolskie"),
+    ("PK", "podkarpackie"),
+    ("PD", "podlaskie"),
+    ("PM", "pomorskie"),
+    ("SL", "śląskie"),
+    ("SK", "świętokrzyskie"),
+    ("WN", "warmińsko-mazurskie"),
+    ("WP", "wielkopolskie"),
+    ("ZP", "zachodniopomorskie"),
+    ('NA', 'nieznany'),
+]
 
-class CustomUserManager(BaseUserManager):
-    # Method to create a normal user
+
+class MikoUserManager(BaseUserManager):
     def create_user(self, username, email, password, **extra_fields):
         if not email:
-            raise ValueError('The email address is required')
+            raise ValueError(_("The email must be set."))
         email = self.normalize_email(email)
+
+        extra_fields.setdefault('date_of_birth', timezone.localdate())
+        extra_fields.setdefault('region', 'NA')
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    # Method to create a superuser
     def create_superuser(self, username, email, password, **extra_fields):
-        user = self.model(username=username, email=email, **extra_fields)
-        user.set_password(password)
-        user.is_superuser = True
-        user.is_staff = True
-        user.save(using=self._db)
-        return user
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        return self.create_user(username, email, password, **extra_fields)
 
 
 class User(AbstractUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    email = models.EmailField(max_length=255, unique=True)
-    password = models.CharField(max_length=128)
-    region = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(5), MaxLengthValidator(30)])
-    date_of_birth = models.DateField(blank=True, null=True)
-    profile_image = models.ImageField(upload_to='media/profile_images/', blank=True, null=True)
-    objects = CustomUserManager()
+    id = models.UUIDField(
+        primary_key=True,
+        verbose_name=_("Unique User ID"),
+        default=uuid.uuid4,
+        editable=False,
+    )
+    email = models.EmailField(
+        verbose_name=_("Email Address"),
+        unique=True,
+        blank=False,
+        null=False,
+    )
+    region = models.CharField(
+        verbose_name=_("Region"),
+        max_length=2,
+        choices=REGION_CHOICES,
+        blank=False,
+        null=False,
+    )
+    date_of_birth = models.DateField(
+        verbose_name=_("Date of Birth"),
+        validators=[ValidateMinAge(getattr(settings, 'MIN_AGE_YEARS', 13))],
+        blank=False,
+        null=False,
+    )
+    profile_image = models.ImageField(
+        verbose_name=_("Profile Image"),
+        upload_to='profile_images/',
+        blank=True,
+        null=True,
+    )
+
+    objects = MikoUserManager()
 
     def __str__(self):
         return f"{self.username} ({self.first_name} {self.last_name})"
