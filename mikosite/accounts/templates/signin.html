@@ -1,45 +1,69 @@
 {% load static %}
+{% load compress %}
 
 <!DOCTYPE html>
 <html lang="pl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logowanie</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'accounts/styleSignin.css' %}">
+    <title>Logowanie – MIKO</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik" />
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'accounts/auth.css' %}">
+    {% endcompress %}
+    {% compress js %}
+    <script src="{% static 'script.js' %}"></script>
+    {% endcompress %}
 </head>
 
 <body>
-    <header>
+{% include "header.html" %}
 
-    </header>
-    <div class="container">
+<main class="auth-page">
+    <div class="auth-shell">
+        <section class="auth-panel auth-panel--hero">
+            <img class="auth-hero-logo" src="{% static 'logoDark.svg' %}" alt="MIKO">
+            <h1 class="auth-title" style="color: white;">Witaj ponownie!</h1>
+            <p class="auth-subtitle">
+                Zaloguj się, aby korzystać z systemu MIKO.
+            </p>
+        </section>
 
-        <div class="box-inside">
-            <h1>Logowanie</h1>
-            <div id="login">Zaloguj się do swojego konta</div>
-            <form id="loginForm" method="POST" action="/signin/">
+        <section class="auth-panel">
+            <h1 class="auth-title">Logowanie</h1>
+
+            <form class="auth-form" method="POST" action="/signin/">
                 {% csrf_token %}
 
-                <div class="form-group">
-                    <input type="text" id="username" name="username" placeholder="Nazwa użytkownika" required>
+                <div class="auth-field">
+                    <label for="username">Nazwa użytkownika</label>
+                    <input class="auth-input" type="text" id="username" name="username" placeholder="np. marek123" required>
                 </div>
-                <div class="form-group">
-                    <input type="password" id="password" name="password" placeholder="Hasło" required>
-                </div>
-                <!-- TODO ref to pass reset -->
-                <div class="forgot-password">Zapomniałem hasła</div>
-                <button type="submit">Zaloguj</button>
-            </form>
 
-            <div class="no-acc">Nie masz konta? <a href="../signup/">Zarejestruj się</a></div>
-            <p style="color: red">{{ custom_message }}</p>
-        </div>
+                <div class="auth-field">
+                    <label for="password">Hasło</label>
+                    <input class="auth-input" type="password" id="password" name="password" placeholder="••••••••••" required>
+                </div>
+
+                <div class="auth-actions">
+                    <button class="btn btn-primary" type="submit">Zaloguj</button>
+                    <a class="btn btn-secondary" href="/">Wróć na stronę</a>
+                </div>
+
+                <div class="auth-links">
+                    Nie masz konta? <a href="../signup/">Zarejestruj się</a>
+                </div>
+
+                {% if custom_message %}
+                    <div class="flash">{{ custom_message }}</div>
+                {% endif %}
+            </form>
+        </section>
     </div>
+</main>
+
+{% include "footer.html" %}
 </body>
 </html>

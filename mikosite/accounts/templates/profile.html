@@ -1,67 +1,105 @@
 {% load static %}
+{% load compress %}
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prolif</title>
-    <link rel="stylesheet" href="{% static 'styleProfile.css' %}">
+    <title>Profil – MIKO</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik" />
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'accounts/auth.css' %}">
+    {% endcompress %}
+    {% compress js %}
+    <script src="{% static 'script.js' %}"></script>
+    {% endcompress %}
 </head>
+
 <body>
-    {% include "header.html" %}
+{% include "header.html" %}
 
-    <div class="container">
-        <h1>Profil</h1>
-        <form action="" method="post">
-            {% csrf_token %}
+<main class="auth-page">
+    <div class="auth-shell">
+        <section class="auth-panel auth-panel--hero">
+            <div class="profile-top">
+                {% if user.profile_image %}
+                    <img class="avatar" src="{{ user.profile_image.url }}" alt="Zdjęcie profilowe">
+                {% else %}
+                    <img class="avatar" src="{% static 'logoNoCircle.svg' %}" alt="Placeholder zdjęcia profilowego" aria-hidden="true">
+                {% endif %}
 
-            {% if user.profile_image %}
-                <img src="{{ user.profile_image.url }}" alt="Profile Image">
-            {% endif %}
+                <div class="kv">
+                    <strong>{{ user.full_name|default:user.username }}</strong>
+                    <span>@{{ user.username }} · {{ user.email }}</span>
+                </div>
+            </div>
 
-            <div class="field">
-                <label for="username">Nazwa użytkownika</label>
-                <span id="username">{{ user.username }}</span>
-            </div>
-            <div class="field">
-                <label for="email">Email</label>
-                <span id="email">{{ user.email }}</span>
-            </div>
-            <div class="field">
-                <label for="first_name">Imię</label>
-                <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
-            </div>
-            <div class="field">
-                <label for="last_name">Nazwisko</label>
-                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
-            </div>
-            <div class="field">
-                <label for="region">Województwo</label>
-                    <select class="input" id="region" name="region" required>
-                        <option value="" disabled {% if not user.region %}selected{% endif %}>Wybierz z listy</option>
-                        {% for code, label in region_choices %}
-                        <option value="{{ code }}" {% if user.region == code %}selected{% endif %}>
-                            {{ label }}
-                        </option>
-                        {% endfor %}
-                    </select>
-            </div>
-            <div class="field">
-                <label for="date_of_birth">Data urodzenia</label>
-                <input class="input" type="date" id="date_of_birth" name="date_of_birth"
-                       value="{% if user.date_of_birth %}{{ user.date_of_birth|date:"Y-m-d" }}{% endif %}"
-                       min="1900-01-01">
-            </div>
-            <div id="buttons">
-                <a href="/signout/"><button type="button">Wyloguj</button></a> 
-                <a href="/change_password/"><button type="button">Zmień hasło</button></a>
-                <button type="submit">Zapisz</button>
-            </div>
+            <p class="auth-subtitle">
+                Uzupełnij dane profilu. Zmiany zapiszesz jednym kliknięciem.
+            </p>
+        </section>
+
+        <section class="auth-panel profile-card">
+            <h1 class="auth-title">Profil</h1>
+
+            <form class="auth-form" method="post">
+                {% csrf_token %}
             
-            <p style="color: red">{{ custom_message }}</p>
-        </form>
+                <div class="auth-field">
+                    <label>Nazwa użytkownika</label>
+                    <input class="auth-input" value="{{ user.username }}" disabled>
+                </div>
+                <div class="auth-field">
+                    <label>Email</label>
+                    <input class="auth-input" value="{{ user.email }}" disabled>
+                </div>
+
+                <div class="auth-row">
+                    <div class="auth-field">
+                        <label for="first_name">Imię</label>
+                        <input class="auth-input" type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+                    </div>
+                    <div class="auth-field">
+                        <label for="last_name">Nazwisko</label>
+                        <input class="auth-input" type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
+                    </div>
+                </div>
+
+                <div class="auth-row">
+                    <div class="auth-field">
+                        <label for="region">Województwo</label>
+                        <select class="auth-select" id="region" name="region" required>
+                            {% for code, label in region_choices %}
+                                <option value="{{ code }}" {% if user.region == code %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="date_of_birth">Data urodzenia</label>
+                        <input class="auth-input" type="date" id="date_of_birth" name="date_of_birth"
+                               value="{% if user.date_of_birth %}{{ user.date_of_birth|date:"Y-m-d" }}{% endif %}"
+                               min="1900-01-01">
+                    </div>
+                </div>
+
+                <div class="auth-actions">
+                    <button class="btn btn-primary" type="submit">Zapisz</button>
+                    <a class="btn btn-secondary" href="/change_password/">Zmień hasło</a>
+                    <a class="btn btn-secondary" href="/signout/">Wyloguj</a>
+                </div>
+
+                {% if custom_message %}
+                    <div class="flash {% if 'zapis' in custom_message|lower %}flash--ok{% endif %}">{{ custom_message }}</div>
+                {% endif %}
+            </form>
+        </section>
     </div>
+</main>
+
+{% include "footer.html" %}
 </body>
 </html>
