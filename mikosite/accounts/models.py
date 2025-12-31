@@ -1,8 +1,12 @@
 import uuid
+from io import BytesIO
+
+from PIL import Image, ImageOps
 
 from django.db import models
 from django.db.models import Q, Sum, CheckConstraint
 from django.db.models.functions import Length
+from django.core.files.base import ContentFile
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -31,6 +35,9 @@ REGION_CHOICES = [
     ("ZP", "zachodniopomorskie"),
     ('NA', 'nieznany'),
 ]
+
+PROFILE_IMAGE_SIZE = getattr(settings, 'PROFILE_IMAGE_SIZE', (320, 320))
+PROFILE_WEBP_QUALITY = 85
 
 
 class MikoUserManager(BaseUserManager):
@@ -101,6 +108,43 @@ class User(AbstractUser):
     @property
     def activity_score(self):
         return self.activity_scores.aggregate(Sum('change'))['change__sum'] or 0
+
+    def _convert_profile_picture(self, file):
+        img = Image.open(file)
+        img = ImageOps.exif_transpose(img)
+
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+
+        img = ImageOps.fit(img, PROFILE_IMAGE_SIZE, method=Image.LANCZOS)
+        out = BytesIO()
+        img.save(out, format='WEBP', quality=PROFILE_WEBP_QUALITY)
+        out.seek(0)
+
+        filename = f"{uuid.uuid4().hex}.webp"
+        return ContentFile(out.read(), name=filename)
+
+    def save(self, *args, **kwargs):
+        old_picture_file = None
+        if self.pk:
+            try:
+                old = type(self).objects.only('profile_image').get(pk=self.pk)
+                old_picture_file = old.profile_image.name if old.profile_image else None
+            except type(self).DoesNotExist:
+                pass
+
+        new_picture_file = getattr(self.profile_image, 'name', None)
+        picture_changed = new_picture_file != old_picture_file
+
+        if self.profile_image and picture_changed:
+            self.profile_image = self._convert_profile_picture(self.profile_image)
+
+        super().save(*args, **kwargs)
+
+        if picture_changed and old_picture_file:
+            storage = self.profile_image.storage
+            if storage.exists(old_picture_file):
+                storage.delete(old_picture_file)
 
     class Meta:
         constraints = [
