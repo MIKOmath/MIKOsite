@@ -45,7 +45,7 @@
         <section class="auth-panel profile-card">
             <h1 class="auth-title">Profil</h1>
 
-            <form class="auth-form" method="post">
+            <form class="auth-form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
             
                 <div class="auth-field">
@@ -85,7 +85,12 @@
                                min="1900-01-01">
                     </div>
                 </div>
-
+                
+                <div class="auth-field">
+                    <label for="profile_image">Zdjęcie profilowe</label>
+                    <input class="auth-input" type="file" id="profile_image" name="profile_image" accept="image/*">
+                </div>
+            
                 <div class="auth-actions">
                     <button class="btn btn-primary" type="submit">Zapisz</button>
                     <a class="btn btn-secondary" href="/change_password/">Zmień hasło</a>

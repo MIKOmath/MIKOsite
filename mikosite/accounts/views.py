@@ -113,6 +113,7 @@ def profile(request):
         last_name = request.POST.get("last_name")
         region = request.POST.get("region")
         dob_str = request.POST.get("date_of_birth")
+        uploaded = request.FILES.get("profile_image")
 
         if dob_str:
             try:
@@ -122,6 +123,9 @@ def profile(request):
                 return render(request, "profile.html", ctx)
             else:
                 request.user.date_of_birth = date_of_birth
+
+        if uploaded:
+            request.user.profile_image = uploaded
 
         request.user.first_name = first_name
         request.user.last_name = last_name
@@ -133,7 +137,9 @@ def profile(request):
             ctx["custom_message"] = "\n".join(msg for msgs in e.message_dict.values() for msg in msgs)
             return render(request, "profile.html", ctx)
 
-        request.user.save(update_fields=['first_name', 'last_name', 'region', 'date_of_birth'])
+        request.user.save(
+            update_fields=['first_name', 'last_name', 'region', 'date_of_birth', 'profile_image']
+        )
         ctx["custom_message"] = "Profil został zaktualizowany."
 
     return render(request, "profile.html", ctx)
