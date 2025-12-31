@@ -236,3 +236,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "accounts.User"
+MIN_USERNAME_LENGTH = 4
+MAX_USERNAME_LENGTH = 32
+MIN_AGE_YEARS = 13

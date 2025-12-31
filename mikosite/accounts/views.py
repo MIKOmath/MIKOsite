@@ -6,9 +6,6 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
-from mainSite.models import Post
-from hintBase.models import Problem, ProblemHint
-from django.http import HttpResponse
 
 
 def signup(request):
@@ -18,8 +15,8 @@ def signup(request):
         password0 = request.POST.get("password")
         password1 = request.POST.get("confirmPassword")
 
-        name = request.POST.get("name")
-        surname = request.POST.get("surname")
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
         date_of_birth = request.POST.get("date_of_birth")
         region = request.POST.get("region")
 
@@ -40,8 +37,8 @@ def signup(request):
 
         newUser = User.objects.create_user(username=username, email=email, password=password0)
 
-        newUser.name = name
-        newUser.surname = surname
+        newUser.first_name = first_name
+        newUser.last_name = last_name
         newUser.date_of_birth = date_of_birth
         newUser.region = region
 
@@ -80,18 +77,17 @@ def profile(request):
         new_user = User(
             username=request.user.username,  # Preserve original username for security
             email=request.user.email,  # Preserve original email for security
-            name=request.POST.get('name'),
-            surname=request.POST.get('surname'),
+            first_name=request.POST.get('first_name'),
+            last_name=request.POST.get('last_name'),
             region=request.POST.get('region'),
             date_of_birth=request.POST.get('date_of_birth'),
-            problem_counter=request.user.problem_counter  # Preserve original problem counter
         )
 
         changes_detected = False
         try:
             # Attempt to parse the date (modify format string as needed)
             datetime.datetime.strptime(new_user.date_of_birth, '%Y-%m-%d')
-            for field in ['name', 'surname', 'region', 'date_of_birth']:
+            for field in ['first_name', 'last_name', 'region', 'date_of_birth']:
                 original_value = getattr(request.user, field)
                 new_value = getattr(new_user, field)
                 if original_value != new_value:
@@ -99,7 +95,7 @@ def profile(request):
                     break
         except ValueError:
             # If invalid format, assign "default_date" and add an error message
-            for field in ['name', 'surname', 'region']:
+            for field in ['first_name', 'last_name', 'region']:
                 original_value = getattr(request.user, field)
                 new_value = getattr(new_user, field)
                 if original_value != new_value:
@@ -107,8 +103,8 @@ def profile(request):
                     break
 
         if changes_detected:
-            request.user.name = new_user.name
-            request.user.surname = new_user.surname
+            request.user.first_name = new_user.first_name
+            request.user.last_name = new_user.last_name
             request.user.region = new_user.region
             request.user.date_of_birth = new_user.date_of_birth
             request.user.save()
