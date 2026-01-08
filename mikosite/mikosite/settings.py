@@ -231,3 +231,10 @@ AUTH_USER_MODEL = "accounts.User"
 MIN_USERNAME_LENGTH = 4
 MAX_USERNAME_LENGTH = 32
 MIN_AGE_YEARS = 13
+
+try:
+    from .secrets import TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY
+except ImportError:
+    print("Turnstile details not found in secrets.py, falling back to env variables.")
+    TURNSTILE_SITE_KEY = os.getenv("TURNSTILE_SITE_KEY", "")
+    TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY", "")
