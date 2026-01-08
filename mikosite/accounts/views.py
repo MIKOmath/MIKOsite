@@ -2,12 +2,15 @@ import datetime
 
 from django.db import IntegrityError, transaction
 from django.shortcuts import render, redirect
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
 from django.core.exceptions import ValidationError
+
+from .turnstile import get_client_ip, verify_turnstile
 
 User = get_user_model()
 
@@ -16,9 +19,21 @@ def signup(request):
     ctx = {
         "region_choices": User._meta.get_field('region').choices,
         "pwd_help_texts": password_validators_help_texts(),
+        "turnstile_site_key": settings.TURNSTILE_SITE_KEY,
     }
 
     if request.method == "POST":
+        token = request.POST.get("cf-turnstile-response", "")
+        cf_ok, cf_msg = verify_turnstile(
+            token=token,
+            secret=settings.TURNSTILE_SECRET_KEY,
+            remote_ip=get_client_ip(request.META),
+            expected_action="signup",
+        )
+        if not cf_ok:
+            ctx["custom_message"] = cf_msg
+            return render(request, "signup.html", ctx)
+
         username = request.POST.get("username")
         email = request.POST.get("email")
         password = request.POST.get("password")
