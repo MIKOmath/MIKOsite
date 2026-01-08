@@ -31,13 +31,19 @@
             <li><a href="/kolo" {% if request.path == '/kolo/' %}id="current"{% endif %}>KOŁO MATEMATYCZNE</a></li>
             <li><a href="/about" {% if request.path == '/about/' %}id="current"{% endif %}>O NAS</a></li>
             <li><a href="/pozdro/" id="highlighted">POZDRO 2026</a></li>
-            <li class="profile-item"><a href="#" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a></li>
+            <li class="profile-item">
+                {% if user.is_authenticated %}
+                    <a href="/profile/" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a>
+                {% else %}
+                    <a href="/signin/" {% if request.path == '/signin/' %}id="current"{% endif %}>ZALOGUJ SIĘ</a>
+                {% endif %}
+            </li>
         </ul>
         <div class="navbar-right">
             {% if user.is_authenticated %}
-                <a href="/profile/">PROFIL</a>
+                <a href="/profile/" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a>
             {% else %}
-                <a href="/signin/">ZALOGUJ SIĘ</a>
+                <a href="/signin/" {% if request.path == '/signin/' %}id="current"{% endif %}>ZALOGUJ SIĘ</a>
             {% endif %}
         </div>
     </nav>
