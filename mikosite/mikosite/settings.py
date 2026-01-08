@@ -27,8 +27,6 @@ except ImportError:
 CSRF_TRUSTED_ORIGINS = [
     'https://mikomath.org',
     'http://mikomath.org',
-    "https://195.117.15.149",
-    "http://195.117.15.149",
 ]
 
 # Quick-start development settings - unsuitable for production
@@ -47,7 +45,6 @@ AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
 ALLOWED_HOSTS = [
     "mikomath.org",
-    "195.117.15.149",
     "127.0.0.1",
     "localhost",
 ]
