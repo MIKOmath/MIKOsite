@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link rel="stylesheet" href="{% static 'accounts/auth.css' %}">
     {% endcompress %}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     {% compress js %}
     <script src="{% static 'script.js' %}"></script>
     {% endcompress %}
@@ -98,6 +99,10 @@
                 {% if custom_message %}
                     <div class="flash">{{ custom_message }}</div>
                 {% endif %}
+            
+                <div class="cf-turnstile" style="margin-bottom: -12px;"
+                     data-sitekey="{{ turnstile_site_key }}"
+                     data-action="signup"></div>
 
                 <div class="auth-actions">
                     <button class="btn btn-primary" type="submit">Utwórz konto</button>

@@ -149,12 +149,12 @@ class User(AbstractUser):
     class Meta:
         constraints = [
             CheckConstraint(
-                check=Q(username__length__gte=settings.MIN_USERNAME_LENGTH),
+                condition=Q(username__length__gte=settings.MIN_USERNAME_LENGTH),
                 violation_error_message=_(f'Nazwa użytkownika jest za krótka. Wymagana liczba znaków: {settings.MIN_USERNAME_LENGTH}.'),
                 name='username_min_length',
             ),
             CheckConstraint(
-                check=Q(username__length__lte=settings.MAX_USERNAME_LENGTH),
+                condition=Q(username__length__lte=settings.MAX_USERNAME_LENGTH),
                 violation_error_message=_(f'Nazwa użytkownika jest za długa. Dopuszczalna liczba znaków: {settings.MAX_USERNAME_LENGTH}.'),
                 name='username_max_length',
             ),
