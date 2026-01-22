@@ -13,6 +13,12 @@ let currentDate = new Date();
 let events = {};
 let eventsCache = {};
 
+var escape = document.createElement('textarea');
+function escapeHTML(html) {
+    escape.textContent = html;
+    return escape.innerHTML;
+}
+
 function showLoadingBar() {
     prevMonthButton.disabled = true;
     nextMonthButton.disabled = true;
@@ -149,7 +155,7 @@ function showEventPopup(date, eventsList) {
 
         li.innerHTML = `
             <span style="color: var(--r1)"><strong>${timeDisplay}</strong></span>
-            <h3 class="seminar-theme"><strong> ${event.theme} </strong></h3>
+            <h3 class="seminar-theme"><strong> ${escapeHTML(event.theme)} </strong></h3>
 
             <div class="badge-container">
                 ${event.featured ? `
@@ -177,11 +183,11 @@ function showEventPopup(date, eventsList) {
             <div class="event-info">
                 ${event.tutors.length ? `
                     <p>
-                        <strong>${event.tutors.length > 1 ? 'Prowadzą: ' : 'Prowadzi: '}</strong>${event.tutors.join(", ")}
+                        <strong>${event.tutors.length > 1 ? 'Prowadzą: ' : 'Prowadzi: '}</strong>${escapeHTML(event.tutors.join(", "))}
                     </p>` : ''}
                 ${event.description ? `
                     <p>
-                        <strong>${'Opis: '}</strong>${event.description}<br>
+                        <strong>${'Opis: '}</strong>${escapeHTML(event.description)}<br>
                     </p>` : ''}
             </div>
 
