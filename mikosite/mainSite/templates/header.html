@@ -30,7 +30,8 @@
             <li><a href="/" {% if request.path == '/' %}id="current"{% endif %}>HOME</a></li>
             <li><a href="/kolo" {% if request.path == '/kolo/' %}id="current"{% endif %}>KOŁO MATEMATYCZNE</a></li>
             <li><a href="/about" {% if request.path == '/about/' %}id="current"{% endif %}>O NAS</a></li>
-            <li><a href="/pozdro/" id="highlighted">POZDRO 2026</a></li>
+            <li><a href="https://sprawdzai.org/?utm_source=mikomath.org&utm_medium=referral&utm_campaign=sprawdzai&utm_content=header
+" id="highlighted">SPRAWDZAI</a></li>
             <li class="profile-item">
                 {% if user.is_authenticated %}
                     <a href="/profile/" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a>
