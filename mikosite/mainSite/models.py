@@ -45,6 +45,14 @@ class Post(models.Model):
             'time': format_time(self.time, format='HH:mm', locale=locale) if self.time else '',
         }
 
+class TeamMemberTile(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    role = models.CharField(max_length=100, blank=False, null=False)
+    bio = models.TextField(blank=True, null=False)
+    photo = models.ImageField(upload_to='team_photos/', blank=False)
+
+    def __str__(self):
+        return self.name
 
 class Image(models.Model):
     image = models.ImageField(upload_to='post_images/', blank=True)
