@@ -1,17 +1,30 @@
-from datetime import datetime
+from datetime import timedelta
+
 from django.core.cache import cache
+from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
-from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.shortcuts import render
+from django.utils import timezone
 
-from mainSite.models import Post
+from mainSite.models import RegistrationEvent, Post
 from seminars.models import Seminar
-
 
 UPCOMING_SEMINARS_CACHE_KEY = 'upcoming-seminars-display-data'
 UPCOMING_SEMINARS_MAX_TTL = 86400  # 1 day
 MAINSITE_POSTS_CACHE_KEY = 'mainsite-posts-display-data'
 MAINSITE_POSTS_MAX_TTL = 86400
+ACTIVE_REGISTRATION_CACHE_KEY = 'active-registration-display-data'
+
+
+def seconds_until_next_midnight() -> int:
+    now = timezone.localtime()
+    next_midnight = (now + timedelta(days=1)).replace(
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
+    return int((next_midnight - now).total_seconds())
 
 
 def get_upcoming_seminars_data():
@@ -19,13 +32,18 @@ def get_upcoming_seminars_data():
     if data is None:
         next_seminars = Seminar.fetch_upcoming()
         if next_seminars:
-            time_to_next_seminar = (next_seminars[0].start_timestamp - datetime.now()).total_seconds()
+            time_to_next_seminar = (
+                next_seminars[0].start_timestamp - timezone.now()
+            ).total_seconds()
         else:
             time_to_next_seminar = UPCOMING_SEMINARS_MAX_TTL
 
         data = [seminar.display_dict() for seminar in next_seminars]
-        cache.set(UPCOMING_SEMINARS_CACHE_KEY, data, min(time_to_next_seminar, UPCOMING_SEMINARS_MAX_TTL))
-
+        cache.set(
+            UPCOMING_SEMINARS_CACHE_KEY,
+            data,
+            min(time_to_next_seminar, UPCOMING_SEMINARS_MAX_TTL),
+        )
     return data
 
 
@@ -42,7 +60,6 @@ def get_posts_data():
         posts = Post.objects.order_by('-date', '-time').prefetch_related('authors', 'images')
         data = [post.display_dict() for post in posts]
         cache.set(MAINSITE_POSTS_CACHE_KEY, data, MAINSITE_POSTS_MAX_TTL)
-
     return data
 
 
@@ -54,11 +71,37 @@ def clear_posts_cache(sender, **kwargs):
     cache.delete(MAINSITE_POSTS_CACHE_KEY)
 
 
+def get_active_registration_event_data():
+    data = cache.get(ACTIVE_REGISTRATION_CACHE_KEY)
+    if data is None:
+        today = timezone.localdate()
+        event = (
+            RegistrationEvent.objects
+            .filter(registration_begin__lte=today, registration_end__gte=today)
+            .order_by('registration_end', 'date_begin', 'pk')
+            .first()
+        )
+        data = event.display_dict() if event else None
+        cache.set(
+            ACTIVE_REGISTRATION_CACHE_KEY,
+            data,
+            seconds_until_next_midnight(),
+        )
+    return data
+
+
+@receiver(post_save, sender=RegistrationEvent)
+@receiver(post_delete, sender=RegistrationEvent)
+def clear_active_registration_event_cache(sender, **kwargs):
+    cache.delete(ACTIVE_REGISTRATION_CACHE_KEY)
+
+
 def index(request):
     context = {
         "posts": get_posts_data,
         "events": get_upcoming_seminars_data,
-        "user": request.user
+        "registration_event": get_active_registration_event_data,
+        "user": request.user,
     }
     return render(request, "index.html", context)
 
