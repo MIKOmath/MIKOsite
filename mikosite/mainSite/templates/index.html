@@ -1,199 +1,255 @@
 {% load static %}
 {% load compress %}
 {% load custom_filters %}
-
 <!DOCTYPE html>
 <html lang="pl">
 
 <head>
-    <title>Matematyczne Internetowe Koło Olimpijskie – MIKO</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Społeczność, gdzie poznasz innych ambitnych młodych matematyków, poszerzysz swoją wiedzę i przygotujesz się do Olimpiady Matematycznej.">
-    <meta name="author" content="Matematyczne Internetowe Koło Olimpijskie">
-    {% compress css %}
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link rel="stylesheet" href="{% static 'badges.css' %}">
-    {% endcompress %}
-    {% compress js %}
-    <script src="{% static 'script.js' %}"></script>
-    {% endcompress %}
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Matematyczne Internetowe Koło Olimpijskie – MIKO">
-    <meta property="og:description" content="Społeczność, gdzie poznasz innych ambitnych młodych matematyków, poszerzysz swoją wiedzę i przygotujesz się do Olimpiady Matematycznej.">
-    <meta property="og:url" content="https://mikomath.org/">
-    <meta property="og:locale" content="pl_PL">
-    <meta property="og:image" content="https://mikomath.org/media/cards/index.png">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="twitter:title" content="Matematyczne Internetowe Koło Olimpijskie – MIKO">
-    <meta property="twitter:description" content="Społeczność, gdzie poznasz innych ambitnych młodych matematyków, poszerzysz swoją wiedzę i przygotujesz się do Olimpiady Matematycznej.">
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:image" content="https://mikomath.org/media/cards/index.png">
+ <title>Matematyczne Internetowe Koło Olimpijskie – MIKO</title>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta name="description" content="Społeczność, gdzie poznasz innych ambitnych młodych matematyków, poszerzysz swoją wiedzę i przygotujesz się do Olimpiady Matematycznej.">
+ <meta name="author" content="Matematyczne Internetowe Koło Olimpijskie">
+
+ {% compress css %}
+ <link rel="stylesheet" href="{% static 'style.css' %}">
+ <link rel="stylesheet" href="{% static 'badges.css' %}">
+ {% endcompress %}
+
+ {% compress js %}
+ <script src="{% static 'script.js' %}"></script>
+ {% endcompress %}
+
+ <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik" />
+ <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+ <meta property="og:type" content="website">
+ <meta property="og:title" content="Matematyczne Internetowe Koło Olimpijskie – MIKO">
+ <meta property="og:description" content="Społeczność, gdzie poznasz innych ambitnych młodych matematyków, poszerzysz swoją wiedzę i przygotujesz się do Olimpiady Matematycznej.">
+ <meta property="og:url" content="https://mikomath.org/">
+ <meta property="og:locale" content="pl_PL">
+ <meta property="og:image" content="https://mikomath.org/media/cards/index.png">
+ <meta property="og:image:type" content="image/png">
+ <meta property="og:image:width" content="1200">
+ <meta property="og:image:height" content="630">
+ <meta property="twitter:title" content="Matematyczne Internetowe Koło Olimpijskie – MIKO">
+ <meta property="twitter:description" content="Społeczność, gdzie poznasz innych ambitnych młodych matematyków, poszerzysz swoją wiedzę i przygotujesz się do Olimpiady Matematycznej.">
+ <meta property="twitter:card" content="summary_large_image">
+ <meta property="twitter:image" content="https://mikomath.org/media/cards/index.png">
 </head>
 
 <body>
-    {% include "header.html" %}
+ {% include "header.html" %}
 
-    <main>
-        <div id="landing-banner-wrapper">
-            <div id="info-wrapper">
-                <img src="{% static 'logoDark.svg' %}" alt="Logo Matematycznego Internetowego Koła Olimpijskiego"
-                    style="    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    user-select: none;">
-                <h2 id="welcome-text">Dołącz do&nbsp;nas, rozwiązuj ciekawe zadania, rozwijając z&nbsp;nami pasję do&nbsp;matematyki!</h2>
-                <div style="display: flex; justify-content: center; font-weight: 400; margin-top: 20px;">
-                    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer">Dołączam!</a>
-                    <a href={% url 'informacje' %} style="text-decoration: none; cursor: pointer">O kole</a>
-                </div>
-            </div>
-            <div id="background-image" style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0),rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.webp' %}');">
-            </div>
+ <main>
+  <div id="landing-banner-wrapper">
+   <div id="info-wrapper">
+    <img
+      src="{% static 'logoDark.svg' %}"
+      alt="Logo Matematycznego Internetowego Koła Olimpijskiego"
+      style="-webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;"
+    >
+    <h2 id="welcome-text">Dołącz do&nbsp;nas, rozwiązuj ciekawe zadania, rozwijając z&nbsp;nami pasję do&nbsp;matematyki!</h2>
+
+    <div class="landing-banner-actions">
+      <a href="https://discord.gg/nA8CjrPqGM" class="homepage-cta-button">Dołączam!</a>
+      <a href="{% url 'informacje' %}" class="homepage-cta-button homepage-cta-button--ghost">O kole</a>
+    </div>
+   </div>
+
+   <div
+     id="background-image"
+     style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0), rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.webp' %}');"
+   ></div>
+  </div>
+ </main>
+
+ <section id="feed">
+  <div class="row">
+   <div class="column_left">
+    <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer" class="profile">
+      <img
+        src="{% static 'dsclogo.webp' %}"
+        alt="Ikona z logo Discord"
+        style="height: 100px; border-radius: 50px; margin-bottom: 20px;"
+      >
+      <h3 id="profile_name" style="color: white; text-align: center;">
+        Dołącz do&nbsp;społeczności MIKO na&nbsp;Discordzie!
+        <span style="vertical-align: bottom;" class="material-symbols-rounded">open_in_new</span>
+      </h3>
+    </a>
+
+    <div class="info-banner">
+      <h2>Nadchodzące eventy:</h2>
+
+      {% for seminar in events %}
+      <div class="event">
+        <h3 class="seminar-theme"><strong>{{ seminar.theme }}</strong></h3>
+
+        <div class="event-date">
+          {{ seminar.date_string }}, {{ seminar.time_string }}<br>
         </div>
-    </main>
 
-    <section id="feed">
+        <div class="badge-container">
+          {% if seminar.featured %}
+          <div class="badge badge-featured">
+            <span class="material-symbols-rounded badge-icon">verified</span>
+            polecane
+          </div>
+          {% endif %}
 
-        <div class="row">
-            <div class="column_left">
+          {% if seminar.special_guest %}
+          <div class="badge badge-featured">
+            <span class="material-symbols-rounded badge-icon">person_alert</span>
+            gość specjalny
+          </div>
+          {% endif %}
 
-                <a href="https://discord.gg/nA8CjrPqGM" style="text-decoration: none; cursor: pointer" class="profile">
-                    <img src="{% static 'dsclogo.webp' %}" alt="Ikona z logo Discord"
-                        style="height: 100px; border-radius: 50px; margin-bottom: 20px;">
-                    <h3 id="profile_name" style="color: white; text-align: center;">
-                        Dołącz do&nbsp;społeczności MIKO na&nbsp;Discordzie!
-                        <span style="vertical-align: bottom;" class="material-symbols-rounded">open_in_new</span></h3>
-                </a>
+          {% if seminar.group_name %}
+          <div class="badge badge-dark">
+            <span class="material-symbols-rounded badge-icon">group</span>
+            {{ seminar.group_name }}
+          </div>
+          {% endif %}
 
-                <div class="info-banner">
-                    <h2>Nadchodzące eventy:</h2>
-                    {% for seminar in events %}
-                        <div class="event">
-                            <h3 class="seminar-theme"><strong> {{ seminar.theme }} </strong></h3>
-                            <div class="event-date">
-                                {{ seminar.date_string }}, {{ seminar.time_string }}<br>
-                            </div>
-
-                            <div class="badge-container">
-                                {% if seminar.featured %}
-                                    <div class="badge badge-featured">
-                                        <span class="material-symbols-rounded badge-icon">verified</span>
-                                        polecane
-                                    </div>
-                                {% endif %}
-                                {% if seminar.special_guest %}
-                                    <div class="badge badge-featured">
-                                        <span class="material-symbols-rounded badge-icon">person_alert</span>
-                                        gość specjalny
-                                    </div>
-                                {% endif %}
-                                {% if seminar.group_name %}
-                                    <div class="badge badge-dark">
-                                        <span class="material-symbols-rounded badge-icon">group</span>
-                                        {{ seminar.group_name }}</div>
-                                {% endif %}
-                                {% if seminar.difficulty_label %}
-                                    <div class="badge badge-light">
-                                        <span class="material-symbols-rounded badge-icon">{{ seminar.difficulty_icon }}</span>
-                                        {{ seminar.difficulty_label }}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="event-info">
-                                {% if seminar.tutors %}
-                                    <div class="event-tutors">
-                                        {% if seminar.tutors|length > 1%}
-                                            <strong>Prowadzą:</strong>
-                                        {% else %}
-                                            <strong>Prowadzi:</strong>
-                                        {% endif %}
-                                        {{ seminar.tutors|join:", " }}
-                                    </div>
-                                {% endif %}
-                                {% if seminar.description %}
-                                    <strong>Opis:</strong> {{ seminar.description }}<br>
-                                {% endif %}
-                            </div>
-
-                            {% if seminar.image_url %}
-                                <div class="event-image">
-                                    <img src="{{ seminar.image_url }}" alt="{{ seminar.theme }}" style="max-width: 100%; height: auto;">
-                                </div>
-                            {% endif %}
-                            {% if seminar.file_url %}
-                                <div style="display: flex;">
-                                    <a href="{{ seminar.file_url }}" style="text-decoration: none"><div class="badge badge-light">
-                                        <span class="material-symbols-rounded badge-icon">download</span>
-                                        załącznik</div></a>
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% empty %}
-                        <h3>Brak eventów w najbliższym czasie ;(</h3>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="column_right" style="flex-wrap: wrap; word-break:break-word;">
-                <h1 style="margin-top: 0px;">Aktualności</h1>
-                <hr style="margin-bottom: 20px">
-                {% for post in posts %}
-                <div class="post">
-                    <div class="post-header">
-                        <h2 id="post_title">{{ post.title }}</h2>
-                        <p>{{ post.date }}, {{ post.time }}</p>
-                    </div>
-                    <h3 id="post_subtitle">{{ post.subtitle }}</h3>
-
-                    <hr style="border: none; height: 2px; margin-bottom: 10px">
-                    <p>{% if post.authors|length > 1%}
-                            <strong>Autorzy:</strong>
-                        {% else %}
-                            <strong>Autor:</strong>
-                        {% endif %}
-                        {% for author in post.authors %}
-                            <a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a>
-                            {% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </p>
-
-                    <div class="post_content">
-                        {{ post.content }}
-                    </div>
-
-                    {% if post.file %}
-                        <div style="display: flex; margin-top: 10px;">
-                        <a href="{{ post.file.url }}" style="text-decoration: none"><div class="badge badge-light">
-                            <span class="material-symbols-rounded badge-icon">download</span>
-                            {{ post.file.name }}</div></a>
-                        </div>
-                    {% endif %}
-                    {% if post.images|length > 0 %}
-                        <div class="images">
-                            {% for image in post.images %}
-                            <img src="/media/{{ image.url }}" alt="{{ image.alt_text }}">
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                {% empty %}
-                    <p>Brak postów.</p>
-                {% endfor %}
-
-            </div>
+          {% if seminar.difficulty_label %}
+          <div class="badge badge-light">
+            <span class="material-symbols-rounded badge-icon">{{ seminar.difficulty_icon }}</span>
+            {{ seminar.difficulty_label }}
+          </div>
+          {% endif %}
         </div>
-    </section>
-    {% include "footer.html" %}
 
+        <div class="event-info">
+          {% if seminar.tutors %}
+          <div class="event-tutors">
+            {% if seminar.tutors|length > 1 %}
+            <strong>Prowadzą:</strong>
+            {% else %}
+            <strong>Prowadzi:</strong>
+            {% endif %}
+            {{ seminar.tutors|join:", " }}
+          </div>
+          {% endif %}
+
+          {% if seminar.description %}
+          <strong>Opis:</strong> {{ seminar.description }}<br>
+          {% endif %}
+        </div>
+
+        {% if seminar.image_url %}
+        <div class="event-image">
+          <img src="{{ seminar.image_url }}" alt="{{ seminar.theme }}" style="max-width: 100%; height: auto;">
+        </div>
+        {% endif %}
+
+        {% if seminar.file_url %}
+        <div style="display: flex;">
+          <a href="{{ seminar.file_url }}" style="text-decoration: none">
+            <div class="badge badge-light">
+              <span class="material-symbols-rounded badge-icon">download</span>
+              załącznik
+            </div>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <h3>Brak eventów w najbliższym czasie ;(</h3>
+      {% endfor %}
+    </div>
+   </div>
+
+   <div class="column_right" style="flex-wrap: wrap; word-break: break-word;">
+    {% if registration_event %}
+    <div
+      class="post homepage-event-tile"
+      style="background-image:
+        linear-gradient(135deg, rgba(6, 49, 62, 0.85), rgba(7, 74, 89, 0.60)),
+        url('{% static 'MIKO_GATHERING.webp' %}');"
+    >
+      <div class="homepage-event-tile__content">
+        <p class="homepage-event-tile__eyebrow">
+          <span class="material-symbols-rounded">event_upcoming</span>
+          Trwają zapisy
+        </p>
+
+        <h2 class="homepage-event-tile__title">{{ registration_event.name }}</h2>
+        <p class="homepage-event-tile__meta">
+          {{ registration_event.location }}, {{ registration_event.date_range }}
+        </p>
+      </div>
+
+      <a
+        href="{{ registration_event.registration_link }}"
+        class="homepage-cta-button homepage-event-tile__button"
+        target="_blank"
+      >
+        Biorę udział!
+      </a>
+    </div>
+    {% endif %}
+
+    <h1 style="margin-top: 0px;">Aktualności</h1>
+    <hr style="margin-bottom: 20px">
+
+    {% for post in posts %}
+    <div class="post">
+      <div class="post-header">
+        <h2 id="post_title">{{ post.title }}</h2>
+        <p>{{ post.date }}, {{ post.time }}</p>
+      </div>
+
+      <h3 id="post_subtitle">{{ post.subtitle }}</h3>
+      <hr style="border: none; height: 2px; margin-bottom: 10px">
+
+      <p>
+        {% if post.authors|length > 1 %}
+        <strong>Autorzy:</strong>
+        {% else %}
+        <strong>Autor:</strong>
+        {% endif %}
+
+        {% for author in post.authors %}
+        <a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </p>
+
+      <div class="post_content">
+        {{ post.content }}
+      </div>
+
+      {% if post.file %}
+      <div style="display: flex; margin-top: 10px;">
+        <a href="{{ post.file.url }}" style="text-decoration: none">
+          <div class="badge badge-light">
+            <span class="material-symbols-rounded badge-icon">download</span>
+            {{ post.file.name }}
+          </div>
+        </a>
+      </div>
+      {% endif %}
+
+      {% if post.images|length > 0 %}
+      <div class="images">
+        {% for image in post.images %}
+        <img src="/media/{{ image.url }}" alt="{{ image.alt_text }}">
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% empty %}
+    <p>Brak postów.</p>
+    {% endfor %}
+   </div>
+  </div>
+ </section>
+
+ {% include "footer.html" %}
 </body>
 
-<script>function toggleImageSize() {
+<script>
+function toggleImageSize() {
   const images = document.querySelectorAll('div.images img');
 
   images.forEach(img => {
@@ -210,21 +266,24 @@
   });
 }
 
-// Call the function when the page loads
-document.addEventListener('DOMContentLoaded', toggleImageSize);</script>
+document.addEventListener('DOMContentLoaded', toggleImageSize);
+</script>
 
-<script>const backgroundDiv = document.getElementById('background-image');
+<script>
+const backgroundDiv = document.getElementById('background-image');
 const images = ['MIKO_BG1.webp', 'MIKO_PICTURE.webp'];
 let currentIndex = 0;
 
 function changeBackground() {
-    currentIndex = (currentIndex + 1) % images.length;
-    const nextImage = `/static/${images[currentIndex]}`; // Direct string concatenation
+  currentIndex = (currentIndex + 1) % images.length;
+  const nextImage = `/static/${images[currentIndex]}`;
 
-    backgroundDiv.style.transition = 'background-image 1s ease-in-out';
-    backgroundDiv.style.backgroundImage = `linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0), rgba(255,255,255,0), rgba(255,255,255,0)), url('${nextImage}')`; // Template literal here
+  backgroundDiv.style.transition = 'background-image 1s ease-in-out';
+  backgroundDiv.style.backgroundImage =
+    `linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0), rgba(255,255,255,0), rgba(255,255,255,0)), url('${nextImage}')`;
 }
 
-// Change background every 5 seconds
-setInterval(changeBackground, 5000);</script>
+setInterval(changeBackground, 5000);
+</script>
+
 </html>
