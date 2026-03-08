@@ -5,6 +5,8 @@ mikosite/media/
 mikosite/static/CACHE/
 # Auto-generated static files
 mikosite/static/debug_toolbar/
+mikosite/static/admin/
+mikosite/static/rest_framework/
 
 # Secrets file
 mikosite/mikosite/secrets.py
