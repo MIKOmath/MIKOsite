@@ -1,10 +1,9 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.core.cache import cache
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 from django.shortcuts import render
-from django.utils import timezone
 
 from mainSite.models import RegistrationEvent, Post
 from seminars.models import Seminar
@@ -17,7 +16,7 @@ ACTIVE_REGISTRATION_CACHE_KEY = 'active-registration-display-data'
 
 
 def seconds_until_next_midnight() -> int:
-    now = timezone.localtime()
+    now = datetime.now()
     next_midnight = (now + timedelta(days=1)).replace(
         hour=0,
         minute=0,
@@ -33,7 +32,7 @@ def get_upcoming_seminars_data():
         next_seminars = Seminar.fetch_upcoming()
         if next_seminars:
             time_to_next_seminar = (
-                next_seminars[0].start_timestamp - timezone.now()
+                next_seminars[0].start_timestamp - datetime.now()
             ).total_seconds()
         else:
             time_to_next_seminar = UPCOMING_SEMINARS_MAX_TTL
@@ -74,7 +73,7 @@ def clear_posts_cache(sender, **kwargs):
 def get_active_registration_event_data():
     data = cache.get(ACTIVE_REGISTRATION_CACHE_KEY)
     if data is None:
-        today = timezone.localdate()
+        today = datetime.today()
         event = (
             RegistrationEvent.objects
             .filter(registration_begin__lte=today, registration_end__gte=today)
