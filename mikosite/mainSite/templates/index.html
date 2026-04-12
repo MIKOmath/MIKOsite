@@ -139,7 +139,12 @@
           {% endif %}
 
           {% if seminar.description %}
-          <strong>Opis:</strong> {{ seminar.description }}<br>
+          <div class="event-description">
+            <span><strong>Opis:</strong> {{ seminar.short_description }}</span>
+            {% if seminar.description_is_truncated %}
+            <a href="{% url 'informacje' %}?seminar={{ seminar.id }}" class="event-more-link">pokaż więcej</a>
+            {% endif %}
+          </div>
           {% endif %}
         </div>
 

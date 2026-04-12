@@ -4,12 +4,14 @@ from django.core.cache import cache
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 from django.shortcuts import render
+from django.utils.text import Truncator
 
 from mainSite.models import RegistrationEvent, Post
 from seminars.models import Seminar
 
 UPCOMING_SEMINARS_CACHE_KEY = 'upcoming-seminars-display-data'
 UPCOMING_SEMINARS_MAX_TTL = 86400  # 1 day
+UPCOMING_SEMINAR_DESCRIPTION_PREVIEW_LENGTH = 250
 MAINSITE_POSTS_CACHE_KEY = 'mainsite-posts-display-data'
 MAINSITE_POSTS_MAX_TTL = 86400
 ACTIVE_REGISTRATION_CACHE_KEY = 'active-registration-display-data'
@@ -28,7 +30,25 @@ def seconds_until_next_midnight() -> int:
 
 def build_upcoming_seminar_display_data(seminar: Seminar) -> dict:
     seminar_data = seminar.display_dict()
-    seminar_data['id'] = seminar.pk
+    description = seminar_data.get('description')
+    normalized_description = ' '.join(description.split()) if description else None
+
+    short_description = (
+        Truncator(normalized_description).chars(
+            UPCOMING_SEMINAR_DESCRIPTION_PREVIEW_LENGTH,
+            truncate='...',
+        )
+        if normalized_description
+        else None
+    )
+
+    seminar_data.update({
+        'id': seminar.pk,
+        'short_description': short_description,
+        'description_is_truncated': bool(
+            normalized_description and short_description != normalized_description
+        ),
+    })
     return seminar_data
 
 
