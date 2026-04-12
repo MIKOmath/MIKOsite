@@ -11,15 +11,35 @@ class SeminarGroupAdmin(admin.ModelAdmin):
 
 
 class SeminarAdmin(admin.ModelAdmin):
+    autocomplete_fields = ("tutors",)
+    list_display = (
+        "theme",
+        "date",
+        "group",
+        "tutor_list",
+    )
     list_filter = [
         ('date', DateRangeFilterBuilder(title='data',
-                                        default_start=lambda r: datetime.now() - timedelta(days=7),
-                                        default_end=lambda r: datetime.now() + timedelta(days=30))),
+                                        default_start=lambda r: datetime.now() - timedelta(days=30),
+                                        default_end=lambda r: datetime.now() + timedelta(days=90))),
         ('group', MultiSelectRelatedOnlyFilter),
         ('tutors', MultiSelectRelatedOnlyFilter),
     ]
-    search_fields = ['theme']
+    search_fields = [
+        "theme",
+        "tutors__username",
+        "tutors__last_name",
+        "tutors__email",
+    ]
     ordering = ('-date', '-time')
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.prefetch_related("tutors")
+
+    @admin.display(description="Tutors")
+    def tutor_list(self, obj):
+        return ", ".join(obj.tutors.values_list("username", flat=True)) or "-"
 
 
 class GoogleFormsTemplateAdmin(admin.ModelAdmin):
