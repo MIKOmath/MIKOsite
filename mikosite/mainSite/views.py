@@ -26,6 +26,12 @@ def seconds_until_next_midnight() -> int:
     return int((next_midnight - now).total_seconds())
 
 
+def build_upcoming_seminar_display_data(seminar: Seminar) -> dict:
+    seminar_data = seminar.display_dict()
+    seminar_data['id'] = seminar.pk
+    return seminar_data
+
+
 def get_upcoming_seminars_data():
     data = cache.get(UPCOMING_SEMINARS_CACHE_KEY)
     if data is None:
@@ -37,7 +43,7 @@ def get_upcoming_seminars_data():
         else:
             time_to_next_seminar = UPCOMING_SEMINARS_MAX_TTL
 
-        data = [seminar.display_dict() for seminar in next_seminars]
+        data = [build_upcoming_seminar_display_data(seminar) for seminar in next_seminars]
         cache.set(
             UPCOMING_SEMINARS_CACHE_KEY,
             data,

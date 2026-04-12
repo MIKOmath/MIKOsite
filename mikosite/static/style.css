@@ -263,6 +263,18 @@ h3 {
   color: var(--b2);
 }
 
+.event--clickable {
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.event--clickable:hover,
+.event--clickable:focus-visible {
+  border-color: var(--b1);
+  transform: translateY(-2px);
+  outline: none;
+}
+
 .event-info:not(:has(div)) {
   margin-top: -4px;
 }
@@ -453,6 +465,13 @@ hr {
   align-content: center;
   line-height: 1.2;
   padding: 20px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.profile:hover,
+.profile:focus-visible {
+  transform: translateY(-2px);
+  outline: none;
 }
 
 /* Columns */

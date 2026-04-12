@@ -83,7 +83,13 @@
       <h2>Nadchodzące eventy:</h2>
 
       {% for seminar in events %}
-      <div class="event">
+      <div
+        class="event event--clickable"
+        data-seminar-url="{% url 'informacje' %}?seminar={{ seminar.id }}"
+        role="link"
+        tabindex="0"
+        aria-label="Pokaz szczegoly wydarzenia {{ seminar.theme }}"
+      >
         <h3 class="seminar-theme"><strong>{{ seminar.theme }}</strong></h3>
 
         <div class="event-date">
@@ -267,6 +273,38 @@ function toggleImageSize() {
 }
 
 document.addEventListener('DOMContentLoaded', toggleImageSize);
+</script>
+
+<script>
+function enableClickableSeminarTiles() {
+  const seminarTiles = document.querySelectorAll('.event--clickable');
+
+  seminarTiles.forEach(tile => {
+    const seminarUrl = tile.dataset.seminarUrl;
+    if (!seminarUrl) {
+      return;
+    }
+
+    tile.addEventListener('click', event => {
+      if (event.target.closest('a')) {
+        return;
+      }
+
+      window.location.href = seminarUrl;
+    });
+
+    tile.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+      }
+
+      event.preventDefault();
+      window.location.href = seminarUrl;
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', enableClickableSeminarTiles);
 </script>
 
 <script>

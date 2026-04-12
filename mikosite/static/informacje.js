@@ -12,11 +12,33 @@ const loadingBar = document.getElementById('loadingBar');
 let currentDate = new Date();
 let events = {};
 let eventsCache = {};
+let requestedSeminarId = getRequestedSeminarId();
 
 var escape = document.createElement('textarea');
 function escapeHTML(html) {
     escape.textContent = html;
     return escape.innerHTML;
+}
+
+function parseLocalDate(dateString) {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+}
+
+function getRequestedSeminarId() {
+    const seminarId = new URLSearchParams(window.location.search).get('seminar');
+    if (!seminarId) {
+        return null;
+    }
+
+    const parsedId = Number(seminarId);
+    return Number.isInteger(parsedId) && parsedId > 0 ? parsedId : null;
+}
+
+function clearRequestedSeminarId() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('seminar');
+    window.history.replaceState({}, document.title, url.toString());
 }
 
 function showLoadingBar() {
@@ -33,7 +55,7 @@ function hideLoadingBar() {
     loadingBar.style.display = 'none';
 }
 
-function fetchEvents() {
+async function fetchEvents() {
     const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
     if (eventsCache[monthKey]) {
         events = eventsCache[monthKey];
@@ -48,40 +70,44 @@ function fetchEvents() {
     const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toLocaleDateString("sv");
     const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toLocaleDateString("sv");
     const url = `/api/seminars/?limit=200&start_date=${startDate}&end_date=${endDate}&display_only=1`;
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            events = {};
-            data.results.forEach(event => {
-                const eventDate = new Date(event.date);
-                const key = eventDate.toDateString();
-                if (!events[key]) {
-                    events[key] = [];
-                }
-                events[key].push({
-                    date: eventDate,
-                    time: new Date(`${event.date}T${event.time}`),
-                    duration: {
-                        hours: parseInt(event.duration.split(':')[0]),
-                        minutes: parseInt(event.duration.split(':')[1])
-                    },
-                    theme: event.theme,
-                    tutors: event.tutors,
-                    description: event.description,
-                    image: event.image,
-                    file: event.file,
-                    group_name: event.group_name,
-                    difficulty_label: event.difficulty_label,
-                    difficulty_icon: event.difficulty_icon,
-                    featured: event.featured,
-                    special_guest: event.special_guest
-                });
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        events = {};
+        data.results.forEach(event => {
+            const eventDate = parseLocalDate(event.date);
+            const key = eventDate.toDateString();
+            if (!events[key]) {
+                events[key] = [];
+            }
+            events[key].push({
+                id: event.id,
+                date: eventDate,
+                time: new Date(`${event.date}T${event.time}`),
+                duration: {
+                    hours: parseInt(event.duration.split(':')[0]),
+                    minutes: parseInt(event.duration.split(':')[1])
+                },
+                theme: event.theme,
+                tutors: event.tutors,
+                description: event.description,
+                image: event.image,
+                file: event.file,
+                group_name: event.group_name,
+                difficulty_label: event.difficulty_label,
+                difficulty_icon: event.difficulty_icon,
+                featured: event.featured,
+                special_guest: event.special_guest
             });
-            eventsCache[monthKey] = events;
-            updateCalendar();
-        })
-        .catch(error => console.error('Error fetching events:', error))
-        .finally(hideLoadingBar);
+        });
+        eventsCache[monthKey] = events;
+        updateCalendar();
+    } catch (error) {
+        console.error('Error fetching events:', error);
+    } finally {
+        hideLoadingBar();
+    }
 }
 
 function updateCalendar() {
@@ -209,6 +235,37 @@ function showEventPopup(date, eventsList) {
     eventPopup.style.display = 'block';
 }
 
+async function openRequestedSeminar() {
+    if (!requestedSeminarId) {
+        await fetchEvents();
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/seminars/${requestedSeminarId}/?display_only=1`);
+        if (!response.ok) {
+            throw new Error(`Failed to load seminar ${requestedSeminarId}`);
+        }
+
+        const seminar = await response.json();
+        const seminarDate = parseLocalDate(seminar.date);
+        currentDate = new Date(seminarDate.getFullYear(), seminarDate.getMonth(), 1);
+        await fetchEvents();
+
+        const dailyEvents = events[seminarDate.toDateString()];
+        if (dailyEvents) {
+            showEventPopup(seminarDate, dailyEvents);
+        }
+    } catch (error) {
+        console.error('Error opening requested seminar:', error);
+        currentDate = new Date();
+        await fetchEvents();
+    } finally {
+        clearRequestedSeminarId();
+        requestedSeminarId = null;
+    }
+}
+
 function getTimeDisplay(event) {
     if (!event.time) {
         return 'Brak danych';
@@ -263,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    fetchEvents();
+    openRequestedSeminar();
 });
 
 function showCurrentMonth() {
