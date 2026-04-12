@@ -238,3 +238,47 @@ except ImportError:
     print("Turnstile details not found in secrets.py, falling back to env variables.")
     TURNSTILE_SITE_KEY = os.getenv("TURNSTILE_SITE_KEY", "")
     TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY", "")
+
+if not DEBUG:
+    LOGS_DIR = BASE_DIR / "logs"
+    LOGS_DIR.mkdir(parents=True, exist_ok=True)
+    ERROR_LOG_FILE = LOGS_DIR / "django-errors.log"
+
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+            }
+        },
+        "handlers": {
+            "error_file": {
+                "class": "logging.FileHandler",
+                "level": "ERROR",
+                "filename": str(ERROR_LOG_FILE),
+                "formatter": "verbose",
+            }
+        },
+        "loggers": {
+            "django": {
+                "handlers": ["error_file"],
+                "level": "ERROR",
+                "propagate": False,
+            },
+            "django.request": {
+                "handlers": ["error_file"],
+                "level": "ERROR",
+                "propagate": False,
+            },
+            "django.server": {
+                "handlers": ["error_file"],
+                "level": "ERROR",
+                "propagate": False,
+            },
+        },
+        "root": {
+            "handlers": ["error_file"],
+            "level": "ERROR",
+        },
+    }
