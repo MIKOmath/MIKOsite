@@ -1,13 +1,22 @@
-from datetime import datetime, date
+from datetime import datetime
 from babel.dates import format_date, format_time
+
 from django.db import models
 from django.db.models import Q
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.exceptions import ValidationError
+from django.core.validators import (
+    FileExtensionValidator,
+    MaxValueValidator,
+    MinValueValidator,
+    URLValidator,
+)
 from django.conf import settings
-from django.template.defaultfilters import length
 from django.utils.safestring import mark_safe
 
 from accounts.models import User
+
+
+absolute_url_validator = URLValidator(schemes=["http", "https"])
 
 
 class SeminarGroup(models.Model):
@@ -157,6 +166,128 @@ class Seminar(models.Model):
             'difficulty_label': difficulty_badge_content['label'],
             'difficulty_icon': difficulty_badge_content['icon'],
         }
+
+
+class PreviousEdition(models.Model):
+    start_date = models.DateField(blank=False, null=False)
+    end_date = models.DateField(blank=False, null=False)
+    member_count = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0)],
+        help_text="Liczba członków na koniec edycji.",
+    )
+    member_count_is_estimate = models.BooleanField(
+        default=True,
+        help_text="Dodaje plus do liczby, np. 2000+.",
+    )
+    brochure = models.FileField(
+        upload_to='brochures/',
+        blank=True,
+        validators=[FileExtensionValidator(['pdf'])],
+        help_text="Opcjonalny plik PDF z materiałami dla tej edycji.",
+    )
+    is_published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-start_date']
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(end_date__gte=models.F('start_date')),
+                name='previous_edition_end_after_start',
+            ),
+        ]
+
+    def __str__(self):
+        return self.school_year_label
+
+    def clean(self):
+        errors = {}
+
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            errors['end_date'] = "Data końca edycji nie może być wcześniejsza niż data początku."
+
+        if self.start_date and self.end_date:
+            overlapping = PreviousEdition.objects.filter(
+                start_date__lte=self.end_date,
+                end_date__gte=self.start_date,
+            )
+            if self.pk:
+                overlapping = overlapping.exclude(pk=self.pk)
+            if overlapping.exists():
+                errors['start_date'] = "Zakres dat edycji nie może nachodzić na inną edycję."
+
+        if errors:
+            raise ValidationError(errors)
+
+    @property
+    def school_year_label(self):
+        return f"Rok szkolny {self.start_date.year}/{str(self.end_date.year)[-2:]}"
+
+    @property
+    def seminar_count(self):
+        return Seminar.objects.filter(date__gte=self.start_date, date__lte=self.end_date).count()
+
+    @property
+    def member_count_label(self):
+        if self.member_count is None:
+            return ""
+        suffix = "+" if self.member_count_is_estimate else ""
+        return f"{self.member_count}{suffix}"
+
+    @property
+    def brochure_url(self):
+        return self.brochure.url if self.brochure else ""
+
+
+class PreviousEditionMilestone(models.Model):
+    edition = models.ForeignKey(
+        PreviousEdition,
+        on_delete=models.CASCADE,
+        related_name='milestones',
+    )
+    date = models.DateField(blank=False, null=False)
+    show_date = models.BooleanField(
+        "Pokazuj datę",
+        default=True,
+        help_text="Odznacz, jeśli data ma być używana tylko do sortowania.",
+    )
+    title = models.CharField(max_length=200, blank=False, null=False)
+    description = models.TextField(blank=True)
+    material_icon = models.CharField(
+        max_length=64,
+        default='flag',
+        help_text="Nazwa symbolu Material Icons, np. flag, emoji_events, school.",
+    )
+    link_url = models.CharField(
+        max_length=500,
+        blank=True,
+        help_text="Opcjonalny link. Dozwolone są pełne adresy http(s)://... oraz ścieżki w obrębie strony, np. /about/.",
+    )
+
+    class Meta:
+        ordering = ['date', 'id']
+        verbose_name = "kamień milowy"
+        verbose_name_plural = "kamienie milowe"
+
+    def __str__(self):
+        return f"{self.edition.school_year_label}: {self.title}"
+
+    def clean(self):
+        errors = {}
+
+        if self.edition_id and self.date:
+            if self.date < self.edition.start_date or self.date > self.edition.end_date:
+                errors['date'] = "Data kamienia milowego musi mieścić się w zakresie edycji."
+
+        if self.link_url and not self.link_url.startswith('/'):
+            try:
+                absolute_url_validator(self.link_url)
+            except ValidationError:
+                errors['link_url'] = "Podaj pełny adres http(s)://... albo ścieżkę zaczynającą się od /."
+
+        if errors:
+            raise ValidationError(errors)
 
 
 class Reminder(models.Model):

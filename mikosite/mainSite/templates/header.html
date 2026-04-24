@@ -28,7 +28,8 @@
         </button>
         <ul class="navbar-center">
             <li><a href="/" {% if request.path == '/' %}id="current"{% endif %}>HOME</a></li>
-            <li><a href="/kolo" {% if request.path == '/kolo/' %}id="current"{% endif %}>KOŁO MATEMATYCZNE</a></li>
+            <li><a href="/kolo" {% if request.path == '/kolo/' %}id="current"{% endif %}>ZAJĘCIA</a></li>
+            <li><a href="/editions" {% if request.path == '/editions/' %}id="current"{% endif %}>MATERIAŁY</a></li>
             <li><a href="/about" {% if request.path == '/about/' %}id="current"{% endif %}>O NAS</a></li>
             <li><a href="https://sprawdzai.org/?utm_source=mikomath.org&utm_medium=referral&utm_campaign=sprawdzai&utm_content=header
 " id="highlighted">SPRAWDZAI</a></li>

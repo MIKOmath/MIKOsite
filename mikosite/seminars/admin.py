@@ -6,7 +6,14 @@ from django.contrib import admin
 from rangefilter.filters import DateRangeFilterBuilder
 from more_admin_filters import MultiSelectRelatedOnlyFilter
 
-from .models import Seminar, SeminarGroup, GoogleFormsTemplate, Reminder
+from .models import (
+    Seminar,
+    SeminarGroup,
+    GoogleFormsTemplate,
+    PreviousEdition,
+    PreviousEditionMilestone,
+    Reminder,
+)
 
 
 def theme_looks_fully_capitalized(theme):
@@ -96,6 +103,52 @@ class GoogleFormsTemplateAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
 
+class PreviousEditionMilestoneInline(admin.StackedInline):
+    model = PreviousEditionMilestone
+    extra = 1
+    fields = (
+        ('date', 'show_date'),
+        ('material_icon', 'title'),
+        'description',
+        'link_url',
+    )
+
+
+class PreviousEditionAdmin(admin.ModelAdmin):
+    list_display = (
+        'school_year_label',
+        'start_date',
+        'end_date',
+        'seminar_count',
+        'milestone_count',
+        'member_count_label',
+        'has_brochure',
+        'is_published',
+    )
+    list_filter = ('is_published',)
+    readonly_fields = ('school_year_label', 'seminar_count')
+    fields = (
+        'start_date',
+        'end_date',
+        'school_year_label',
+        'member_count',
+        'member_count_is_estimate',
+        'brochure',
+        'seminar_count',
+        'is_published',
+    )
+    inlines = (PreviousEditionMilestoneInline,)
+    ordering = ('-start_date',)
+
+    @admin.display(boolean=True, description='Brochure')
+    def has_brochure(self, obj):
+        return bool(obj.brochure)
+
+    @admin.display(description='Milestones')
+    def milestone_count(self, obj):
+        return obj.milestones.count()
+
+
 class ReminderAdmin(admin.ModelAdmin):
     list_filter = [
         ('date_time', DateRangeFilterBuilder(title='date',
@@ -109,4 +162,5 @@ class ReminderAdmin(admin.ModelAdmin):
 admin.site.register(SeminarGroup, SeminarGroupAdmin)
 admin.site.register(Seminar, SeminarAdmin)
 admin.site.register(GoogleFormsTemplate, GoogleFormsTemplateAdmin)
+admin.site.register(PreviousEdition, PreviousEditionAdmin)
 admin.site.register(Reminder, ReminderAdmin)

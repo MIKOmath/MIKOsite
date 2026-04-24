@@ -55,6 +55,23 @@
             <div id="loadingBar" class="loading-bar"></div>
         </div>
 
+        <section class="history-section">
+            <div class="history-section__copy">
+                <h1 class="mobile-left-padding">Historia</h1>
+                <h3 class="mobile-left-padding">
+                    MIKO rozwija się od września 2023&nbsp;roku jako społeczność uczniów
+                    przygotowujących się do Olimpiady Matematycznej. Od samego początku organizujemy
+                    regularne spotkania online prowadzone przez doświadczonych olimpijczyków.
+                    Materiały z&nbsp;zakończonych edycji mogą stanowić cenną inspirację do dalszej nauki.
+                </h3>
+            </div>
+            <div class="history-section__meta">
+                <div class="history-section__number">{{ history.experience_years }}</div>
+                <div class="history-section__label">{{ history.experience_year_unit }} doświadczenia</div>
+                <a href="{% url 'previous_editions' %}" class="history-section__button">Poprzednie edycje</a>
+            </div>
+        </section>
+
         <h1 class="mobile-left-padding">Informacje</h1>
         <h3 class="mobile-left-padding">
             Do udziału w&nbsp;Matematycznym Internetowym Kole Olimpijskim zapraszamy wszystkich zainteresowanych nauką
