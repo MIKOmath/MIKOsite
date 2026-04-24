@@ -17,3 +17,8 @@ class WebsiteTest(TestCase):
         response = self.client.get('/kolo/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'informacje.html')
+
+    def test_previous_editions_response(self):
+        response = self.client.get('/editions/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'previous_editions.html')
