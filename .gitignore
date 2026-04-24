@@ -1,11 +1,11 @@
 # Media files
 mikosite/media/
 
-# Static files cache
-mikosite/static/CACHE/
 # Auto-generated static files
-mikosite/static/debug_toolbar/
+# These are build/collectstatic outputs and should not be committed.
+mikosite/static/CACHE/
 mikosite/static/admin/
+mikosite/static/debug_toolbar/
 mikosite/static/rest_framework/
 
 # Secrets file
