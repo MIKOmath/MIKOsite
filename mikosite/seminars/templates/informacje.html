@@ -38,19 +38,25 @@
 
     <div class="introduction">
         <h1 class="mobile-left-padding">Kalendarz zajęć</h1>
-        <h3 style="font-weight: 450; margin-bottom: 30px;" class="mobile-left-padding">Poniżej znajdują się nadchodzące kółka i&nbsp;inne wydarzenia organizowane przez MIKO.</h3>
+        <h3 class="mobile-left-padding">
+            Poniżej znajdują się nadchodzące kółka i&nbsp;inne wydarzenia organizowane przez MIKO.
+        </h3>
         <div class="calendar">
             <div class="header">
                 <button id="prevMonth">◀</button>
                 <h2 id="currentMonth"></h2>
                 <button id="nextMonth">▶</button>
             </div>
-            <button id="showCurrentMonth" style="width: auto; margin: auto; margin-bottom: 5px; margin-top: 5px; border: 3px solid #F24535;border-radius: 15px; background-color: transparent; color: #F24535; cursor: pointer"><h2 style="color: var(--r1); padding: 5px 10px;">Dzisiaj</h2> </button>
+            <button id="showCurrentMonth">
+                <span class="material-symbols-rounded" aria-hidden="true">today</span>
+                Dzisiaj
+            </button>
             <div class="days" id="calendarDays"></div>
             <div id="loadingBar" class="loading-bar"></div>
         </div>
+
         <h1 class="mobile-left-padding">Informacje</h1>
-        <h3 style="font-weight: 450" class="mobile-left-padding">
+        <h3 class="mobile-left-padding">
             Do udziału w&nbsp;Matematycznym Internetowym Kole Olimpijskim zapraszamy wszystkich zainteresowanych nauką
             matematyki i&nbsp;nauk pokrewnych. Zajęcia podzielone są na&nbsp;grupy o&nbsp;zróżnicowanym poziomie i&nbsp;różnorodnej tematyce:
         </h3>
@@ -68,7 +74,11 @@
         </div>
 
         <hr style="margin-top: 60px;">
-        <h3 style="font-weight: 450; " class="mobile-left-padding">Wszystkie zajęcia odbywają się zdalnie na platformie Discord. Ważną częścią naszej społeczności jest możliwość prowadzenia dyskusji i&nbsp;wspólnej pracy nad zadaniami na&nbsp;chatach. Dołączając do naszego serwera na Discordzie uzyskasz także:</h3>
+        <h3 class="mobile-left-padding">
+            Wszystkie zajęcia odbywają się zdalnie na platformie Discord. Ważną częścią naszej społeczności jest
+            możliwość prowadzenia dyskusji i&nbsp;wspólnej pracy nad zadaniami na&nbsp;chatach. Dołączając do naszego
+            serwera na Discordzie, uzyskasz także:
+        </h3>
         <div class="levels">
             <div class="column">
                 <h2><strong>Materiały</strong></h2>
@@ -90,13 +100,18 @@
     </div>
     </div>
 
-    <div id="eventPopup" class="event-popup">
-        <div class="popup-content">
-            <h3 id="popupDate"></h3>
-            <span class="close-btn">&times;</span>
-            <ul id="eventList"></ul>
+    <dialog id="eventPopup" class="event-popup" aria-labelledby="popupDate">
+        <div class="event-popup__top">
+            <div>
+                <p>Nadchodzące spotkania</p>
+                <h2 id="popupDate"></h2>
+            </div>
+            <button class="event-popup__close" type="button" data-dialog-close aria-label="Zamknij">
+                <span class="material-symbols-rounded" aria-hidden="true">close</span>
+            </button>
         </div>
-    </div>
+        <ul id="eventList"></ul>
+    </dialog>
 
     {% include "footer.html" %}
 </body>

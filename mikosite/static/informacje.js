@@ -6,7 +6,7 @@ const showCurrentMonthButton = document.getElementById('showCurrentMonth');
 const eventPopup = document.getElementById('eventPopup');
 const popupDate = document.getElementById('popupDate');
 const eventList = document.getElementById('eventList');
-const closeBtn = document.querySelector('.close-btn');
+const closeBtn = eventPopup ? eventPopup.querySelector('[data-dialog-close]') : null;
 const loadingBar = document.getElementById('loadingBar');
 
 let currentDate = new Date();
@@ -169,18 +169,14 @@ function updateCalendar() {
 
 function showEventPopup(date, eventsList) {
     popupDate.textContent = date.toLocaleDateString('pl', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    popupDate.style.fontWeight = "bold"
     eventList.innerHTML = '';
 
     eventsList.forEach(event => {
         const li = document.createElement('li');
         const timeDisplay = getTimeDisplay(event);
 
-        li.style.color = '#06313E';
-        li.style.fontFamily = '"Rubik", sans-serif';
-
         li.innerHTML = `
-            <span style="color: var(--r1)"><strong>${timeDisplay}</strong></span>
+            <span class="event-time">${timeDisplay}</span>
             <h3 class="seminar-theme"><strong> ${escapeHTML(event.theme)} </strong></h3>
 
             <div class="badge-container">
@@ -219,11 +215,11 @@ function showEventPopup(date, eventsList) {
 
             ${event.image ? `
                 <div class="event-image">
-                    <img src="${event.image}" alt="${event.theme}" style="max-width: 250px;">
+                    <img src="${event.image}" alt="${event.theme}">
                 </div>` : ''}
             ${event.file ? `
-                <div style="display: flex;">
-                    <a href="${event.file}" style="text-decoration: none"><div class="badge badge-light">
+                <div class="event-file">
+                    <a href="${event.file}"><div class="badge badge-light">
                         <span class="material-symbols-rounded badge-icon">download</span>
                         załącznik</div></a>
                 </div>` : ''}
@@ -232,7 +228,9 @@ function showEventPopup(date, eventsList) {
         eventList.appendChild(li);
     });
 
-    eventPopup.style.display = 'block';
+    if (eventPopup && typeof eventPopup.showModal === 'function') {
+        eventPopup.showModal();
+    }
 }
 
 async function openRequestedSeminar() {
@@ -283,14 +281,22 @@ function getTimeDisplay(event) {
     return `${startTime}-${endTime}`;
 }
 
-closeBtn.onclick = function() {
-    eventPopup.style.display = 'none';
+function closeEventPopup() {
+    if (eventPopup && typeof eventPopup.close === 'function' && eventPopup.open) {
+        eventPopup.close();
+    }
 }
 
-window.onclick = function(event) {
-    if (event.target === eventPopup) {
-        eventPopup.style.display = 'none';
-    }
+if (closeBtn) {
+    closeBtn.addEventListener('click', closeEventPopup);
+}
+
+if (eventPopup) {
+    eventPopup.addEventListener('click', function(event) {
+        if (event.target === eventPopup) {
+            closeEventPopup();
+        }
+    });
 }
 
 prevMonthButton.addEventListener('click', () => {
@@ -306,19 +312,12 @@ nextMonthButton.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', function() {
     const navbarToggle = document.querySelector('.navbar-toggle');
     const navbarCenter = document.querySelector('.navbar-center');
-    const eventPopup = document.getElementById('eventPopup');
 
-    navbarToggle.addEventListener('click', function() {
-        navbarCenter.classList.toggle('active');
-    });
-
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape' || event.key === 'Esc') {
-            if (eventPopup && eventPopup.style.display === 'block') {
-                eventPopup.style.display = 'none';
-            }
-        }
-    });
+    if (navbarToggle && navbarCenter) {
+        navbarToggle.addEventListener('click', function() {
+            navbarCenter.classList.toggle('active');
+        });
+    }
 
     openRequestedSeminar();
 });
