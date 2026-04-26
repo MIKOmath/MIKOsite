@@ -1,7 +1,9 @@
 FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    N_WORKERS=5 \
+    HYPERCORN_BIND=0.0.0.0:8000
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -23,4 +25,4 @@ WORKDIR /app/mikosite
 
 ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
 
-CMD ["hypercorn", "-k", "uvloop", "--workers", "5", "--bind", "0.0.0.0:8000", "mikosite.asgi:application"]
+CMD ["sh", "-c", "exec hypercorn -k uvloop --workers \"$N_WORKERS\" --bind \"$HYPERCORN_BIND\" mikosite.asgi:application"]
