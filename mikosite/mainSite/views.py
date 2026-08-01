@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from django.core.cache import cache
 from django.db.models.signals import m2m_changed, post_delete, post_save
@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.utils.text import Truncator
 
 from mainSite.models import RegistrationEvent, Post
+from mikosite.dates import seconds_until_next_midnight
 from seminars.models import Seminar
 
 UPCOMING_SEMINARS_CACHE_KEY = 'upcoming-seminars-display-data'
@@ -16,17 +17,6 @@ UPCOMING_SEMINAR_DESCRIPTION_PREVIEW_LENGTH = 250
 MAINSITE_POSTS_CACHE_KEY = 'mainsite-posts-display-data'
 MAINSITE_POSTS_MAX_TTL = 86400
 ACTIVE_REGISTRATION_CACHE_KEY = 'active-registration-display-data'
-
-
-def seconds_until_next_midnight() -> int:
-    now = datetime.now()
-    next_midnight = (now + timedelta(days=1)).replace(
-        hour=0,
-        minute=0,
-        second=0,
-        microsecond=0,
-    )
-    return int((next_midnight - now).total_seconds())
 
 
 def build_upcoming_seminar_display_data(seminar: Seminar) -> dict:
