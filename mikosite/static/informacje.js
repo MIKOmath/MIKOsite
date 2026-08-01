@@ -1,38 +1,398 @@
-const currentMonthElement = document.getElementById('currentMonth');
-const calendarDaysElement = document.getElementById('calendarDays');
+/* Calendar page controller: month loading, grid rendering, filters and the day dialog. */
+
+const CALENDAR_ENDPOINT = '/api/calendar/';
+const SEMINAR_ENDPOINT = '/api/seminars/';
+const MAX_CHIP_ROWS_WIDE = 3;
+const MAX_CHIP_ROWS_COMPACT = 4;
+const MAX_CACHED_MONTHS = 24;
+const PREFETCH_DEADLINE_MS = 1000;
+
+const monthTitle = document.getElementById('currentMonth');
+const weeksElement = document.getElementById('calendarWeeks');
 const prevMonthButton = document.getElementById('prevMonth');
 const nextMonthButton = document.getElementById('nextMonth');
 const showCurrentMonthButton = document.getElementById('showCurrentMonth');
+const filtersElement = document.getElementById('calendarFilters');
+const groupFiltersElement = document.getElementById('groupFilters');
+const clearFiltersButton = document.getElementById('clearFilters');
+const progressElement = document.getElementById('calendarProgress');
+const errorElement = document.getElementById('calendarError');
+const retryButton = document.getElementById('calendarRetry');
 const eventPopup = document.getElementById('eventPopup');
+const popupEyebrow = document.getElementById('popupEyebrow');
 const popupDate = document.getElementById('popupDate');
 const eventList = document.getElementById('eventList');
-const closeBtn = eventPopup ? eventPopup.querySelector('[data-dialog-close]') : null;
-const loadingBar = document.getElementById('loadingBar');
+const popupCloseButton = eventPopup ? eventPopup.querySelector('[data-dialog-close]') : null;
 
-let currentDate = new Date();
-let events = {};
-let eventsCache = {};
-let requestedSeminarId = getRequestedSeminarId();
+const compactQuery = window.matchMedia('(max-width: 780px)');
 
-var escape = document.createElement('textarea');
-function escapeHTML(html) {
-    escape.textContent = html;
-    return escape.innerHTML;
+const state = {
+    viewDate: startOfMonth(new Date()),
+    payload: null,
+    cache: new Map(),
+    selectedGroups: new Set(),
+    day: null,
+    request: null,
+    requestToken: 0,
+};
+
+/* ------------------------------------------------------------------ loading */
+
+async function fetchMonth(viewDate, signal) {
+    const start = firstVisibleMonday(viewDate);
+    const end = lastVisibleDay(viewDate);
+    const url = `${CALENDAR_ENDPOINT}?start_date=${isoDate(start)}&end_date=${isoDate(end)}`;
+    const response = await fetch(url, { signal, headers: { Accept: 'application/json' } });
+    if (!response.ok) {
+        throw new Error(`Calendar request failed with ${response.status}`);
+    }
+    return response.json();
 }
 
-function parseLocalDate(dateString) {
-    const [year, month, day] = dateString.split('-').map(Number);
-    return new Date(year, month - 1, day);
+function cacheMonth(key, payload) {
+    state.cache.set(key, payload);
+    while (state.cache.size > MAX_CACHED_MONTHS) {
+        state.cache.delete(state.cache.keys().next().value);
+    }
 }
 
-function getRequestedSeminarId() {
-    const seminarId = new URLSearchParams(window.location.search).get('seminar');
-    if (!seminarId) {
-        return null;
+async function loadMonth(viewDate) {
+    state.viewDate = startOfMonth(viewDate);
+    const key = monthKey(state.viewDate);
+
+    if (state.cache.has(key)) {
+        state.payload = state.cache.get(key);
+        setError(false);
+        render();
+        prefetchAdjacentMonths();
+        return;
     }
 
-    const parsedId = Number(seminarId);
-    return Number.isInteger(parsedId) && parsedId > 0 ? parsedId : null;
+    if (state.request) {
+        state.request.abort();
+    }
+    const controller = new AbortController();
+    state.request = controller;
+    const token = ++state.requestToken;
+
+    render();
+    setLoading(true);
+
+    try {
+        const payload = await fetchMonth(state.viewDate, controller.signal);
+        cacheMonth(key, payload);
+        if (token !== state.requestToken) {
+            return;
+        }
+        state.payload = payload;
+        setError(false);
+        render();
+        prefetchAdjacentMonths();
+    } catch (error) {
+        if (error.name === 'AbortError' || token !== state.requestToken) {
+            return;
+        }
+        console.error('Error fetching calendar data:', error);
+        state.payload = emptyCalendarPayload();
+        setError(true);
+        render();
+    } finally {
+        if (token === state.requestToken) {
+            state.request = null;
+            setLoading(false);
+        }
+    }
+}
+
+function prefetchAdjacentMonths() {
+    // The timeout matters: idle callbacks are starved in a backgrounded tab.
+    const schedule = window.requestIdleCallback
+        ? callback => window.requestIdleCallback(callback, { timeout: PREFETCH_DEADLINE_MS })
+        : callback => window.setTimeout(callback, PREFETCH_DEADLINE_MS);
+    schedule(() => {
+        [addMonths(state.viewDate, -1), addMonths(state.viewDate, 1)].forEach(async neighbour => {
+            const key = monthKey(neighbour);
+            if (state.cache.has(key)) {
+                return;
+            }
+            try {
+                cacheMonth(key, await fetchMonth(neighbour));
+            } catch (error) {
+                state.cache.delete(key);
+            }
+        });
+    });
+}
+
+function setLoading(isLoading) {
+    progressElement.hidden = !isLoading;
+    weeksElement.classList.toggle('is-loading', isLoading);
+}
+
+function setError(hasError) {
+    errorElement.hidden = !hasError;
+}
+
+/* ------------------------------------------------------------------ filters */
+
+/**
+ * Selections survive navigation, but only groups drawn on the current grid can
+ * filter it — otherwise stepping into another month would empty the calendar.
+ */
+function activeGroupKeys(groups) {
+    const present = new Set(groups.map(group => group.key));
+    return new Set([...state.selectedGroups].filter(key => present.has(key)));
+}
+
+function toggleGroupFilter(key) {
+    if (state.selectedGroups.has(key)) {
+        state.selectedGroups.delete(key);
+    } else {
+        state.selectedGroups.add(key);
+    }
+    render();
+}
+
+function renderFilters(groups, activeKeys) {
+    groupFiltersElement.replaceChildren();
+    filtersElement.hidden = groups.length < 2;
+    clearFiltersButton.hidden = activeKeys.size === 0;
+
+    groups.forEach(group => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'calendar__chip';
+        chip.style.setProperty('--chip-color', group.color);
+        chip.style.setProperty('--chip-ink', contrastingInk(group.color));
+        chip.setAttribute('aria-pressed', String(activeKeys.has(group.key)));
+        chip.title = `${group.name}: ${group.count} ${polishPlural(group.count, 'spotkanie', 'spotkania', 'spotkań')}`;
+        chip.textContent = group.label;
+        chip.addEventListener('click', () => toggleGroupFilter(group.key));
+        groupFiltersElement.appendChild(chip);
+    });
+}
+
+function splitSeminarsByDay(payload, activeKeys) {
+    const shown = new Map();
+    const hidden = new Map();
+
+    (payload.seminars || []).forEach(seminar => {
+        const key = seminar.date;
+        if (activeKeys.size && !activeKeys.has(groupKeyOf(seminar))) {
+            hidden.set(key, (hidden.get(key) || 0) + 1);
+            return;
+        }
+        if (!shown.has(key)) {
+            shown.set(key, []);
+        }
+        shown.get(key).push(seminar);
+    });
+
+    return { shown, hidden };
+}
+
+/* ---------------------------------------------------------------- grid cells */
+
+function buildDayCell(date, column, { hasContent, isOutside, isToday, eventCount }) {
+    const cell = document.createElement('button');
+    cell.type = 'button';
+    cell.className = 'cal-cell';
+    cell.style.gridColumn = column;
+    cell.style.gridRow = '1 / -1';
+    cell.classList.toggle('is-outside', isOutside);
+    cell.classList.toggle('is-today', isToday);
+    cell.classList.toggle('is-empty', !hasContent);
+    cell.disabled = !hasContent;
+    cell.setAttribute('aria-label', describeDay(date, eventCount));
+    cell.addEventListener('click', () => openDayDialog(date));
+    return cell;
+}
+
+function buildDayNumber(date, column) {
+    const dayNumber = document.createElement('span');
+    dayNumber.className = 'cal-daynum';
+    dayNumber.style.gridColumn = column;
+    dayNumber.style.gridRow = '1';
+    dayNumber.textContent = String(date.getDate());
+    return dayNumber;
+}
+
+/**
+ * Chips start under the lowest band covering this day and stretch to the bottom,
+ * so a day beside a band is not pushed down by a lane it does not use. The marker
+ * costs a row of its own, so it only replaces chips when it stands for two or more.
+ */
+function buildDayChips(seminars, dayBands, column, maxRows) {
+    const chips = document.createElement('div');
+    chips.className = 'cal-chips';
+    chips.style.gridColumn = column;
+    const lowestLane = dayBands.reduce((lowest, band) => Math.max(lowest, band.lane), -1);
+    chips.style.gridRow = `${lowestLane + 3} / -1`;
+
+    const shownCount = seminars.length <= maxRows ? seminars.length : maxRows - 1;
+    seminars.slice(0, shownCount).forEach(seminar => chips.appendChild(buildSeminarChip(seminar)));
+    if (seminars.length > shownCount) {
+        chips.appendChild(buildOverflowMarker(seminars.length - shownCount));
+    }
+    return chips;
+}
+
+function buildWeek(weekIndex, layout) {
+    const { gridStartDate, bands, laneCount, seminarsByDay, bandsByDay, maxRows, today } = layout;
+
+    const week = document.createElement('div');
+    week.className = 'cal-week';
+    // repeat(0, ...) is not valid CSS, so months without bands need the short form.
+    week.style.gridTemplateRows = laneCount ? `auto repeat(${laneCount}, auto) 1fr` : 'auto 1fr';
+
+    for (let weekday = 0; weekday < 7; weekday += 1) {
+        const date = addDays(gridStartDate, weekIndex * 7 + weekday);
+        const key = isoDate(date);
+        const daySeminars = seminarsByDay.get(key) || [];
+        const dayBands = bandsByDay.get(key) || [];
+        const column = String(weekday + 1);
+
+        week.append(
+            buildDayCell(date, column, {
+                hasContent: daySeminars.length > 0 || dayBands.length > 0,
+                isOutside: date.getMonth() !== state.viewDate.getMonth(),
+                isToday: isSameDay(date, today),
+                eventCount: daySeminars.length + dayBands.length,
+            }),
+            buildDayNumber(date, column),
+            buildDayChips(daySeminars, dayBands, column, maxRows),
+        );
+    }
+
+    bands.forEach(band => {
+        const placement = segmentBandForWeek(band, weekIndex);
+        if (!placement) {
+            return;
+        }
+        const segment = buildBandSegment(band, { ...placement, onOpen: openBandDialog });
+        segment.style.gridColumn = `${placement.firstColumn} / ${placement.lastColumn}`;
+        segment.style.gridRow = String(band.lane + 2);
+        week.appendChild(segment);
+    });
+
+    return week;
+}
+
+function render() {
+    const payload = state.payload || emptyCalendarPayload();
+    const gridStartDate = firstVisibleMonday(state.viewDate);
+    const gridEndDate = lastVisibleDay(state.viewDate);
+
+    monthTitle.textContent = formatMonthTitle(state.viewDate);
+
+    const groups = collectVisibleGroups(payload);
+    const activeKeys = activeGroupKeys(groups);
+    renderFilters(groups, activeKeys);
+
+    const { bands, laneCount } = layOutBands(payload, gridStartDate, gridEndDate);
+    const { shown: seminarsByDay, hidden: hiddenByDay } = splitSeminarsByDay(payload, activeKeys);
+    const bandsByDay = bandsCoveringEachDay(bands, gridStartDate);
+
+    state.day = { seminarsByDay, hiddenByDay, bandsByDay };
+
+    const layout = {
+        gridStartDate,
+        bands,
+        laneCount,
+        seminarsByDay,
+        bandsByDay,
+        // Read per render: a resize that delivers no change event still lands right.
+        maxRows: compactQuery.matches ? MAX_CHIP_ROWS_COMPACT : MAX_CHIP_ROWS_WIDE,
+        today: new Date(),
+    };
+
+    const weeks = document.createDocumentFragment();
+    for (let weekIndex = 0; weekIndex < WEEKS_IN_GRID; weekIndex += 1) {
+        weeks.appendChild(buildWeek(weekIndex, layout));
+    }
+    weeksElement.replaceChildren(weeks);
+}
+
+/* ------------------------------------------------------------------- dialog */
+
+function appendCardSection(heading, items, buildCard) {
+    if (!items.length) {
+        return;
+    }
+    eventList.appendChild(buildSectionHeader(heading));
+    items.forEach(item => eventList.appendChild(buildCard(item)));
+}
+
+function openDayDialog(date, { highlightSeminarId = null } = {}) {
+    if (!state.day) {
+        return;
+    }
+    const key = isoDate(date);
+    const seminars = state.day.seminarsByDay.get(key) || [];
+    const bands = state.day.bandsByDay.get(key) || [];
+    const events = bands.filter(band => band.kind === 'event');
+    const olympiads = bands.filter(band => band.kind === 'olympiad');
+    const hidden = state.day.hiddenByDay.get(key) || 0;
+
+    popupEyebrow.textContent = 'Plan dnia';
+    popupDate.textContent = formatDayTitle(date);
+    eventList.replaceChildren();
+
+    appendCardSection(events.length > 1 ? 'Wydarzenia' : 'Wydarzenie', events, buildEventCard);
+    appendCardSection(olympiads.length > 1 ? 'Olimpiady' : 'Olimpiada', olympiads, buildOlympiadCard);
+    appendCardSection('Zajęcia', seminars, seminar => buildSeminarCard(seminar, {
+        highlighted: seminar.id === highlightSeminarId,
+    }));
+
+    if (!eventList.childElementCount) {
+        const empty = document.createElement('p');
+        empty.className = 'event-popup__empty';
+        empty.textContent = hidden
+            ? 'Wszystkie zajęcia tego dnia są ukryte przez wybrane filtry.'
+            : 'Tego dnia nic nie zaplanowaliśmy.';
+        eventList.appendChild(empty);
+    } else if (hidden) {
+        const note = document.createElement('p');
+        note.className = 'event-popup__note';
+        note.textContent = `Filtry ukrywają ${hidden} ${polishPlural(hidden, 'spotkanie', 'spotkania', 'spotkań')} tego dnia.`;
+        eventList.appendChild(note);
+    }
+
+    showDialog();
+}
+
+function openBandDialog(band) {
+    popupEyebrow.textContent = band.kind === 'olympiad' ? 'Etap olimpiady' : 'Wydarzenie stacjonarne';
+    popupDate.textContent = band.title;
+    eventList.replaceChildren(band.kind === 'olympiad' ? buildOlympiadCard(band) : buildEventCard(band));
+    showDialog();
+}
+
+function showDialog() {
+    if (eventPopup && typeof eventPopup.showModal === 'function' && !eventPopup.open) {
+        eventPopup.showModal();
+    }
+    const highlighted = eventList.querySelector('.is-highlighted');
+    if (highlighted) {
+        highlighted.scrollIntoView({ block: 'nearest' });
+    }
+}
+
+function closeDialog() {
+    if (eventPopup && typeof eventPopup.close === 'function' && eventPopup.open) {
+        eventPopup.close();
+    }
+}
+
+/* ------------------------------------------------------------- deep linking */
+
+function getRequestedSeminarId() {
+    const raw = new URLSearchParams(window.location.search).get('seminar');
+    if (!raw) {
+        return null;
+    }
+    const parsed = Number(raw);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
 }
 
 function clearRequestedSeminarId() {
@@ -41,290 +401,88 @@ function clearRequestedSeminarId() {
     window.history.replaceState({}, document.title, url.toString());
 }
 
-function showLoadingBar() {
-    prevMonthButton.disabled = true;
-    nextMonthButton.disabled = true;
-    showCurrentMonthButton.disabled = true;
-    loadingBar.style.display = 'block';
-}
-
-function hideLoadingBar() {
-    prevMonthButton.disabled = false;
-    nextMonthButton.disabled = false;
-    showCurrentMonthButton.disabled = false;
-    loadingBar.style.display = 'none';
-}
-
-async function fetchEvents() {
-    const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
-    if (eventsCache[monthKey]) {
-        events = eventsCache[monthKey];
-        updateCalendar();
-        return;
-    }
-
-    events = {};
-    updateCalendar();
-    showLoadingBar();
-
-    const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toLocaleDateString("sv");
-    const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toLocaleDateString("sv");
-    const url = `/api/seminars/?limit=200&start_date=${startDate}&end_date=${endDate}&display_only=1`;
+async function openRequestedSeminar(seminarId) {
     try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        events = {};
-        data.results.forEach(event => {
-            const eventDate = parseLocalDate(event.date);
-            const key = eventDate.toDateString();
-            if (!events[key]) {
-                events[key] = [];
-            }
-            events[key].push({
-                id: event.id,
-                date: eventDate,
-                time: new Date(`${event.date}T${event.time}`),
-                duration: {
-                    hours: parseInt(event.duration.split(':')[0]),
-                    minutes: parseInt(event.duration.split(':')[1])
-                },
-                theme: event.theme,
-                tutors: event.tutors,
-                description: event.description,
-                image: event.image,
-                file: event.file,
-                group_name: event.group_name,
-                difficulty_label: event.difficulty_label,
-                difficulty_icon: event.difficulty_icon,
-                featured: event.featured,
-                special_guest: event.special_guest
-            });
-        });
-        eventsCache[monthKey] = events;
-        updateCalendar();
-    } catch (error) {
-        console.error('Error fetching events:', error);
-    } finally {
-        hideLoadingBar();
-    }
-}
-
-function updateCalendar() {
-    currentMonthElement.textContent = currentDate.toLocaleString('pl', { month: 'long', year: 'numeric' });
-    calendarDaysElement.innerHTML = '';
-
-    const dayNames = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nie'];
-    dayNames.forEach(day => {
-        const dayElement = document.createElement('div');
-        dayElement.textContent = day;
-        dayElement.classList.add('day-name');
-        calendarDaysElement.appendChild(dayElement);
-    });
-
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-
-    let startIndex = firstDayOfMonth.getDay() - 1;
-    if (startIndex === -1) startIndex = 6;
-
-    for (let i = 0; i < startIndex; i++) {
-        calendarDaysElement.appendChild(document.createElement('div'));
-    }
-
-    for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
-        const dayElement = document.createElement('div');
-        const linkElement = document.createElement('a');
-        linkElement.textContent = day;
-        linkElement.className = "day-number";
-        dayElement.appendChild(linkElement);
-        dayElement.className = "day-nuberw"
-        const currentDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-        const key = currentDay.toDateString();
-
-        if (events[key]) {
-            dayElement.classList.add('event-day');
-            const eventIndicator = document.createElement('span');
-            eventIndicator.className = 'event-indicator';
-            eventIndicator.title = events[key].map(event => event.theme).join(', ');
-            dayElement.appendChild(eventIndicator);
-            dayElement.addEventListener('click', () => showEventPopup(currentDay, events[key]));
-        }
-
-        if (day === new Date().getDate() &&
-            currentDate.getMonth() === new Date().getMonth() &&
-            currentDate.getFullYear() === new Date().getFullYear()) {
-            dayElement.classList.add('current-day');
-        }
-
-        calendarDaysElement.appendChild(dayElement);
-    }
-
-    const totalCells = 42;
-    const filledCells = calendarDaysElement.children.length;
-    for (let i = filledCells; i < totalCells; i++) {
-        calendarDaysElement.appendChild(document.createElement('div'));
-    }
-}
-
-function showEventPopup(date, eventsList) {
-    popupDate.textContent = date.toLocaleDateString('pl', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    eventList.innerHTML = '';
-
-    eventsList.forEach(event => {
-        const li = document.createElement('li');
-        const timeDisplay = getTimeDisplay(event);
-
-        li.innerHTML = `
-            <span class="event-time">${timeDisplay}</span>
-            <h3 class="seminar-theme"><strong> ${escapeHTML(event.theme)} </strong></h3>
-
-            <div class="badge-container">
-                ${event.featured ? `
-                    <div class="badge badge-featured">
-                        <span class="material-symbols-rounded badge-icon">verified</span>
-                        polecane
-                    </div>` : ''}
-                ${event.special_guest ? `
-                    <div class="badge badge-featured">
-                        <span class="material-symbols-rounded badge-icon">person_alert</span>
-                        gość specjalny
-                    </div>` : ''}
-                ${event.group_name ? `
-                    <div class="badge badge-dark">
-                        <span class="material-symbols-rounded badge-icon">group</span>
-                        ${event.group_name}
-                    </div>` : ''}
-                ${event.difficulty_label ? `
-                    <div class="badge badge-light">
-                        <span class="material-symbols-rounded badge-icon">${event.difficulty_icon}</span>
-                        ${event.difficulty_label}
-                    </div>` : ''}
-            </div>
-
-            <div class="event-info">
-                ${event.tutors.length ? `
-                    <p>
-                        <strong>${event.tutors.length > 1 ? 'Prowadzą: ' : 'Prowadzi: '}</strong>${escapeHTML(event.tutors.join(", "))}
-                    </p>` : ''}
-                ${event.description ? `
-                    <p>
-                        <strong>${'Opis: '}</strong>${escapeHTML(event.description)}<br>
-                    </p>` : ''}
-            </div>
-
-            ${event.image ? `
-                <div class="event-image">
-                    <img src="${event.image}" alt="${event.theme}">
-                </div>` : ''}
-            ${event.file ? `
-                <div class="event-file">
-                    <a href="${event.file}"><div class="badge badge-light">
-                        <span class="material-symbols-rounded badge-icon">download</span>
-                        załącznik</div></a>
-                </div>` : ''}
-        `;
-
-        eventList.appendChild(li);
-    });
-
-    if (eventPopup && typeof eventPopup.showModal === 'function') {
-        eventPopup.showModal();
-    }
-}
-
-async function openRequestedSeminar() {
-    if (!requestedSeminarId) {
-        await fetchEvents();
-        return;
-    }
-
-    try {
-        const response = await fetch(`/api/seminars/${requestedSeminarId}/?display_only=1`);
+        const response = await fetch(`${SEMINAR_ENDPOINT}${seminarId}/?display_only=1`);
         if (!response.ok) {
-            throw new Error(`Failed to load seminar ${requestedSeminarId}`);
+            throw new Error(`Failed to load seminar ${seminarId}`);
         }
-
         const seminar = await response.json();
         const seminarDate = parseLocalDate(seminar.date);
-        currentDate = new Date(seminarDate.getFullYear(), seminarDate.getMonth(), 1);
-        await fetchEvents();
-
-        const dailyEvents = events[seminarDate.toDateString()];
-        if (dailyEvents) {
-            showEventPopup(seminarDate, dailyEvents);
-        }
+        await loadMonth(seminarDate);
+        openDayDialog(seminarDate, { highlightSeminarId: seminarId });
     } catch (error) {
         console.error('Error opening requested seminar:', error);
-        currentDate = new Date();
-        await fetchEvents();
+        await loadMonth(new Date());
     } finally {
         clearRequestedSeminarId();
-        requestedSeminarId = null;
     }
 }
 
-function getTimeDisplay(event) {
-    if (!event.time) {
-        return 'Brak danych';
+/* ------------------------------------------------------------------ wiring */
+
+function arrowKeysAreBusy(keyEvent) {
+    if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) {
+        return true;
     }
-
-    let startTime = event.time.toLocaleTimeString('pl', { hour: '2-digit', minute: '2-digit' });
-
-    if (!event.duration) {
-        return `${startTime} (nieznany czas trwania)`;
+    if (eventPopup && eventPopup.open) {
+        return true;
     }
-
-    let endTime = new Date(event.time.getTime() + (event.duration.hours * 60 + event.duration.minutes) * 60000);
-    endTime = endTime.toLocaleTimeString('pl', { hour: '2-digit', minute: '2-digit' });
-
-    return `${startTime}-${endTime}`;
+    const target = keyEvent.target;
+    return target instanceof HTMLElement
+        && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
 }
 
-function closeEventPopup() {
-    if (eventPopup && typeof eventPopup.close === 'function' && eventPopup.open) {
-        eventPopup.close();
-    }
-}
+prevMonthButton.addEventListener('click', () => loadMonth(addMonths(state.viewDate, -1)));
+nextMonthButton.addEventListener('click', () => loadMonth(addMonths(state.viewDate, 1)));
+showCurrentMonthButton.addEventListener('click', () => loadMonth(new Date()));
 
-if (closeBtn) {
-    closeBtn.addEventListener('click', closeEventPopup);
+retryButton.addEventListener('click', () => {
+    state.cache.delete(monthKey(state.viewDate));
+    loadMonth(state.viewDate);
+});
+
+clearFiltersButton.addEventListener('click', () => {
+    state.selectedGroups.clear();
+    render();
+});
+
+if (popupCloseButton) {
+    popupCloseButton.addEventListener('click', closeDialog);
 }
 
 if (eventPopup) {
-    eventPopup.addEventListener('click', function(event) {
-        if (event.target === eventPopup) {
-            closeEventPopup();
+    eventPopup.addEventListener('click', clickEvent => {
+        if (clickEvent.target === eventPopup) {
+            closeDialog();
         }
     });
 }
 
-prevMonthButton.addEventListener('click', () => {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    fetchEvents();
+compactQuery.addEventListener('change', () => render());
+
+document.addEventListener('keydown', keyEvent => {
+    if (keyEvent.key !== 'ArrowLeft' && keyEvent.key !== 'ArrowRight') {
+        return;
+    }
+    if (arrowKeysAreBusy(keyEvent)) {
+        return;
+    }
+    keyEvent.preventDefault();
+    loadMonth(addMonths(state.viewDate, keyEvent.key === 'ArrowRight' ? 1 : -1));
 });
 
-nextMonthButton.addEventListener('click', () => {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    fetchEvents();
-});
-
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const navbarToggle = document.querySelector('.navbar-toggle');
     const navbarCenter = document.querySelector('.navbar-center');
-
     if (navbarToggle && navbarCenter) {
-        navbarToggle.addEventListener('click', function() {
-            navbarCenter.classList.toggle('active');
-        });
+        navbarToggle.addEventListener('click', () => navbarCenter.classList.toggle('active'));
     }
 
-    openRequestedSeminar();
+    const requestedSeminarId = getRequestedSeminarId();
+    if (requestedSeminarId) {
+        openRequestedSeminar(requestedSeminarId);
+    } else {
+        loadMonth(new Date());
+    }
 });
-
-function showCurrentMonth() {
-    currentDate = new Date();
-    fetchEvents();
-}
-
-showCurrentMonthButton.addEventListener('click', showCurrentMonth);
