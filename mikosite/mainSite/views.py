@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from django.core.cache import cache
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.text import Truncator
 
@@ -119,6 +120,34 @@ def get_active_registration_event_data():
 @receiver(post_delete, sender=RegistrationEvent)
 def clear_active_registration_event_cache(sender, **kwargs):
     cache.delete(ACTIVE_REGISTRATION_CACHE_KEY)
+
+
+def empty_error_response(status: int) -> HttpResponse:
+    """Return the status only; nginx replaces error page bodies anyway.
+
+    Rendering a template here would pull in the site header, resolve
+    request.user and query the database. Under ASGI, Django renders error
+    responses on a shared executor thread whose connections it never closes,
+    so that query checks a connection out of the psycopg pool and never
+    returns it (Django #36027).
+    """
+    return HttpResponse(status=status)
+
+
+def bad_request(request, exception):
+    return empty_error_response(400)
+
+
+def permission_denied(request, exception):
+    return empty_error_response(403)
+
+
+def page_not_found(request, exception):
+    return empty_error_response(404)
+
+
+def server_error(request):
+    return empty_error_response(500)
 
 
 def index(request):
