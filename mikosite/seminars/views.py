@@ -15,7 +15,7 @@ from .models import (
 )
 
 
-SEMINAR_GROUPS_CACHE_KEY = 'seminar-groups-display-data'
+SEMINAR_GROUPS_CACHE_KEY = 'seminar-groups-display-data-v2'
 SEMINAR_GROUPS_MAX_TTL = 604800  # 1 week
 DEFAULT_HISTORY_START_DATE = date(2023, 9, 1)
 

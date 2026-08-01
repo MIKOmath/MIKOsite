@@ -8,19 +8,40 @@ from django.core.validators import (
     FileExtensionValidator,
     MaxValueValidator,
     MinValueValidator,
+    RegexValidator,
     URLValidator,
 )
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
 from accounts.models import User
+from mikosite.dates import format_day_range
 
 
 absolute_url_validator = URLValidator(schemes=["http", "https"])
 
+hex_color_validator = RegexValidator(
+    regex=r'^#[0-9a-fA-F]{6}$',
+    message="Podaj kolor w formacie szesnastkowym, np. #F24535.",
+)
+
+DEFAULT_GROUP_COLOR = '#074A59'
+COLOR_HELP_TEXT = "Kolor w formacie #RRGGBB. Pozostaw puste, aby użyć koloru domyślnego."
+
 
 class SeminarGroup(models.Model):
     name = models.CharField(max_length=256, blank=False, null=False)
+    short_label = models.CharField(
+        max_length=32,
+        blank=True,
+        help_text="Krótka etykieta używana w filtrach kalendarza, np. „OM śr.”. Domyślnie pełna nazwa.",
+    )
+    color = models.CharField(
+        max_length=7,
+        blank=True,
+        validators=[hex_color_validator],
+        help_text=COLOR_HELP_TEXT,
+    )
     lead = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     discord_role_id = models.CharField(max_length=128, blank=True, null=True)
@@ -36,9 +57,26 @@ class SeminarGroup(models.Model):
     def seminar_count(self):
         return self.seminar_set.count()
 
+    @property
+    def display_color(self):
+        return self.color or DEFAULT_GROUP_COLOR
+
+    @property
+    def display_short_label(self):
+        return self.short_label or self.name
+
+    def calendar_dict(self) -> dict:
+        return {
+            'id': self.pk,
+            'name': self.name,
+            'short_label': self.display_short_label,
+            'color': self.display_color,
+        }
+
     def display_dict(self) -> dict:
         return {
             'lead': mark_safe(self.lead),
+            'color': self.display_color,
             'desc_snippets': [mark_safe(snippet) for snippet in self.description.split('\n')
                               if snippet and not snippet.isspace()],
         }
@@ -165,6 +203,28 @@ class Seminar(models.Model):
             'group_name': self.group.name if self.group else None,
             'difficulty_label': difficulty_badge_content['label'],
             'difficulty_icon': difficulty_badge_content['icon'],
+        }
+
+    def calendar_dict(self, locale=settings.BABEL_LOCALE) -> dict:
+        start_time = format_time(self.start_timestamp, format='HH:mm', locale=locale)
+        end_time = format_time(self.end_timestamp, format='HH:mm', locale=locale)
+        difficulty_badge_content = self.difficulty_dict.get(self.real_difficulty, {'label': None, 'icon': None})
+
+        return {
+            'id': self.pk,
+            'date': self.date.isoformat(),
+            'time': self.time.isoformat(timespec='minutes'),
+            'time_label': f"{start_time}-{end_time}",
+            'theme': self.theme,
+            'description': self.description or '',
+            'tutors': [tutor.full_name for tutor in self.tutors.all()],
+            'image': self.image.url if self.image else None,
+            'file': self.file.url if self.file else None,
+            'featured': self.featured,
+            'special_guest': self.special_guest,
+            'difficulty_label': difficulty_badge_content['label'],
+            'difficulty_icon': difficulty_badge_content['icon'],
+            'group': self.group.calendar_dict() if self.group else None,
         }
 
 

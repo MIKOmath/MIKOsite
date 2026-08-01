@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from rest_framework.routers import DefaultRouter
-from seminars.api_views import SeminarGroupViewSet, SeminarViewSet, GoogleFormViewSet, ReminderViewSet
+from seminars.api_views import CalendarView, SeminarGroupViewSet, SeminarViewSet, GoogleFormViewSet, ReminderViewSet
 from seminars import views as seminar_views
 from mainSite.api_views import PostImageViewSet, PostViewSet
 from accounts.api_views import UserViewSet, LinkedAccountViewSet, UserActivityViewSet, ActivityScoreViewSet
@@ -44,6 +44,7 @@ urlpatterns = [
     path('kolo/', include('seminars.urls')),
     path('editions/', seminar_views.previous_editions, name='previous_editions'),
     # path("bazahintow/", include("hintBase.urls")),
+    path('api/calendar/', CalendarView.as_view(), name='api_calendar'),
     path('api/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

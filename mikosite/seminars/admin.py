@@ -3,10 +3,12 @@ from datetime import datetime, timedelta
 
 from django import forms
 from django.contrib import admin
+from django.utils.html import format_html
 from rangefilter.filters import DateRangeFilterBuilder
 from more_admin_filters import MultiSelectRelatedOnlyFilter
 
 from .models import (
+    DEFAULT_GROUP_COLOR,
     Seminar,
     SeminarGroup,
     GoogleFormsTemplate,
@@ -14,6 +16,28 @@ from .models import (
     PreviousEditionMilestone,
     Reminder,
 )
+
+
+COLOR_INPUT_ATTRS = {'placeholder': DEFAULT_GROUP_COLOR, 'size': 9, 'pattern': '#[0-9a-fA-F]{6}'}
+
+
+class ColorFieldAdminMixin:
+    """Shows the fallback colour as a placeholder so an empty field reads as "default"."""
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == 'color':
+            kwargs['widget'] = forms.TextInput(attrs=COLOR_INPUT_ATTRS)
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+
+def color_swatch(color, label):
+    return format_html(
+        '<span style="display:inline-flex;align-items:center;gap:6px">'
+        '<span style="width:14px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.2);'
+        'background:{}"></span>{}</span>',
+        color,
+        label,
+    )
 
 
 def theme_looks_fully_capitalized(theme):
@@ -61,9 +85,13 @@ class SeminarAdminForm(forms.ModelForm):
         return cleaned_data
 
 
-class SeminarGroupAdmin(admin.ModelAdmin):
-    list_display = ('name', 'lead', 'seminar_count')
+class SeminarGroupAdmin(ColorFieldAdminMixin, admin.ModelAdmin):
+    list_display = ('name', 'calendar_label', 'lead', 'seminar_count')
     ordering = ('-default_difficulty',)
+
+    @admin.display(description="Etykieta w kalendarzu")
+    def calendar_label(self, obj):
+        return color_swatch(obj.display_color, obj.display_short_label)
 
 
 class SeminarAdmin(admin.ModelAdmin):
