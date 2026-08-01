@@ -10,6 +10,7 @@ from django.utils.safestring import mark_safe
 
 from accounts.models import User
 from mainSite.markdown import DisallowHeadersExtension
+from mikosite.dates import format_day_range
 
 md = Markdown(extensions=[DisallowHeadersExtension()])
 
@@ -79,20 +80,7 @@ class RegistrationEvent(models.Model):
             raise ValidationError(errors)
 
     def format_date_range(self, locale=settings.BABEL_LOCALE) -> str:
-        if self.date_begin == self.date_end:
-            return format_date(self.date_begin, format='d MMMM', locale=locale)
-
-        same_year = self.date_begin.year == self.date_end.year
-        same_month = same_year and self.date_begin.month == self.date_end.month
-
-        if same_month:
-            start_day = format_date(self.date_begin, format='d', locale=locale)
-            end_label = format_date(self.date_end, format='d MMMM', locale=locale)
-            return f"{start_day}-{end_label}"
-
-        start_label = format_date(self.date_begin, format='d MMMM', locale=locale)
-        end_label = format_date(self.date_end, format='d MMMM', locale=locale)
-        return f"{start_label} - {end_label}"
+        return format_day_range(self.date_begin, self.date_end, locale=locale)
 
     def display_dict(self, locale=settings.BABEL_LOCALE) -> dict:
         return {
