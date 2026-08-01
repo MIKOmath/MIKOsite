@@ -6,3 +6,4 @@ class SignalsConfig(AppConfig):
     name = 'seminars'
     def ready(self):
         import seminars.signals
+        import seminars.calendar_data

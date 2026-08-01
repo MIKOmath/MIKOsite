@@ -6,6 +6,7 @@ from markdown import Markdown
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 from accounts.models import User
@@ -82,10 +83,30 @@ class RegistrationEvent(models.Model):
     def format_date_range(self, locale=settings.BABEL_LOCALE) -> str:
         return format_day_range(self.date_begin, self.date_end, locale=locale)
 
+    def registration_is_open(self, today=None) -> bool:
+        today = today or timezone.localdate()
+        return self.registration_begin <= today <= self.registration_end
+
     def display_dict(self, locale=settings.BABEL_LOCALE) -> dict:
         return {
             "name": self.name,
             "location": self.location,
             "date_range": self.format_date_range(locale=locale),
             "registration_link": self.registration_url,
+        }
+
+    def calendar_dict(self, today=None, locale=settings.BABEL_LOCALE) -> dict:
+        return {
+            "id": self.pk,
+            "kind": "registration_event",
+            "title": self.name,
+            "location": self.location,
+            "date_begin": self.date_begin.isoformat(),
+            "date_end": self.date_end.isoformat(),
+            "date_range": self.format_date_range(locale=locale),
+            "registration_url": self.registration_url,
+            "registration_open": self.registration_is_open(today=today),
+            "registration_range": format_day_range(
+                self.registration_begin, self.registration_end, locale=locale
+            ),
         }
