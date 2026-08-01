@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "taggit",
     "formtools",
     "seminars",
+    "olympiads",
     "cards",
 ]
 if DEBUG:
