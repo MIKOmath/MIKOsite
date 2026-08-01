@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="{% static 'badges.css' %}">
     {% endcompress %}
     {% compress js %}
+    <script defer src="{% static 'calendarCore.js' %}"></script>
+    <script defer src="{% static 'calendarCards.js' %}"></script>
     <script defer src="{% static 'informacje.js' %}"></script>
     {% endcompress %}
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik"/>
@@ -41,18 +43,45 @@
         <h3 class="mobile-left-padding">
             Poniżej znajdują się nadchodzące kółka i&nbsp;inne wydarzenia organizowane przez MIKO.
         </h3>
-        <div class="calendar">
-            <div class="header">
-                <button id="prevMonth">◀</button>
-                <h2 id="currentMonth"></h2>
-                <button id="nextMonth">▶</button>
+        <div class="calendar" id="calendar">
+            <div class="calendar__toolbar">
+                <div class="calendar__month">
+                    <button type="button" class="calendar__step" id="prevMonth"
+                            aria-label="Poprzedni miesiąc" title="Poprzedni miesiąc (←)">
+                        <span class="material-symbols-rounded" aria-hidden="true">chevron_left</span>
+                    </button>
+                    <h2 class="calendar__title" id="currentMonth" aria-live="polite"></h2>
+                    <button type="button" class="calendar__step" id="nextMonth"
+                            aria-label="Następny miesiąc" title="Następny miesiąc (→)">
+                        <span class="material-symbols-rounded" aria-hidden="true">chevron_right</span>
+                    </button>
+                </div>
+                <button type="button" class="calendar__today" id="showCurrentMonth">
+                    <span class="material-symbols-rounded" aria-hidden="true">today</span>
+                    Dzisiaj
+                </button>
             </div>
-            <button id="showCurrentMonth">
-                <span class="material-symbols-rounded" aria-hidden="true">today</span>
-                Dzisiaj
-            </button>
-            <div class="days" id="calendarDays"></div>
-            <div id="loadingBar" class="loading-bar"></div>
+
+            <div class="calendar__filters" id="calendarFilters" hidden>
+                <div class="calendar__chips" id="groupFilters" role="group" aria-label="Filtruj według grupy"></div>
+                <button type="button" class="calendar__filters-clear" id="clearFilters" hidden>
+                    <span class="material-symbols-rounded" aria-hidden="true">filter_alt_off</span>
+                    Wyczyść
+                </button>
+            </div>
+
+            <div class="calendar__viewport">
+                <div class="calendar__progress" id="calendarProgress" hidden aria-hidden="true"></div>
+                <div class="calendar__weekdays" aria-hidden="true">
+                    <span>pon</span><span>wt</span><span>śr</span><span>czw</span>
+                    <span>pt</span><span>sob</span><span>nie</span>
+                </div>
+                <div class="calendar__weeks" id="calendarWeeks"></div>
+                <p class="calendar__error" id="calendarError" hidden role="alert">
+                    Nie udało się wczytać kalendarza.
+                    <button type="button" id="calendarRetry">Spróbuj ponownie</button>
+                </p>
+            </div>
         </div>
 
         <section class="history-section">
@@ -78,56 +107,62 @@
             matematyki i&nbsp;nauk pokrewnych. Zajęcia podzielone są na&nbsp;grupy o&nbsp;zróżnicowanym poziomie i&nbsp;różnorodnej tematyce:
         </h3>
 
-        <div class="levels">
+        <div class="info-grid">
             {% for group in groups %}
-                <div class="column">
-                    <h2><strong>{{ group.lead }}</strong></h2>
-                    <hr>
+                <article class="info-card" style="--group-color: {{ group.color }}">
+                    <h2 class="info-card__title">{{ group.lead }}</h2>
+                    <span class="info-card__rule" aria-hidden="true"></span>
                     {% for snippet in group.desc_snippets %}
-                        <h3>{{ snippet }}</h3>
+                        <p class="info-card__text">{{ snippet }}</p>
                     {% endfor %}
-                </div>
+                </article>
             {% endfor %}
         </div>
 
-        <hr style="margin-top: 60px;">
-        <h3 class="mobile-left-padding">
+        <h3 class="mobile-left-padding info-lead">
             Wszystkie zajęcia odbywają się zdalnie na platformie Discord. Ważną częścią naszej społeczności jest
             możliwość prowadzenia dyskusji i&nbsp;wspólnej pracy nad zadaniami na&nbsp;chatach. Dołączając do naszego
             serwera na Discordzie, uzyskasz także:
         </h3>
-        <div class="levels">
-            <div class="column">
-                <h2><strong>Materiały</strong></h2>
-                <hr>
-                <h3>
-                Różnorodne materiały zgromadzone przez bardziej doświadczonych olimpijczyków oraz próbne zestawy zadań
-                przypominające trudnością II&nbsp;i&nbsp;III etapy Olimpiady Matematycznej wraz z&nbsp;omówieniami.</h3>
-                </h3>
-            </div>
-            <div class="column">
-                <h2><strong>Konferencje</strong></h2>
-                <hr>
-                <h3>Możliwość udziału w&nbsp;konferencjach. Raz w&nbsp;roku organizujemy Giełdę Kierunków, konferencję online,
-                    na której studenci różnych uczelni, polskich i&nbsp;zagranicznych, opowiadają o&nbsp;swoich doświadczeniach
-                    podczas studiów. Nie przegap tego wydarzenia, jeśli interesują Cię takie kierunki jak JSIM na Uniwersytecie
-                    Warszawskim, matematyka lub TCS na Uniwersytecie Jagiellońskim, informatyka na Politechnice Warszawskiej
-                    czy matematyka na University of&nbsp;Cambridge.</h3>
+
+        <div class="info-grid">
+            <article class="info-card">
+                <h2 class="info-card__title">Materiały</h2>
+                <span class="info-card__rule" aria-hidden="true"></span>
+                <p class="info-card__text">
+                    Różnorodne materiały zgromadzone przez bardziej doświadczonych olimpijczyków oraz próbne zestawy
+                    zadań przypominające trudnością II&nbsp;i&nbsp;III etapy Olimpiady Matematycznej wraz
+                    z&nbsp;omówieniami.
+                </p>
+            </article>
+            <article class="info-card">
+                <h2 class="info-card__title">Konferencje</h2>
+                <span class="info-card__rule" aria-hidden="true"></span>
+                <p class="info-card__text">
+                    Możliwość udziału w&nbsp;konferencjach. Raz w&nbsp;roku organizujemy Giełdę Kierunków, konferencję
+                    online, na której studenci różnych uczelni, polskich i&nbsp;zagranicznych, opowiadają
+                    o&nbsp;swoich doświadczeniach podczas studiów.
+                </p>
+                <p class="info-card__text">
+                    Nie przegap tego wydarzenia, jeśli interesują Cię takie kierunki jak JSIM na Uniwersytecie
+                    Warszawskim, matematyka lub TCS na Uniwersytecie Jagiellońskim, informatyka na Politechnice
+                    Warszawskiej czy matematyka na University of&nbsp;Cambridge.
+                </p>
+            </article>
         </div>
-    </div>
     </div>
 
     <dialog id="eventPopup" class="event-popup" aria-labelledby="popupDate">
         <div class="event-popup__top">
             <div>
-                <p>Nadchodzące spotkania</p>
+                <p id="popupEyebrow">Plan dnia</p>
                 <h2 id="popupDate"></h2>
             </div>
             <button class="event-popup__close" type="button" data-dialog-close aria-label="Zamknij">
                 <span class="material-symbols-rounded" aria-hidden="true">close</span>
             </button>
         </div>
-        <ul id="eventList"></ul>
+        <div class="event-popup__body" id="eventList"></div>
     </dialog>
 
     {% include "footer.html" %}
