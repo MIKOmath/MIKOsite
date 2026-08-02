@@ -24,6 +24,17 @@ h1 {
   color: var(--b1);
 }
 
+/* Yellow marks the page sections. Auth pages use h1 as a form title, not a section. */
+h1:not(.auth-title)::after {
+  background: var(--y1);
+  border-radius: 2px;
+  content: '';
+  display: block;
+  height: 3px;
+  margin-top: 12px;
+  width: 56px;
+}
+
 h2 {
   font-size: 25px;
   color: var(--y1);
