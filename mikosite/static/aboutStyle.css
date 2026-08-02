@@ -26,6 +26,17 @@ h1
   margin-bottom: 20px;
 }
 
+/* Yellow marks the page sections; the tile rules stay teal. */
+h1::after {
+  background: var(--y1);
+  border-radius: 2px;
+  content: '';
+  display: block;
+  height: 3px;
+  margin-top: 12px;
+  width: 56px;
+}
+
 h2
 {
   font-size: 25px;
@@ -137,6 +148,12 @@ fill: var(--b1);
   padding: 2rem;
   margin: 2rem 0;
   text-align: center;
+}
+
+/* The heading is centred here, so its accent has to be too. */
+#team h1::after {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media screen and (max-width: 900px) 
@@ -328,7 +345,19 @@ clear: both;
   height: 200px;
   width: 300px;
   object-fit: cover;
-  /* You can replace this with an actual image later */
+}
+
+/* Stands in for a portrait on the card thanking everyone who helped out. */
+.photo-placeholder--icon {
+  align-items: center;
+  background: var(--b1);
+  color: var(--w1);
+  display: flex;
+  justify-content: center;
+}
+
+.photo-placeholder--icon .material-symbols-rounded {
+  font-size: 96px;
 }
 
 .team-member h3 {
@@ -338,17 +367,23 @@ font-size: 1.2em;
 }
 
 .team-member h2 {
+color: var(--b1);
 margin: 1rem 0 0.5rem;
 padding: 0 1rem;
 }
 
-.team-member .role {
-  font-style: italic;
-  font-size: 1.1em;
-
-  color: #666;
-  margin: 0 0 1rem;
+.team-member .badge-container {
+  margin: 0 0 0.75rem;
   padding: 0 1rem;
+}
+
+.team-member hr {
+  background: var(--b1);
+  border: none;
+  border-radius: 2px;
+  height: 3px;
+  margin: 0 1rem 0.75rem;
+  width: 56px;
 }
 
 .team-member .description {
