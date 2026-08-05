@@ -16,7 +16,6 @@
  <link rel="stylesheet" href="{% static 'badges.css' %}">
  {% endcompress %}
 
-
  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
  <meta property="og:type" content="website">
@@ -38,26 +37,36 @@
  {% include "header.html" %}
 
  <main>
-  <div id="landing-banner-wrapper">
-   <div id="info-wrapper">
-    <img
-      src="{% static 'logoDark.svg' %}"
-      alt="Logo Matematycznego Internetowego Koła Olimpijskiego"
-      style="-webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;"
-    >
-    <h2 id="welcome-text">Dołącz do&nbsp;nas, rozwiązuj ciekawe zadania, rozwijając z&nbsp;nami pasję do&nbsp;matematyki!</h2>
+  <section class="hero"
+           style="--hero-image: url('{% static 'MIKO_CAMP.webp' %}');
+                  --hero-pattern: url('{% static 'logoPattern.svg' %}');
+                  --hero-mark: url('{% static 'logoDark.svg' %}');">
+   <div class="hero__pattern" aria-hidden="true"></div>
 
-    <div class="landing-banner-actions">
+   <div class="hero__inner">
+    <div class="hero__content">
+     <h1 class="hero__title">Twoja droga do&nbsp;olimpijskich sukcesów.</h1>
+     {# nbsp before AI so it never drops to a line of its own on a wide screen #}
+     <p class="hero__lead">
+      Bądź częścią społeczności, ucz się od&nbsp;doświadczonych olimpijczyków
+      i&nbsp;rozwijaj swoją pasję. Matematyka, informatyka,&nbsp;AI.
+      Za&nbsp;darmo, online, przez cały rok.
+     </p>
+
+     <div class="hero__actions">
       <a href="https://discord.gg/mikomath" class="homepage-cta-button">Dołączam!</a>
       <a href="{% url 'informacje' %}" class="homepage-cta-button homepage-cta-button--ghost">O kole</a>
+     </div>
     </div>
-   </div>
 
-   <div
-     id="background-image"
-     style="background-image: linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0), rgba(255,255,255,0), rgba(255,255,255,0)), url('{% static 'MIKO_BG1.webp' %}');"
-   ></div>
-  </div>
+    {% comment %}
+    Phone-only, and decorative -- the headline already names the organisation. Painted as
+    a CSS background rather than an <img> so it costs nothing above 900px, where it is
+    display:none: a hidden <img> is still fetched, a hidden background-image is not.
+    {% endcomment %}
+    <div class="hero__logo" aria-hidden="true"></div>
+   </div>
+  </section>
  </main>
 
  <section id="feed">
@@ -305,23 +314,6 @@ function enableClickableSeminarTiles() {
 }
 
 document.addEventListener('DOMContentLoaded', enableClickableSeminarTiles);
-</script>
-
-<script>
-const backgroundDiv = document.getElementById('background-image');
-const images = ['MIKO_BG1.webp', 'MIKO_CAMP.webp'];
-let currentIndex = 0;
-
-function changeBackground() {
-  currentIndex = (currentIndex + 1) % images.length;
-  const nextImage = `/static/${images[currentIndex]}`;
-
-  backgroundDiv.style.transition = 'background-image 1s ease-in-out';
-  backgroundDiv.style.backgroundImage =
-    `linear-gradient(to right, rgb(6,49,62), rgba(255,255,255,0), rgba(255,255,255,0), rgba(255,255,255,0)), url('${nextImage}')`;
-}
-
-setInterval(changeBackground, 5000);
 </script>
 
 </html>
