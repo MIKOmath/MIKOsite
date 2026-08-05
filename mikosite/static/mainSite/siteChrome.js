@@ -1,9 +1,6 @@
 /*
- * Mobile navigation for the shared site header.
- *
- * Ships with the header partial rather than from a page-level bundle, so the menu
- * works everywhere the header renders. It previously lived in script.js, which
- * about half the pages never loaded -- their hamburger button did nothing.
+ * Mobile navigation for the shared site header. Ships with the header partial rather
+ * than from a page bundle, so the menu works everywhere the header renders.
  */
 (function () {
     function init() {

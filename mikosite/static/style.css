@@ -277,7 +277,6 @@ h1.hero__title::after {
 .homepage-cta-button--ghost:hover {
   background: transparent;
   color: var(--w1);
-  border-color: var(--w1);
 }
 
 /* Info Banner */
@@ -299,7 +298,6 @@ h1.hero__title::after {
 .event {
   display: flex;
   flex-direction: column;
-  flex-wrap: nowrap;
   gap: 4px;
   border: #06313e 2px solid;
   padding: 10px;
@@ -309,7 +307,7 @@ h1.hero__title::after {
 
 .event--clickable {
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  transition: transform 0.18s ease, border-color 0.18s ease;
 }
 
 .event--clickable:hover,
@@ -330,8 +328,7 @@ h1.hero__title::after {
   gap: 8px;
 }
 
-.event-more-link,
-.event-more-link:hover {
+.event-more-link {
   display: inline-flex;
   align-items: center;
   padding: 5px 12px;
@@ -354,7 +351,6 @@ h1.hero__title::after {
 /* Miscellaneous */
 hr {
   border: none;
-  color: var(--b1);
   background-color: var(--b1);
   height: 3px;
 }
@@ -482,8 +478,7 @@ hr {
   color: rgba(255, 255, 255, 0.92);
 }
 
-.post a.homepage-event-tile__button,
-.post a.homepage-event-tile__button:hover {
+.post a.homepage-event-tile__button {
   flex-shrink: 0;
 }
 
@@ -498,8 +493,7 @@ hr {
     max-width: 100%;
   }
 
-  .post a.homepage-event-tile__button,
-  .post a.homepage-event-tile__button:hover {
+  .post a.homepage-event-tile__button {
     width: 100%;
   }
 }
@@ -509,13 +503,12 @@ hr {
   display: grid;
   justify-items: center;
   background-color: var(--b1);
-  height: auto;
   min-height: 200px;
   border-radius: 20px;
   align-content: center;
   line-height: 1.2;
   padding: 20px;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition: transform 0.18s ease;
 }
 
 .profile:hover,
@@ -529,7 +522,6 @@ hr {
    subtract 390px, leaving 20px of slack that .row's centring split into a stray 10px
    inset -- which is why the feed never lined up with anything above it. */
 .column_right {
-  margin-top: 0;
   width: calc(100% - 370px);
 }
 
@@ -600,6 +592,5 @@ hr {
 main {
   display: flex;
   align-items: center;
-  height: auto;
 }
 
