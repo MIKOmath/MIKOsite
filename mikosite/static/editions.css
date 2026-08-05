@@ -23,11 +23,6 @@ html {
   height: 100%;
 }
 
-header,
-.navbar {
-  width: 100%;
-}
-
 .editions-page {
   margin: 50px auto 60px;
   width: 70%;
@@ -407,6 +402,7 @@ header,
     padding: 0 20px;
     width: 100%;
   }
+
 }
 
 @media (max-width: 560px) {

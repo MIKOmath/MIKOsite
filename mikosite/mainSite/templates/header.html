@@ -1,54 +1,63 @@
 {% load static %}
 {% load compress %}
 
-<!DOCTYPE html>
-<html lang="pl">
+{% comment %}
+Rubik is loaded once here for the whole site. It used to be @import-ed from the footer
+stylesheet; when that file was retired the weight axis went with it and every bold
+heading silently fell back to a synthesised bold of Rubik Regular.
+{% endcomment %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&amp;display=swap">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% compress css %}
-        <link rel="stylesheet" href="{% static 'mainSite/headerStyle.css' %}">
-    {% endcompress %}
-    <link rel="stylesheet" type="text/css"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-</head>
-<body>
-<header>
-    <nav class="navbar">
-        <div class="navbar-left">
-            <a href="/" style="text-decoration: none; cursor: pointer"><h2>MIKO</h2></a>
-        </div>
-        <button class="navbar-toggle" aria-label="Otworz lub zamknij menu nawigacyjne">
-            <svg viewBox="0 0 100 80" width="30" height="30">
-                <rect width="100" height="20"></rect>
-                <rect y="30" width="100" height="20"></rect>
-                <rect y="60" width="100" height="20"></rect>
-            </svg>
+{% compress css %}
+    <link rel="stylesheet" href="{% static 'mainSite/siteChrome.css' %}">
+{% endcompress %}
+
+<header class="site-header">
+    <nav class="site-nav" aria-label="Nawigacja główna">
+        <a class="site-nav__brand" href="/" aria-label="MIKO — strona główna">
+            <span class="site-nav__wordmark">MIKO</span>
+        </a>
+
+        <button class="site-nav__toggle" type="button" aria-controls="site-nav-menu"
+                aria-expanded="false" aria-label="Otwórz lub zamknij menu nawigacyjne">
+            <span class="site-nav__burger"></span>
         </button>
-        <ul class="navbar-center">
-            <li><a href="/" {% if request.path == '/' %}id="current"{% endif %}>HOME</a></li>
-            <li><a href="/kolo" {% if request.path == '/kolo/' %}id="current"{% endif %}>ZAJĘCIA</a></li>
-            <li><a href="/editions" {% if request.path == '/editions/' %}id="current"{% endif %}>MATERIAŁY</a></li>
-            <li><a href="/about" {% if request.path == '/about/' %}id="current"{% endif %}>O NAS</a></li>
-            <li><a href="https://sprawdzai.org/?utm_source=mikomath.org&utm_medium=referral&utm_campaign=sprawdzai&utm_content=header
-" id="highlighted">SPRAWDZAI</a></li>
-            <li class="profile-item">
+
+        <div class="site-nav__menu" id="site-nav-menu">
+            <ul class="site-nav__links">
+                <li><a class="site-nav__link" href="/"
+                       {% if request.path == '/' %}aria-current="page"{% endif %}>Home</a></li>
+                <li><a class="site-nav__link" href="/kolo/"
+                       {% if request.path == '/kolo/' %}aria-current="page"{% endif %}>Zajęcia</a></li>
+                <li><a class="site-nav__link" href="/editions/"
+                       {% if request.path == '/editions/' %}aria-current="page"{% endif %}>Materiały</a></li>
+                <li><a class="site-nav__link" href="/about/"
+                       {% if request.path == '/about/' %}aria-current="page"{% endif %}>O nas</a></li>
+                <li>
+                    <a class="site-nav__link site-nav__link--external" target="_blank" rel="noopener"
+                       href="https://sprawdzai.org/?utm_source=mikomath.org&amp;utm_medium=referral&amp;utm_campaign=sprawdzai&amp;utm_content=header">
+                        SprawdzAI
+                        <svg class="site-nav__external-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.5 17.5 17.5 6.5M9 6.5h8.5V15" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="site-nav__sr">(otwiera osobny serwis)</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="site-nav__actions">
                 {% if user.is_authenticated %}
-                    <a href="/profile/" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a>
+                    <a class="site-nav__auth" href="/profile/"
+                       {% if request.path == '/profile/' %}aria-current="page"{% endif %}>Profil</a>
                 {% else %}
-                    <a href="/signin/" {% if request.path == '/signin/' %}id="current"{% endif %}>ZALOGUJ SIĘ</a>
+                    <a class="site-nav__auth" href="/signin/"
+                       {% if request.path == '/signin/' %}aria-current="page"{% endif %}>Zaloguj się</a>
                 {% endif %}
-            </li>
-        </ul>
-        <div class="navbar-right">
-            {% if user.is_authenticated %}
-                <a href="/profile/" {% if request.path == '/profile/' %}id="current"{% endif %}>PROFIL</a>
-            {% else %}
-                <a href="/signin/" {% if request.path == '/signin/' %}id="current"{% endif %}>ZALOGUJ SIĘ</a>
-            {% endif %}
+            </div>
         </div>
     </nav>
 </header>
-</body>
-</html>
+
+{% compress js %}
+    <script defer src="{% static 'mainSite/siteChrome.js' %}"></script>
+{% endcompress %}
