@@ -14,12 +14,25 @@
   --y1: #F2B544;
   --w1: #ffffff;
 
+  /* One content column for the whole site, so the content edge never moves between pages. */
   --site-width: 1320px;
   --site-gutter: clamp(16px, 4vw, 40px);
 
   /* Tile palette, repeated by the calendar, about and archive stylesheets. */
   --miko-soft: #f4f8f9;
   --miko-border: rgba(7, 74, 89, 0.24);
+}
+
+/* Reserve the scrollbar space always, or the layout shifts between short and long pages. */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Safari only shipped scrollbar-gutter in 18.2. */
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
 }
 
 .site-header,

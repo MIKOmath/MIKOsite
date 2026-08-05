@@ -214,9 +214,9 @@ hr {
 /* Feed */
 #feed {
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px var(--site-gutter);
   width: 100%;
-  max-width: 1400px;
+  max-width: var(--site-width);
 }
 
 .post {
@@ -389,7 +389,7 @@ hr {
 /* Columns */
 .column_right {
   margin-top: 0;
-  width: calc(100% - 390px);
+  width: calc(100% - 370px);
 }
 
 .column_left {

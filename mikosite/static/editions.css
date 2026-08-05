@@ -25,7 +25,9 @@ html {
 
 .editions-page {
   margin: 50px auto 60px;
-  width: 70%;
+  width: 100%;
+  max-width: var(--site-width);
+  padding: 0 var(--site-gutter);
 }
 
 .editions-hero {
@@ -397,12 +399,6 @@ html {
 }
 
 @media screen and (max-width: 900px) {
-  .editions-page {
-    margin: 50px auto 60px;
-    padding: 0 20px;
-    width: 100%;
-  }
-
 }
 
 @media (max-width: 560px) {
