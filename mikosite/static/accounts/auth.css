@@ -114,6 +114,7 @@
 .auth-help ul {
   margin: 0;
   padding-left: 6px;
+  list-style: none;
 }
 
 .auth-help li + li {
