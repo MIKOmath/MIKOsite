@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from rangefilter.filters import DateRangeFilterBuilder
 from more_admin_filters import MultiSelectRelatedOnlyFilter
 
@@ -62,3 +63,25 @@ class EventAdmin(admin.ModelAdmin):
     search_fields = ("name", "location")
     list_filter = ("date_begin", "date_end", "registration_begin", "registration_end", "location")
     ordering = ("-registration_end", "-date_begin", "name")
+    readonly_fields = ("image_preview",)
+    fieldsets = (
+        (None, {"fields": ("name", "location")}),
+        ("Terminy", {"fields": ("date_begin", "date_end", "registration_begin", "registration_end")}),
+        ("Zapisy", {"fields": ("registration_url",)}),
+        ("Zdjęcie", {
+            "fields": ("image", "image_preview"),
+            "description": (
+                "Kafelek na stronie głównej przycina zdjęcie do wysokości karty, "
+                "od 170 px na telefonie do 208 px na monitorze."
+            ),
+        }),
+    )
+
+    @admin.display(description="Podgląd")
+    def image_preview(self, obj):
+        if not obj.image:
+            return "Brak zdjęcia - kafelek użyje zdjęcia domyślnego."
+        return format_html(
+            '<img src="{}" style="max-width:320px;border-radius:8px"><br>{}x{} px, {} kB',
+            obj.image.url, obj.image.width, obj.image.height, round(obj.image.size / 1024),
+        )

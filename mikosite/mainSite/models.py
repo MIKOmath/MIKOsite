@@ -6,6 +6,7 @@ from markdown import Markdown
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.templatetags.static import static
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
@@ -14,6 +15,9 @@ from mainSite.markdown import DisallowHeadersExtension
 from mikosite.dates import format_day_range
 
 md = Markdown(extensions=[DisallowHeadersExtension()])
+
+# Used when an event has no image of its own.
+DEFAULT_EVENT_IMAGE = 'MIKO_GATHERING.webp'
 
 
 class Post(models.Model):
@@ -87,6 +91,16 @@ class RegistrationEvent(models.Model):
     registration_begin = models.DateField()
     registration_end = models.DateField()
     registration_url = models.URLField(max_length=500)
+    image = models.ImageField(
+        upload_to='events/',
+        blank=True,
+        verbose_name="zdjęcie",
+        help_text=(
+            "Format WebP. Proporcje 16:9 (np. 1600×900 px), minimum 1200×675 px, "
+            "do 400 kB. Kadr wypełnia całą szerokość kafelka, więc najważniejsze "
+            "elementy trzymaj z dala od krawędzi. Puste pole = zdjęcie domyślne."
+        ),
+    )
 
     def __str__(self):
         return f"{self.name} ({self.date_begin} - {self.date_end})"
@@ -116,6 +130,7 @@ class RegistrationEvent(models.Model):
             "location": self.location,
             "date_range": self.format_date_range(locale=locale),
             "registration_link": self.registration_url,
+            "image_url": self.image.url if self.image else static(DEFAULT_EVENT_IMAGE),
         }
 
     def calendar_dict(self, today=None, locale=settings.BABEL_LOCALE) -> dict:
