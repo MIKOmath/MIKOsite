@@ -66,6 +66,8 @@ html {
   margin-top: 30px;
 }
 
+/* The tile from the calendar and about pages. Nothing inside it is boxed, so the fill
+   and the hairline are the only frame the card needs. */
 .edition-card {
   background: var(--miko-soft);
   border: 1px solid var(--miko-border);
@@ -73,9 +75,9 @@ html {
   color: var(--b1);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
   min-width: 0;
-  padding: 20px;
+  padding: 24px;
 }
 
 .edition-card:last-of-type:nth-of-type(odd) {
@@ -113,18 +115,27 @@ html {
 .edition-card__label {
   align-items: center;
   background: var(--w1);
-  border: 1px solid var(--miko-border);
-  border-radius: var(--miko-radius);
+  border: 1px solid var(--b1);
+  border-radius: 999px;
   color: var(--b1);
   display: inline-flex;
   font-size: 18px;
   gap: 8px;
-  min-height: 44px;
-  padding: 0 14px;
+  min-height: 42px;
+  padding: 0 16px;
 }
 
 .edition-card__label strong {
   color: var(--r1);
+  font-size: 20px;
+}
+
+/* The unit reads as a caption beside the figure, set like the nav tabs. */
+.edition-card__label span:not(.material-symbols-rounded) {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .edition-card__label .material-symbols-rounded {
@@ -136,7 +147,7 @@ html {
   align-items: center;
   background: var(--w1);
   border: 1px solid var(--miko-border);
-  border-radius: var(--miko-radius);
+  border-radius: 50%;
   color: var(--b1);
   cursor: pointer;
   display: inline-flex;
@@ -160,20 +171,22 @@ html {
   line-height: 1;
 }
 
+/* Same shell as the seminar popup on the calendar page. */
 .edition-milestones-dialog {
   background: var(--w1);
-  border: 1px solid var(--miko-border);
+  border: none;
   border-radius: var(--miko-radius);
   box-shadow: 0 24px 60px rgba(6, 49, 62, 0.22);
   color: var(--b1);
   margin: auto;
   max-width: min(620px, calc(100vw - 36px));
+  overflow: hidden;
   padding: 0;
   width: 100%;
 }
 
 .edition-milestones-dialog::backdrop {
-  background: rgba(6, 49, 62, 0.32);
+  background: rgba(6, 49, 62, 0.45);
 }
 
 .edition-milestones-dialog__top {
@@ -187,29 +200,38 @@ html {
 
 .edition-milestones-dialog__top p {
   color: var(--miko-muted);
-  font-size: 16px;
-  line-height: 1.4;
-  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
 
 .edition-milestones-dialog__top h2 {
   color: var(--b1);
   font-size: 25px;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .edition-milestones-dialog__close {
   align-items: center;
   background: var(--w1);
   border: 1px solid var(--miko-border);
-  border-radius: var(--miko-radius);
+  border-radius: 50%;
   color: var(--b1);
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
   height: 42px;
   justify-content: center;
+  transition: background-color 160ms ease, color 160ms ease;
   width: 42px;
+}
+
+.edition-milestones-dialog__close .material-symbols-rounded {
+  display: block;
+  font-size: 23px;
+  line-height: 1;
 }
 
 .edition-milestones-dialog__close:hover {
@@ -265,9 +287,12 @@ html {
 .edition-milestones-list time {
   color: var(--miko-muted);
   display: block;
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   line-height: 1.4;
   margin-bottom: 2px;
+  text-transform: uppercase;
 }
 
 .edition-milestones-list h3 {
@@ -276,15 +301,17 @@ html {
   line-height: 1.25;
 }
 
-.edition-milestones-list__link-icon {
+/* The Material Symbols stylesheet loads after this one and sets 24px at the same
+   specificity, which left the glyph oversized and stretched the heading's line box.
+   Naming the element takes it back; at this size it no longer affects the line. */
+h3 .edition-milestones-list__link-icon {
   display: inline-block;
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1;
-  margin-left: 4px;
+  margin-left: 2px;
   opacity: 0;
   transition: opacity 160ms ease;
-  transform: translateY(3px);
-  vertical-align: baseline;
+  vertical-align: -0.14em;
 }
 
 .edition-milestones-list p {
@@ -305,43 +332,43 @@ html {
   opacity: 0.6;
 }
 
+/* The red pill used for the same job on the calendar page. */
 .edition-card__materials {
   align-items: center;
   background: var(--r1);
-  border: 3px solid var(--r1);
-  border-radius: var(--miko-radius);
+  border: 2px solid var(--r1);
+  border-radius: 999px;
   color: var(--w1);
   display: inline-flex;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   gap: 10px;
   justify-content: center;
   margin-top: auto;
-  min-height: 80px;
+  min-height: 56px;
   text-decoration: none;
-  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+  transition: background-color 160ms ease, color 160ms ease;
   width: 100%;
 }
 
 .edition-card__materials .material-symbols-rounded {
-  font-size: 30px;
+  font-size: 26px;
 }
 
 .edition-card__materials:hover {
   background: var(--y1);
   border-color: var(--y1);
-  transform: translateY(-2px);
+  color: var(--b2);
 }
 
 .edition-card__materials--pending,
 .edition-card__materials--pending:hover {
-  background: #f0f2f3;
-  border: 2px dashed #b8c3c8;
-  color: #879198;
+  background: var(--w1);
+  border: 2px dashed var(--miko-border);
+  color: var(--miko-muted);
   cursor: default;
   font-size: 18px;
-  min-height: 80px;
-  transform: none;
+  min-height: 56px;
 }
 
 .editions-empty {
@@ -404,9 +431,5 @@ html {
 @media (max-width: 560px) {
   .edition-card__top {
     align-items: center;
-  }
-
-  .edition-card__materials {
-    font-size: 20px;
   }
 }
