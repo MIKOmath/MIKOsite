@@ -1,0 +1,50 @@
+{% load static %}
+{% load compress %}
+
+{% comment %}
+Shell for the four auth pages: one head, one compress block, one content column.
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MIKO{% endblock %}</title>
+    <meta name="description" content="{% block description %}System kont MIKO – Matematyczne Internetowe Koło Olimpijskie.{% endblock %}">
+    <meta name="author" content="Matematyczne Internetowe Koło Olimpijskie">
+
+    <!-- Ahead of the page styles: at equal specificity the later sheet wins, and this one
+         sets display, font-size and line-height on every icon. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'accounts/auth.css' %}">
+    {% endcompress %}
+
+    {% block head_extra %}{% endblock %}
+</head>
+
+<body>
+{% include "header.html" %}
+
+<main class="auth-page home-band {% block page_class %}{% endblock %}">
+    <div class="home-band__inner">
+        <h1>{% block heading %}{% endblock %}</h1>
+        <h3 class="home-band__lead">{% block lead %}{% endblock %}</h3>
+
+        <div class="auth-layout">
+            <section class="auth-card">
+                {% block form %}{% endblock %}
+            </section>
+
+            <aside class="auth-aside">
+                {% block aside %}{% endblock %}
+            </aside>
+        </div>
+    </div>
+</main>
+
+{% include "footer.html" %}
+{% block body_end %}{% endblock %}
+</body>
+</html>
