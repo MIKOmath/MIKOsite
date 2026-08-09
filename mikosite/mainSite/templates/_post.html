@@ -1,0 +1,63 @@
+{% comment %}
+One announcement, shared by the home page and the archive. The card keeps the
+full content column; the meta rail and its column rule are what bring the prose
+down to a readable measure. Nothing is truncated - there is no post detail page.
+
+DOM order is rail, head, body, which is also the visual order at every width.
+{% endcomment %}
+<article class="post">
+    <div class="post__rail">
+        <div class="post__rail-inner">
+            <div class="post__meta">
+                <p class="post__meta-label">Opublikowano</p>
+                <p class="post__meta-value">{{ post.date }}, {{ post.time }}</p>
+            </div>
+
+            {% if post.authors %}
+                <div class="post__meta">
+                    <p class="post__meta-label">
+                        {% if post.authors|length > 1 %}Autorzy{% else %}Autor{% endif %}
+                    </p>
+                    <ul class="post__authors">
+                        {% for author in post.authors %}
+                            <li><a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <header class="post__head">
+        <h2 class="post__title">{{ post.title }}</h2>
+        {% if post.subtitle %}<p class="post__subtitle">{{ post.subtitle }}</p>{% endif %}
+    </header>
+
+    <div class="post__body">
+        {% if post.content %}<div class="post__content">{{ post.content }}</div>{% endif %}
+
+        {% comment %}
+        The `images` class is load-bearing: both host templates select
+        'div.images img' to wire up the 40%/100% click toggle.
+        {% endcomment %}
+        {% if post.images %}
+            <div class="images post__images">
+                {% for image in post.images %}
+                    <img src="/media/{{ image.url }}" alt="{{ image.alt_text }}"
+                         loading="lazy" decoding="async">
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if post.file %}
+            <div class="post__file">
+                <a href="{{ post.file.url }}">
+                    <span class="badge badge-light">
+                        <span class="material-symbols-rounded badge-icon">download</span>
+                        {{ post.file.name }}
+                    </span>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</article>

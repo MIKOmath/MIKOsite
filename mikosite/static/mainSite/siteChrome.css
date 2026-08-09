@@ -21,6 +21,8 @@
   /* Tile palette, repeated by the calendar, about and archive stylesheets. */
   --miko-soft: #f4f8f9;
   --miko-border: rgba(7, 74, 89, 0.24);
+  --miko-muted: #697982;
+  --miko-radius: 20px;
 }
 
 /* Reserve the scrollbar space always, or the layout shifts between short and long pages. */

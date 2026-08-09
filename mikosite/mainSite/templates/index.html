@@ -71,194 +71,277 @@
   </section>
  </main>
 
- <section id="feed">
-  <div class="row">
-   <div class="column_left">
-    <a href="https://discord.gg/mikomath" style="text-decoration: none; cursor: pointer" class="profile">
-      <img
-        src="{% static 'dsclogo.webp' %}"
-        alt="Ikona z logo Discord"
-        style="height: 100px; border-radius: 50px; margin-bottom: 20px;"
-      >
-      <h3 id="profile_name" style="color: white; text-align: center;">
-        Dołącz do&nbsp;społeczności MIKO na&nbsp;Discordzie!
-        <span style="vertical-align: bottom;" class="material-symbols-rounded">open_in_new</span>
-      </h3>
-    </a>
+ {% if registration_event %}
+ {% comment %}
+ The /about team tile, widened: the photograph bleeds to the card edge and only
+ the copy is inset. Nothing saturated touches the picture, which is what every
+ earlier version of this band was rejected on.
+ {% endcomment %}
+ <section class="home-band home-band--event" aria-labelledby="reg-notice-title">
+  <div class="home-band__inner">
+   <div class="reg-notice">
+    <figure class="reg-notice__figure">
+     <img src="{% static 'MIKO_GATHERING.webp' %}"
+          decoding="async" fetchpriority="low"
+          alt="Uczestnicy MIKO na wspólnym zdjęciu grupowym">
+    </figure>
 
-    <div class="info-banner">
-      <h2>Nadchodzące eventy:</h2>
+    <div class="reg-notice__copy">
+     <p class="reg-notice__eyebrow">
+      <span class="material-symbols-rounded" aria-hidden="true">event_upcoming</span>
+      Trwają zapisy
+     </p>
 
-      {% for seminar in events %}
-      <div
-        class="event event--clickable"
-        data-seminar-url="{% url 'informacje' %}?seminar={{ seminar.id }}"
-        role="link"
-        tabindex="0"
-        aria-label="Pokaz szczegoly wydarzenia {{ seminar.theme }}"
-      >
-        <h3 class="seminar-theme"><strong>{{ seminar.theme }}</strong></h3>
+     <h2 class="reg-notice__title" id="reg-notice-title">{{ registration_event.name }}</h2>
+     <span class="reg-notice__rule" aria-hidden="true"></span>
 
-        <div class="event-date">
-          {{ seminar.date_string }}, {{ seminar.time_string }}<br>
-        </div>
+     {# list-style:none strips list semantics in Safari, so the role is restated. #}
+     <ul class="reg-notice__facts" role="list">
+      <li class="reg-notice__fact">
+       <span class="material-symbols-rounded" aria-hidden="true">location_on</span>
+       {{ registration_event.location }}
+      </li>
+      <li class="reg-notice__fact">
+       <span class="material-symbols-rounded" aria-hidden="true">calendar_month</span>
+       {{ registration_event.date_range }}
+      </li>
+     </ul>
+    </div>
 
-        <div class="badge-container">
-          {% if seminar.featured %}
-          <div class="badge badge-featured">
-            <span class="material-symbols-rounded badge-icon">verified</span>
-            polecane
-          </div>
-          {% endif %}
-
-          {% if seminar.special_guest %}
-          <div class="badge badge-featured">
-            <span class="material-symbols-rounded badge-icon">person_alert</span>
-            gość specjalny
-          </div>
-          {% endif %}
-
-          {% if seminar.group_name %}
-          <div class="badge badge-dark">
-            <span class="material-symbols-rounded badge-icon">group</span>
-            {{ seminar.group_name }}
-          </div>
-          {% endif %}
-
-          {% if seminar.difficulty_label %}
-          <div class="badge badge-light">
-            <span class="material-symbols-rounded badge-icon">{{ seminar.difficulty_icon }}</span>
-            {{ seminar.difficulty_label }}
-          </div>
-          {% endif %}
-        </div>
-
-        <div class="event-info">
-          {% if seminar.tutors %}
-          <div class="event-tutors">
-            {% if seminar.tutors|length > 1 %}
-            <strong>Prowadzą:</strong>
-            {% else %}
-            <strong>Prowadzi:</strong>
-            {% endif %}
-            {{ seminar.tutors|join:", " }}
-          </div>
-          {% endif %}
-
-          {% if seminar.description %}
-          <div class="event-description">
-            <span><strong>Opis:</strong> {{ seminar.short_description }}</span>
-            {% if seminar.description_is_truncated %}
-            <a href="{% url 'informacje' %}?seminar={{ seminar.id }}" class="event-more-link">pokaż więcej</a>
-            {% endif %}
-          </div>
-          {% endif %}
-        </div>
-
-        {% if seminar.image_url %}
-        <div class="event-image">
-          <img src="{{ seminar.image_url }}" alt="{{ seminar.theme }}" style="max-width: 100%; height: auto;">
-        </div>
-        {% endif %}
-
-        {% if seminar.file_url %}
-        <div style="display: flex;">
-          <a href="{{ seminar.file_url }}" style="text-decoration: none">
-            <div class="badge badge-light">
-              <span class="material-symbols-rounded badge-icon">download</span>
-              załącznik
-            </div>
-          </a>
-        </div>
-        {% endif %}
-      </div>
-      {% empty %}
-      <h3>Brak eventów w najbliższym czasie ;(</h3>
-      {% endfor %}
+    <div class="reg-notice__action">
+     <a class="reg-notice__cta" href="{{ registration_event.registration_link }}"
+        target="_blank" rel="noopener">
+      Biorę udział!
+      <span class="material-symbols-rounded" aria-hidden="true">arrow_outward</span>
+      <span class="reg-notice__sr">(otwiera się w nowej karcie)</span>
+     </a>
     </div>
    </div>
+  </div>
+ </section>
+ {% endif %}
 
-   <div class="column_right" style="flex-wrap: wrap; word-break: break-word;">
-    {% if registration_event %}
-    <div
-      class="post homepage-event-tile"
-      style="background-image:
-        linear-gradient(135deg, rgba(6, 49, 62, 0.85), rgba(7, 74, 89, 0.60)),
-        url('{% static 'MIKO_GATHERING.webp' %}');"
-    >
-      <div class="homepage-event-tile__content">
-        <p class="homepage-event-tile__eyebrow">
-          <span class="material-symbols-rounded">event_upcoming</span>
-          Trwają zapisy
-        </p>
-
-        <h2 class="homepage-event-tile__title">{{ registration_event.name }}</h2>
-        <p class="homepage-event-tile__meta">
-          {{ registration_event.location }}, {{ registration_event.date_range }}
-        </p>
-      </div>
-
-      <a
-        href="{{ registration_event.registration_link }}"
-        class="homepage-cta-button homepage-event-tile__button"
-        target="_blank"
-      >
-        Biorę udział!
-      </a>
-    </div>
+ <section class="home-band">
+  <div class="home-band__inner">
+   <div class="home-band__head">
+    <h1>Aktualności</h1>
+    {% if has_more_posts %}
+     <a class="home-band__more" href="{% url 'announcements' %}">
+      Zobacz wszystkie
+      <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+     </a>
     {% endif %}
+   </div>
 
-    <h1 style="margin-top: 0px; margin-bottom: 20px;">Aktualności</h1>
+   {% for post in posts %}
+    {% include "_post.html" %}
+   {% empty %}
+    <p class="home-band__empty">Brak aktualności.</p>
+   {% endfor %}
+  </div>
+ </section>
 
-    {% for post in posts %}
-    <div class="post">
-      <div class="post-header">
-        <h2 id="post_title">{{ post.title }}</h2>
-        <p>{{ post.date }}, {{ post.time }}</p>
+ <section class="home-band home-band--accent">
+  <div class="home-band__inner">
+   <div class="home-band__head">
+    <h1>Nadchodzące zajęcia</h1>
+    <a class="home-band__more" href="{% url 'informacje' %}">
+     Zobacz kalendarz
+     <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+    </a>
+   </div>
+
+   {% if events %}
+   <div class="seminar-grid">
+    {% for seminar in events %}
+     <div
+       class="event event--clickable"
+       data-seminar-url="{% url 'informacje' %}?seminar={{ seminar.id }}"
+       role="link"
+       tabindex="0"
+       aria-label="Pokaż szczegóły wydarzenia {{ seminar.theme }}"
+     >
+      <h3 class="seminar-theme"><strong>{{ seminar.theme }}</strong></h3>
+
+      <div class="event-date">{{ seminar.date_string }}, {{ seminar.time_string }}</div>
+
+      <div class="badge-container">
+       {% if seminar.featured %}
+        <div class="badge badge-featured">
+         <span class="material-symbols-rounded badge-icon">verified</span>polecane
+        </div>
+       {% endif %}
+       {% if seminar.special_guest %}
+        <div class="badge badge-featured">
+         <span class="material-symbols-rounded badge-icon">person_alert</span>gość specjalny
+        </div>
+       {% endif %}
+       {% if seminar.group_name %}
+        <div class="badge badge-dark">
+         <span class="material-symbols-rounded badge-icon">group</span>{{ seminar.group_name }}
+        </div>
+       {% endif %}
+       {% if seminar.difficulty_label %}
+        <div class="badge badge-light">
+         <span class="material-symbols-rounded badge-icon">{{ seminar.difficulty_icon }}</span>{{ seminar.difficulty_label }}
+        </div>
+       {% endif %}
       </div>
 
-      <h3 id="post_subtitle">{{ post.subtitle }}</h3>
-      <hr style="border: none; height: 2px; margin-bottom: 10px">
-
-      <p>
-        {% if post.authors|length > 1 %}
-        <strong>Autorzy:</strong>
-        {% else %}
-        <strong>Autor:</strong>
-        {% endif %}
-
-        {% for author in post.authors %}
-        <a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-      </p>
-
-      <div class="post_content">
-        {{ post.content }}
+      <div class="event-info">
+       {% if seminar.tutors %}
+        <div class="event-tutors">
+         {% if seminar.tutors|length > 1 %}<strong>Prowadzą:</strong>{% else %}<strong>Prowadzi:</strong>{% endif %}
+         {{ seminar.tutors|join:", " }}
+        </div>
+       {% endif %}
+       {% if seminar.description %}
+        <div class="event-description">
+         <span><strong>Opis:</strong> {{ seminar.short_description }}</span>
+         {% if seminar.description_is_truncated %}
+          <a href="{% url 'informacje' %}?seminar={{ seminar.id }}" class="event-more-link">pokaż więcej</a>
+         {% endif %}
+        </div>
+       {% endif %}
       </div>
 
-      {% if post.file %}
-      <div style="display: flex; margin-top: 10px;">
-        <a href="{{ post.file.url }}" style="text-decoration: none">
-          <div class="badge badge-light">
-            <span class="material-symbols-rounded badge-icon">download</span>
-            {{ post.file.name }}
-          </div>
+      {% if seminar.file_url %}
+       <div class="event-attachment">
+        <a href="{{ seminar.file_url }}">
+         <span class="badge badge-light">
+          <span class="material-symbols-rounded badge-icon">download</span>załącznik
+         </span>
         </a>
-      </div>
+       </div>
       {% endif %}
-
-      {% if post.images|length > 0 %}
-      <div class="images">
-        {% for image in post.images %}
-        <img src="/media/{{ image.url }}" alt="{{ image.alt_text }}">
-        {% endfor %}
-      </div>
-      {% endif %}
-    </div>
-    {% empty %}
-    <p>Brak postów.</p>
+     </div>
     {% endfor %}
    </div>
+   {% else %}
+    <p class="home-band__empty">
+     Nie mamy teraz zaplanowanych zajęć. Terminy na&nbsp;kolejne tygodnie pojawiają się
+     w&nbsp;kalendarzu, a&nbsp;więcej informacji znajdziesz na&nbsp;naszym Discordzie.
+    </p>
+   {% endif %}
+  </div>
+ </section>
+
+ <section class="home-band">
+  <div class="home-band__inner">
+   <h1>Dlaczego MIKO?</h1>
+   <h3 class="home-band__lead">
+    Cztery rzeczy, które sprawiają, że warto uczyć się razem z&nbsp;nami.
+   </h3>
+
+   <div class="principle-grid">
+    <article class="principle">
+     <span class="principle__icon material-symbols-rounded" aria-hidden="true">calendar_month</span>
+     <h2 class="principle__title">Nauka przez cały rok</h2>
+     <p class="principle__text">
+      Przez cały rok szkolny organizujemy cotygodniowe koła z&nbsp;matematyki, AI,
+      informatyki i&nbsp;fizyki w&nbsp;grupach o&nbsp;zróżnicowanym poziomie,
+      a&nbsp;bezpośrednio przed etapami olimpiad również próbne zawody.
+     </p>
+    </article>
+
+    <article class="principle">
+     <span class="principle__icon material-symbols-rounded" aria-hidden="true">workspace_premium</span>
+     <h2 class="principle__title">Rzeczywiste sukcesy</h2>
+     <p class="principle__text">
+      Wśród uczestników zajęć na&nbsp;MIKO znajduje się wielu laureatów
+      i&nbsp;finalistów olimpiad krajowych, a&nbsp;także medalistów olimpiad
+      międzynarodowych.
+     </p>
+    </article>
+
+    <article class="principle">
+     <span class="principle__icon material-symbols-rounded" aria-hidden="true">diversity_3</span>
+     <h2 class="principle__title">Wspierająca społeczność</h2>
+     <p class="principle__text">
+      Regularne zajęcia, wspólny serwer Discord oraz Zjazdy MIKO i&nbsp;inne wydarzenia
+      stacjonarne pozwalają na&nbsp;nawiązanie cennych znajomości wśród ambitnych
+      rówieśników.
+     </p>
+    </article>
+
+    <article class="principle">
+     <span class="principle__icon material-symbols-rounded" aria-hidden="true">menu_book</span>
+     <h2 class="principle__title">Przydatne materiały</h2>
+     <p class="principle__text">
+      Zajęcia prowadzone są przez doświadczonych olimpijczyków, którzy tworzą
+      wartościowe skrypty, zebrane w&nbsp;broszurach dostępnych za&nbsp;darmo
+      do&nbsp;pobrania.
+     </p>
+    </article>
+   </div>
+
+   <div class="home-band__actions">
+    <a class="homepage-cta-button homepage-cta-button--dark" href="{% url 'about' %}">Poznaj nas lepiej</a>
+   </div>
+  </div>
+ </section>
+
+ <section class="home-band home-band--soft">
+  <div class="home-band__inner">
+   <div class="history-section">
+    <div class="history-section__copy">
+     <h1>Historia</h1>
+     <p>
+      MIKO powstało we&nbsp;wrześniu 2023&nbsp;roku jako społeczność uczniów przygotowujących
+      się do&nbsp;Olimpiady Matematycznej, a&nbsp;obecnie obejmuje też m.in. Olimpiadę
+      Informatyczną i&nbsp;Olimpiadę AI. Wspieramy ambitnych licealistów organizując regularne
+      spotkania online prowadzone przez doświadczonych olimpijczyków. Materiały
+      z&nbsp;zakończonych edycji mogą stanowić cenną inspirację do&nbsp;dalszej nauki.
+     </p>
+    </div>
+    <div class="history-section__meta">
+     <div class="history-section__number">{{ history.experience_years }}</div>
+     <div class="history-section__label">{{ history.experience_year_unit }} doświadczenia</div>
+     <a href="{% url 'previous_editions' %}" class="history-section__button">Poprzednie edycje</a>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="home-band home-band--partners">
+  <div class="home-band__inner">
+   <h1>Partnerzy</h1>
+   <h3 class="home-band__lead">
+    Ambitna edukacja nie powinna być droga. Dlatego za&nbsp;przynależność do&nbsp;MIKO nie
+    pobieramy żadnych opłat. Jest to możliwe dzięki hojności naszych partnerów
+    i&nbsp;darczyńców.
+   </h3>
+
+   {% if partners %}
+    <ul class="partner-strip">
+     {% for partner in partners %}
+      <li class="partner-strip__item">
+       {% if partner.url %}<a href="{{ partner.url }}" target="_blank" rel="noopener">{% endif %}
+       <img src="{{ partner.logo_url }}" alt="{{ partner.name }}">
+       {% if partner.url %}</a>{% endif %}
+      </li>
+     {% endfor %}
+    </ul>
+
+    {% if partners_hidden %}
+     <p class="partner-strip__rest">
+      oraz {{ partners_hidden }} {{ partners_hidden_unit }}, którym również dziękujemy
+     </p>
+    {% endif %}
+   {% endif %}
+
+   <div class="partner-actions">
+    <a class="homepage-cta-button homepage-cta-button--dark"
+       href="https://www.siepomaga.pl/inuni" target="_blank" rel="noopener">
+     <span class="material-symbols-rounded" aria-hidden="true">volunteer_activism</span>
+     Wesprzyj MIKO
+    </a>
+    <a class="homepage-cta-button homepage-cta-button--outline" href="mailto:business@mikomath.org">
+     <span class="material-symbols-rounded" aria-hidden="true">handshake</span>
+     Zostań partnerem
+    </a>
+   </div>
+
   </div>
  </section>
 
