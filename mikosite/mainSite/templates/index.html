@@ -81,9 +81,9 @@
   <div class="home-band__inner">
    <div class="reg-notice">
     <figure class="reg-notice__figure">
-     <img src="{% static 'MIKO_GATHERING.webp' %}"
+     <img src="{{ registration_event.image_url }}"
           decoding="async" fetchpriority="low"
-          alt="Uczestnicy MIKO na wspólnym zdjęciu grupowym">
+          alt="Zdjęcie z wydarzenia {{ registration_event.name }}">
     </figure>
 
     <div class="reg-notice__copy">
