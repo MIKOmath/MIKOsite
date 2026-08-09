@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 from babel import Locale
 
@@ -195,6 +196,12 @@ if not DEBUG or USE_REDIS_WITH_DEBUG:
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
     CACHE_BACKEND = f'redis_cache.cache://{REDIS_HOST}:6379/1'
     SESSION_CACHE_ALIAS = "default"
+
+# Parallel test workers get a database each but would share one Redis, so cached
+# payloads - and cache.clear() - leak between them. An in-process cache is private
+# to each worker.
+if 'test' in sys.argv:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
