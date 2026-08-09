@@ -56,6 +56,29 @@ class Image(models.Model):
         return str(self.image)
 
 
+class Partner(models.Model):
+    name = models.CharField(max_length=200, help_text="Nazwa widoczna dla czytników ekranu.")
+    logo = models.ImageField(upload_to='partners/')
+    url = models.URLField(max_length=500, blank=True, help_text="Opcjonalny link do strony partnera.")
+    order = models.PositiveIntegerField(default=0, help_text="Mniejsza wartość - wcześniej na liście.")
+    is_published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = "partner"
+        verbose_name_plural = "partnerzy"
+
+    def __str__(self):
+        return self.name
+
+    def display_dict(self) -> dict:
+        return {
+            'name': self.name,
+            'logo_url': self.logo.url if self.logo else '',
+            'url': self.url,
+        }
+
+
 class RegistrationEvent(models.Model):
     name = models.CharField(max_length=200)
     location = models.CharField(max_length=100)
