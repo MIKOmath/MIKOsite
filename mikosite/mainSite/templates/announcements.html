@@ -1,0 +1,84 @@
+{% load static %}
+{% load compress %}
+
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <title>Aktualności – MIKO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wszystkie aktualności Matematycznego Internetowego Koła Olimpijskiego.">
+    <meta name="author" content="Matematyczne Internetowe Koło Olimpijskie">
+
+    <!-- Ahead of the page styles: at equal specificity the later sheet wins, and this one
+         sets display, font-size and line-height on every icon. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'badges.css' %}">
+    {% endcompress %}
+
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Aktualności – MIKO">
+    <meta property="og:description" content="Wszystkie aktualności Matematycznego Internetowego Koła Olimpijskiego.">
+    <meta property="og:url" content="https://mikomath.org/announcements/">
+    <meta property="og:locale" content="pl_PL">
+</head>
+
+<body>
+{% include "header.html" %}
+
+<section class="home-band">
+    <div class="home-band__inner">
+        <h1>Aktualności</h1>
+
+        {% for post in page %}
+            {% include "_post.html" %}
+        {% empty %}
+            <p class="home-band__empty">Brak aktualności.</p>
+        {% endfor %}
+
+        {% if page.paginator.num_pages > 1 %}
+            <nav class="pagination" aria-label="Nawigacja po stronach">
+                {% if page.has_previous %}
+                    <a class="pagination__step" href="?strona={{ page.previous_page_number }}" rel="prev">
+                        <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+                        Poprzednia
+                    </a>
+                {% endif %}
+
+                <span class="pagination__status">
+                    Strona {{ page.number }} z&nbsp;{{ page.paginator.num_pages }}
+                </span>
+
+                {% if page.has_next %}
+                    <a class="pagination__step" href="?strona={{ page.next_page_number }}" rel="next">
+                        Następna
+                        <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+                    </a>
+                {% endif %}
+            </nav>
+        {% endif %}
+    </div>
+</section>
+
+{% include "footer.html" %}
+</body>
+
+<script>
+function toggleImageSize() {
+  document.querySelectorAll('div.images img').forEach(img => {
+    img.style.cursor = 'pointer';
+    img.style.width = '40%';
+    img.addEventListener('click', function () {
+      this.style.width = this.style.width === '40%' ? '100%' : '40%';
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', toggleImageSize);
+</script>
+
+</html>

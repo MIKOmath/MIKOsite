@@ -264,34 +264,18 @@ h1.hero__title::after {
   font-size: 18px;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease;
   cursor: pointer;
 }
 
 .homepage-cta-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 18px rgba(6, 49, 62, 0.18);
 }
 
 .homepage-cta-button--ghost,
 .homepage-cta-button--ghost:hover {
   background: transparent;
   color: var(--w1);
-}
-
-/* Info Banner */
-.info-banner {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  background-color: #f1b239;
-  padding: 20px;
-  border-radius: 20px;
-  width: 310px;
-}
-
-.info-banner h2 {
-  color: #06313e;
 }
 
 /* Event */
@@ -357,236 +341,19 @@ hr {
 
 /* Feed
    Same column and gutter as the header and the hero, so all three line up. */
-#feed {
-  margin: 0 auto;
-  padding: 20px var(--site-gutter);
-  width: 100%;
-  max-width: var(--site-width);
-}
-
-.post {
-  border: 2px solid var(--b1);
-  border-radius: 20px;
-  color: var(--b1);
-  padding: 20px 30px;
-  margin-bottom: 30px;
-}
-
-.post a {
-  color: var(--b1);
-}
-
-.post a:not(.homepage-cta-button):hover {
-  color: #fff;
-  background-color: var(--b1);
-  border-radius: 3px;
-  text-decoration: none;
-}
-
-.post h3 {
-  margin: 8px 0;
-}
-
-.post_content {
-  margin-top: 10px;
-}
-
-.post_content p + p, ul + p, ol + p {
-  margin-top: 10px;
-}
-
-.post_content p + ol, p + ul {
-  margin-top: 5px;
-}
-
-.post_content ol {
-  padding-left: 20px;
-}
-
-.post_content ul {
-  padding-left: 20px;
-  list-style-type: disc;
-}
-
-.post_content li + li {
-  margin-top: 5px;
-}
-
-.post_content blockquote {
-  margin: 10px 0;
-  padding: 10px 10px 10px 20px;
-  background-color: #f5f5f5;
-  border-left: 5px solid var(--y1);
-}
-
-.post_content hr {
-  height: 1px;
-  margin: 10px 0;
-}
-
-.images {
-  margin-top: 10px;
-}
-
-/* Event registration tile */
-.post.homepage-event-tile {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  min-height: 220px;
-  border: none;
-  color: var(--w1);
-  background-size: cover;
-  background-position: center;
-  overflow: hidden;
-  box-shadow: 0 12px 32px rgba(6, 49, 62, 0.14);
-}
-
-.homepage-event-tile__content {
-  max-width: 70%;
-}
-
-.homepage-event-tile__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.10);
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  backdrop-filter: blur(6px);
-}
-
-.homepage-event-tile__title {
-  margin-top: 16px;
-  font-size: clamp(28px, 3vw, 36px);
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--w1);
-}
-
-.homepage-event-tile__meta {
-  margin-top: 10px;
-  font-size: 18px;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.post a.homepage-event-tile__button {
-  flex-shrink: 0;
-}
 
 @media screen and (max-width: 700px) {
-  .post.homepage-event-tile {
-    flex-direction: column;
-    align-items: flex-start;
-    min-height: unset;
-  }
-
-  .homepage-event-tile__content {
-    max-width: 100%;
-  }
-
-  .post a.homepage-event-tile__button {
-    width: 100%;
-  }
 }
 
 /* Profile */
-.profile {
-  display: grid;
-  justify-items: center;
-  background-color: var(--b1);
-  min-height: 200px;
-  border-radius: 20px;
-  align-content: center;
-  line-height: 1.2;
-  padding: 20px;
-  transition: transform 0.18s ease;
-}
-
-.profile:hover,
-.profile:focus-visible {
-  transform: translateY(-2px);
-  outline: none;
-}
 
 /* Columns */
 /* 310px column + 60px gutter = 370px, so the pair fills the row exactly. It used to
    subtract 390px, leaving 20px of slack that .row's centring split into a stray 10px
    inset -- which is why the feed never lined up with anything above it. */
-.column_right {
-  width: calc(100% - 370px);
-}
-
-.column_left {
-  display: flex;
-  flex-direction: column;
-  width: 310px;
-  margin-right: 60px;
-  gap: 30px;
-}
-
-.profile {
-  width: 310px;
-}
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  justify-content: center;
-  margin-top: 50px;
-}
-
-.post-header {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px 20px;
-  align-items: baseline;
-  margin-bottom: 8px;
-}
 
 .seminar-theme {
   color: var(--b2);
-}
-
-@media screen and (max-width: 1000px) {
-  .row {
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-  }
-
-  .profile {
-    display: none;
-  }
-
-  .column_left {
-    margin: 0;
-    width: 100%;
-  }
-
-  .info-banner {
-    width: 100%;
-    margin: auto;
-  }
-
-  .column_right {
-    width: 100%;
-    margin-top: 50px;
-  }
-
-  .post {
-    padding: 20px;
-  }
 }
 
 main {
@@ -594,3 +361,938 @@ main {
   align-items: center;
 }
 
+/* ------------------------------------------------------------- home page bands --- */
+
+/* Every home page section is a full-width band with the content in the shared column,
+   so alternating fills can run edge to edge without breaking the alignment. */
+.home-band {
+  padding: 56px 0;
+}
+
+.home-band--accent {
+  background: var(--y1);
+}
+
+/* Dark teal on the yellow: --b1 reads 5.38:1 there against --b2's 7.56:1, and
+   the section rule would otherwise be yellow on yellow. */
+.home-band--accent h1,
+.home-band--accent .home-band__more,
+.home-band--accent .home-band__empty {
+  color: var(--b2);
+}
+
+.home-band--accent h1::after {
+  background: var(--b2);
+}
+
+.home-band--accent .home-band__more {
+  border-color: var(--b2);
+}
+
+.home-band--accent .home-band__more:hover {
+  background: var(--b2);
+  color: var(--w1);
+}
+
+.home-band--soft {
+  background: var(--miko-soft);
+}
+
+.home-band__inner {
+  width: 100%;
+  max-width: var(--site-width);
+  margin: 0 auto;
+  padding: 0 var(--site-gutter);
+}
+
+.home-band__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+/* The outlined pill from the header login button, so secondary actions match. */
+.home-band__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border: 2px solid var(--b1);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--b1);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.home-band__more:hover {
+  background: var(--b1);
+  color: var(--w1);
+}
+
+.home-band__more .material-symbols-rounded {
+  font-size: 18px;
+}
+
+.home-band__lead {
+  max-width: 62ch;
+  margin-top: 18px;
+}
+
+.home-band__actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.home-band__empty {
+  max-width: 62ch;
+  margin-top: 24px;
+  color: var(--miko-muted);
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.home-band h1 + .post,
+.home-band__head + .post,
+.home-band__head + .seminar-grid {
+  margin-top: 28px;
+}
+
+/* --- upcoming seminars --- */
+
+.seminar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 28px;
+}
+
+.event-attachment {
+  display: flex;
+  margin-top: 10px;
+}
+
+.event-attachment a {
+  text-decoration: none;
+}
+
+/* --- principles --- */
+
+.principle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.principle {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--miko-soft);
+  border: 1px solid var(--miko-border);
+  border-radius: var(--miko-radius);
+  padding: 24px;
+  /* The lift .info-card and .team-member already use. */
+  transition: transform 0.3s ease;
+}
+
+.principle:hover {
+  transform: translateY(-5px);
+}
+
+.home-band--soft .principle {
+  background: var(--w1);
+}
+
+/* Rounded tile per principle, cycling the brand palette rather than the prototype's
+   green/blue/orange/purple, which are not colours this site uses. */
+.principle__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--b1);
+  color: var(--w1);
+  font-size: 28px;
+}
+
+.principle:nth-child(2) .principle__icon {
+  background: var(--r1);
+}
+
+.principle:nth-child(3) .principle__icon {
+  background: var(--y1);
+  color: var(--b2);
+}
+
+.principle:nth-child(4) .principle__icon {
+  background: var(--b2);
+}
+
+.principle__title {
+  color: var(--b1);
+  font-size: 21px;
+  line-height: 1.25;
+}
+
+.principle__text {
+  color: var(--b2);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.homepage-cta-button--dark,
+.homepage-cta-button--dark:hover {
+  gap: 8px;
+  background: var(--b1);
+  border-color: var(--b1);
+  color: var(--w1);
+}
+
+.homepage-cta-button--outline,
+.homepage-cta-button--outline:hover {
+  gap: 8px;
+  background: transparent;
+  border-color: var(--b1);
+  color: var(--b1);
+}
+
+/* --- history --- */
+
+.history-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  align-items: stretch;
+  gap: 28px;
+  color: var(--b1);
+}
+
+.history-section h1 {
+  margin-bottom: 16px;
+}
+
+.history-section__copy p {
+  font-size: 20px;
+  line-height: 1.55;
+}
+
+.history-section__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--w1);
+  border: 1px solid var(--miko-border);
+  border-radius: var(--miko-radius);
+  min-height: 220px;
+  padding: 22px;
+  text-align: center;
+}
+
+.history-section__number {
+  color: var(--r1);
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.history-section__label {
+  color: var(--b1);
+  font-size: 18px;
+  font-weight: 700;
+  margin: 8px 0 22px;
+}
+
+.history-section__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--r1);
+  border: 2px solid var(--r1);
+  border-radius: 999px;
+  color: var(--w1);
+  font-size: 18px;
+  font-weight: 700;
+  min-height: 56px;
+  padding: 0 24px;
+  text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.history-section__button:hover {
+  background: var(--y1);
+  border-color: var(--y1);
+  color: var(--b2);
+}
+
+/* --- partners --- */
+
+/* A grid, not a wrapped flex row: with a dozen logos of different aspect ratios
+   flex leaves ragged rows of unequal cells, and every cell here is the same box
+   however many partners there are. */
+.partner-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  justify-items: center;
+  gap: 28px 32px;
+  list-style: none;
+  margin-top: 36px;
+}
+
+/* Fixed cell keeps logos of different aspect ratios on one baseline. */
+.partner-strip__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 72px;
+}
+
+.partner-strip__item img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+.partner-strip__rest {
+  margin-top: 26px;
+  color: var(--miko-muted);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.partner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+/* --- announcements archive --- */
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 20px;
+  margin-top: 40px;
+}
+
+.pagination__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid var(--b1);
+  border-radius: 999px;
+  color: var(--b1);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  min-height: 46px;
+  padding: 0 20px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.pagination__step:hover {
+  background: var(--b1);
+  color: var(--w1);
+}
+
+.pagination__status {
+  color: var(--miko-muted);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pagination__step .material-symbols-rounded {
+  font-size: 18px;
+}
+
+@media screen and (max-width: 900px) {
+  .home-band {
+    padding: 40px 0;
+  }
+
+  .history-section {
+    grid-template-columns: 1fr;
+  }
+
+  .history-section__meta {
+    min-height: 190px;
+  }
+}
+
+/* --- registration notice ---------------------------------------------------
+
+   The /about team tile, widened: --miko-soft behind a 1px --miko-border, 20px
+   radius, overflow hidden, and the photograph bleeding flush to the card edge
+   rather than floating inside padding. Only the copy is inset, exactly as
+   .team-member insets everything below its .photo-placeholder.
+
+   Three tracks, because one column of Polish plus a button does not fill
+   1240px: figure | copy | action. Nothing saturated ever touches the
+   photograph - the fill it meets is --miko-soft and its own hairline - which
+   is the interface that killed the three photographic versions of this band. */
+
+.home-band--event {
+  padding: 40px 0 14px;
+}
+
+.reg-notice {
+  display: grid;
+  grid-template-columns: minmax(240px, 32%) minmax(0, 1fr) auto;
+  align-items: stretch;
+  border: 1px solid var(--miko-border);
+  border-radius: var(--miko-radius);
+  background: var(--miko-soft);
+  /* Clips the photograph to the card's radius, the way .team-member does. */
+  overflow: hidden;
+}
+
+/* No radius and no inset of its own: the card's overflow does the rounding, so
+   the picture reaches the border on three sides. --b2 underneath, so a slow
+   decode is a dark plate rather than a white hole. */
+.reg-notice__figure {
+  position: relative;
+  min-height: 208px;
+  background: var(--b2);
+}
+
+/* Absolute, so the height comes from the grid row and inset:0 resolves against
+   it at every width. */
+.reg-notice__figure img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The group sits high in the frame; a centred crop into a 208px band cuts
+     faces in half. The same bias .hero::before uses. */
+  object-position: 50% 38%;
+}
+
+.reg-notice__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 24px 28px;
+}
+
+/* Filled, not outlined: an outlined chip inside a bordered card is a second
+   concentric hairline. White on --b1 is 9.85:1. */
+.reg-notice__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--b1);
+  color: var(--w1);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.reg-notice__eyebrow .material-symbols-rounded {
+  font-size: 19px;
+}
+
+/* The global h2 is 25px and --y1; yellow on --miko-soft is 1.71:1, so both are
+   named here. */
+.reg-notice__title {
+  min-width: 0;
+  color: var(--b1);
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+}
+
+/* .team-member hr: 56px of 3px teal under the heading. Teal rather than the
+   section yellow, because on the tiles it marks an item, not a section. */
+.reg-notice__rule {
+  width: 56px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--b1);
+}
+
+.reg-notice__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  list-style: none;
+}
+
+/* Deliberately not nowrap: format_day_range emits "28 grudnia 2026 -
+   4 stycznia 2027" whenever a range crosses a year, and at 375px that has to
+   wrap inside its own item rather than scroll the page. */
+.reg-notice__fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  color: var(--b2);
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.reg-notice__fact .material-symbols-rounded {
+  flex: 0 0 auto;
+  color: var(--r1);
+  font-size: 21px;
+}
+
+.reg-notice__action {
+  display: flex;
+  align-items: center;
+  padding: 24px 28px 24px 0;
+}
+
+/* No border: the fill is the shape. 20px is not decoration - at >= 18.66px
+   bold the pair is large text, so white on --r1 answers to 3:1 and passes at
+   3.70:1. At 18px the bar becomes 4.5:1 and it fails. */
+.reg-notice__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 28px;
+  border: none;
+  border-radius: 999px;
+  background: var(--r1);
+  color: var(--w1);
+  font-family: "Rubik", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+/* The house hover for a red pill is yellow. --b2 on --y1 is 7.56:1. */
+.reg-notice__cta:hover {
+  background: var(--y1);
+  color: var(--b2);
+}
+
+.reg-notice__cta:focus-visible {
+  outline: 2px solid var(--b1);
+  outline-offset: 3px;
+}
+
+.reg-notice__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Two columns at the width the header swaps to its hamburger and .post stacks,
+   so the page changes shape exactly once. The figure stays beside the copy and
+   the action drops to a bar across the foot. */
+@media screen and (max-width: 1000px) {
+  .reg-notice {
+    grid-template-columns: minmax(220px, 34%) minmax(0, 1fr);
+  }
+
+  .reg-notice__figure {
+    min-height: 180px;
+  }
+
+  .reg-notice__action {
+    grid-column: 1 / -1;
+    padding: 0 24px 24px;
+  }
+}
+
+/* Phone: one column, photograph on top and leading the card. */
+@media screen and (max-width: 900px) {
+  .home-band--event {
+    padding: 28px 0 22px;
+  }
+
+  .reg-notice {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Height in vw with hard stops, not aspect-ratio: at an 899px tablet a
+     full-width 16:9 crop would be 438px tall and the card would turn back into
+     the picture slab this design exists to avoid. */
+  .reg-notice__figure {
+    min-height: 0;
+    height: clamp(170px, 42vw, 260px);
+  }
+
+  .reg-notice__copy {
+    gap: 12px;
+    padding: 20px 20px 18px;
+  }
+
+  .reg-notice__fact {
+    font-size: 17px;
+  }
+
+  .reg-notice__action {
+    padding: 0 20px 20px;
+  }
+
+  /* Full-width tap target; font-size is untouched and stays 20px/700. */
+  .reg-notice__cta {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .principle,
+  .reg-notice__cta {
+    transition: none;
+  }
+
+  .principle:hover {
+    transform: none;
+  }
+}
+
+/* --- announcement card ---------------------------------------------------- */
+
+/* The original shell - white, 2px teal, 20px radius. What changed is inside it:
+   a meta rail takes the left, so the prose gets a readable measure instead of
+   the whole 1240px column, and the card still spans the column like every
+   other band. */
+.post {
+  display: grid;
+  /* Sized to the content, not to the column: the longest Polish dateline,
+     "23 września 2026, 18:00", measures 188px, so the rail holds it on one line
+     and stops. Anything wider was empty space with a rule drawn beside it. */
+  grid-template-columns: clamp(220px, 19%, 240px) minmax(0, 1fr);
+  /* Row 2 must be flexible: with two auto rows, a rail taller than a one-line
+     post spreads its surplus across both and wedges a gap under the title. */
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "rail head"
+    "rail body";
+  column-gap: 40px;
+  row-gap: 16px;
+  padding: 24px 30px 28px;
+  border: 2px solid var(--b1);
+  border-radius: 20px;
+  color: var(--b1);
+}
+
+.post + .post {
+  margin-top: 30px;
+}
+
+/* Spans both rows, so the divider is as tall as the card whether the body runs
+   one line or eighty. That edge is what stops the space beside a short post
+   reading as a hole. */
+.post__rail {
+  grid-area: rail;
+  min-width: 0;
+  padding-right: 24px;
+  border-right: 3px solid var(--y1);
+}
+
+/* Self-disabling on a short post - sticky does nothing until the container is
+   taller than the sticky box. 85px clears the 68px header and its border. */
+.post__rail-inner {
+  position: sticky;
+  top: 85px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.post__meta {
+  min-width: 0;
+}
+
+.post__meta-label {
+  margin-bottom: 4px;
+  color: var(--miko-muted);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.post__meta-value {
+  color: var(--b1);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.post__authors {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+}
+
+.post__head {
+  grid-area: head;
+  align-self: start;
+  min-width: 0;
+}
+
+/* Named: the global h2 is yellow, which is 1.83:1 on white. */
+.post__title {
+  color: var(--b1);
+  font-size: 25px;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+/* The original subtitle, which was an h3. */
+.post__subtitle {
+  margin-top: 8px;
+  color: var(--b1);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.post__body {
+  grid-area: body;
+  align-self: start;
+  min-width: 0;
+  /* Active, not a backstop: Rubik runs about 9.2px a character at this size, so
+     the full track would run past 100 characters. 41em holds the line to ~84. */
+  max-width: 41em;
+  color: var(--b1);
+  font-size: 18px;
+  line-height: 1.55;
+  overflow-wrap: break-word;
+}
+
+.post__body > * + * {
+  margin-top: 16px;
+}
+
+/* Rendered markdown. Headings are rewritten to <p> by DisallowHeadersExtension,
+   so only the constructs below can appear. */
+.post__content > * + * {
+  margin-top: 10px;
+}
+
+.post__content ul,
+.post__content ol {
+  padding-left: 20px;
+}
+
+.post__content ul {
+  list-style-type: disc;
+}
+
+.post__content li + li {
+  margin-top: 5px;
+}
+
+.post__content blockquote {
+  padding: 10px 12px 10px 18px;
+  border-left: 4px solid var(--y1);
+  border-radius: 0 8px 8px 0;
+  background: var(--miko-soft);
+}
+
+.post__content hr {
+  height: 1px;
+  border: none;
+  background: var(--miko-border);
+}
+
+/* --miko-soft, not white: the card is white now. */
+.post__content code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--miko-soft);
+  font-size: 0.92em;
+}
+
+/* An indented code block is the one markdown construct that cannot wrap. */
+.post__content pre {
+  padding: 12px 14px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: var(--miko-soft);
+}
+
+.post__content pre code {
+  padding: 0;
+  background: none;
+}
+
+.post__content a,
+.post__authors a {
+  color: var(--b1);
+  text-decoration: underline;
+  text-decoration-color: rgba(7, 74, 89, 0.35);
+  text-underline-offset: 0.16em;
+  transition: text-decoration-color 160ms ease;
+}
+
+.post__authors a {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+/* Long URLs in prose must break rather than push the grid. */
+.post__content a {
+  overflow-wrap: anywhere;
+}
+
+/* Replaces the white-on-teal inversion, which stamped a filled slab into the
+   middle of a paragraph. */
+.post__content a:hover,
+.post__authors a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* The scripts write width:40% inline and toggle it to 100%. Percentages resolve
+   against this container, so 40% is a thumbnail rather than near full bleed. */
+.post__images {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.post__images img {
+  flex: 0 0 auto;
+  display: block;
+  width: 40%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* The badge the seminar tiles use for the same job. */
+.post__file {
+  display: flex;
+}
+
+.post__file a {
+  text-decoration: none;
+}
+
+.post a:focus-visible {
+  outline: 2px solid var(--b1);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Stacks at the width the header swaps to its hamburger, so the page changes
+   shape once. The areas restack into plain DOM order. */
+@media screen and (max-width: 1000px) {
+  .post {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "rail"
+      "head"
+      "body";
+    column-gap: 0;
+    row-gap: 14px;
+    padding: 20px 24px 24px;
+  }
+
+  /* The rule rotates: column divider becomes the strip's edge. */
+  .post__rail {
+    padding-right: 0;
+    padding-bottom: 12px;
+    border-right: none;
+    border-bottom: 3px solid var(--y1);
+  }
+
+  /* Never sticky once stacked - a pinned strip would sit on the text. */
+  .post__rail-inner {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 28px;
+  }
+
+  .post__authors {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2px 0;
+  }
+
+  .post__authors li + li::before {
+    content: "\00B7";
+    padding: 0 8px;
+    color: rgba(7, 74, 89, 0.45);
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .post {
+    padding: 18px 20px 20px;
+  }
+
+  .post + .post {
+    margin-top: 20px;
+  }
+
+  .post__title {
+    font-size: 22px;
+  }
+
+  .post__subtitle {
+    font-size: 18px;
+  }
+
+  .post__body {
+    font-size: 16px;
+  }
+
+  /* 40% of a phone card is unreadable. min-width beats the inline width at
+     used-value resolution, so the toggle becomes a deliberate no-op. */
+  .post__images img {
+    min-width: 100%;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .post__rail-inner {
+    gap: 8px 20px;
+  }
+}

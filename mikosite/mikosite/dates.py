@@ -22,6 +22,15 @@ def polish_year_unit(years, locale=settings.BABEL_LOCALE) -> str:
     return 'lat'
 
 
+def polish_partner_unit(count, locale=settings.BABEL_LOCALE) -> str:
+    plural_form = locale.plural_form(count)
+    if plural_form == 'one':
+        return 'partner'
+    if plural_form == 'few':
+        return 'partnerzy'
+    return 'partnerów'
+
+
 def seconds_until_next_midnight() -> int:
     now = datetime.now()
     next_midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
