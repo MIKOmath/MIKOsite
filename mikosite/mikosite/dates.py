@@ -3,6 +3,23 @@ from datetime import datetime, timedelta
 from babel.dates import format_date
 
 from django.conf import settings
+from django.utils import timezone
+
+
+def rounded_years_since(start_date, today=None) -> int:
+    today = today or timezone.localdate()
+    if today <= start_date:
+        return 0
+    return round((today - start_date).days / 365.2425)
+
+
+def polish_year_unit(years, locale=settings.BABEL_LOCALE) -> str:
+    plural_form = locale.plural_form(years)
+    if plural_form == 'one':
+        return 'rok'
+    if plural_form == 'few':
+        return 'lata'
+    return 'lat'
 
 
 def seconds_until_next_midnight() -> int:

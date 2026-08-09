@@ -3,8 +3,9 @@ from datetime import date, time, timedelta
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from mikosite.dates import polish_year_unit, rounded_years_since
 from seminars.models import PreviousEdition, PreviousEditionMilestone, Seminar
-from seminars.views import polish_kolo_unit, polish_year_unit, rounded_years_since
+from seminars.views import polish_kolo_unit
 
 
 class PreviousEditionTests(TestCase):
