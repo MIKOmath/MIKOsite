@@ -2,7 +2,7 @@ from django.contrib import admin
 from rangefilter.filters import DateRangeFilterBuilder
 from more_admin_filters import MultiSelectRelatedOnlyFilter
 
-from .models import RegistrationEvent, Image, Post
+from .models import RegistrationEvent, Image, Partner, Post
 
 
 @admin.register(Post)
@@ -38,6 +38,15 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
     list_display = ("id", "image")
+
+
+@admin.register(Partner)
+class PartnerAdmin(admin.ModelAdmin):
+    list_display = ("name", "order", "is_published", "url")
+    list_editable = ("order", "is_published")
+    search_fields = ("name",)
+    list_filter = ("is_published",)
+    ordering = ("order", "name")
 
 
 @admin.register(RegistrationEvent)
