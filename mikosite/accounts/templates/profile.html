@@ -1,106 +1,81 @@
+{% extends "_auth_base.html" %}
 {% load static %}
-{% load compress %}
 
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil – MIKO</title>
+{% block title %}Profil – MIKO{% endblock %}
+{% block description %}Twoje dane w systemie MIKO – Matematycznego Internetowego Koła Olimpijskiego.{% endblock %}
 
-    {% compress css %}
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link rel="stylesheet" href="{% static 'accounts/auth.css' %}">
-    {% endcompress %}
-</head>
+{% block heading %}Profil{% endblock %}
+{% block lead %}Uzupełnij dane profilu. Pamiętaj, aby zapisać wprowadzone zmiany.{% endblock %}
+{% block page_class %}auth-page--profile{% endblock %}
 
-<body>
-{% include "header.html" %}
+{% block form %}
+    
+    {% include "_auth_note.html" with ok_marker="zaktualizowany" %}
 
-<main class="auth-page">
-    <div class="auth-shell">
-        <section class="auth-panel auth-panel--hero">
-            <div class="profile-top">
-                {% if user.profile_image %}
-                    <img class="avatar" src="{{ user.profile_image.url }}" alt="Zdjęcie profilowe">
-                {% else %}
-                    <img class="avatar" src="{% static 'logoNoCircle.svg' %}" alt="Placeholder zdjęcia profilowego" aria-hidden="true">
-                {% endif %}
+    <form class="auth-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
 
-                <div class="kv">
-                    <strong>{{ user.full_name|default:user.username }}</strong>
-                    <span>@{{ user.username }} · {{ user.email }}</span>
-                </div>
-            </div>
+        {% include "_auth_name_row.html" with first_value=user.first_name last_value=user.last_name %}
 
-            <p class="auth-subtitle">
-                Uzupełnij dane profilu. Zmiany zapiszesz jednym kliknięciem.
+        {% include "_auth_region_row.html" with selected_region=user.region dob_value=user.date_of_birth|date:"Y-m-d" dob_required=False %}
+
+        <div class="auth-field">
+            <label class="auth-label" for="profile_image">Zdjęcie profilowe</label>
+            {# Its own class: a file input is a replaced element and ignores the text-field skin. #}
+            <input class="auth-file" type="file" id="profile_image" name="profile_image"
+                   accept="image/*" aria-describedby="profile-image-hint">
+            <p class="auth-hint" id="profile-image-hint">
+                Zdjęcie zostanie automatycznie przycięte do kwadratu.
             </p>
-        </section>
+        </div>
 
-        <section class="auth-panel profile-card">
-            <h1 class="auth-title">Profil</h1>
+        <div class="auth-actions">
+            <button class="homepage-cta-button homepage-cta-button--dark" type="submit">Zapisz</button>
+        </div>
+    </form>
+{% endblock %}
 
-            <form class="auth-form" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-            
-                <div class="auth-field">
-                    <label>Nazwa użytkownika</label>
-                    <input class="auth-input" value="{{ user.username }}" disabled>
-                </div>
-                <div class="auth-field">
-                    <label>Email</label>
-                    <input class="auth-input" value="{{ user.email }}" disabled>
-                </div>
-
-                <div class="auth-row">
-                    <div class="auth-field">
-                        <label for="first_name">Imię</label>
-                        <input class="auth-input" type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
-                    </div>
-                    <div class="auth-field">
-                        <label for="last_name">Nazwisko</label>
-                        <input class="auth-input" type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
-                    </div>
-                </div>
-
-                <div class="auth-row">
-                    <div class="auth-field">
-                        <label for="region">Województwo</label>
-                        <select class="auth-select" id="region" name="region" required>
-                            {% for code, label in region_choices %}
-                                <option value="{{ code }}" {% if user.region == code %}selected{% endif %}>{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="auth-field">
-                        <label for="date_of_birth">Data urodzenia</label>
-                        <input class="auth-input" type="date" id="date_of_birth" name="date_of_birth"
-                               value="{% if user.date_of_birth %}{{ user.date_of_birth|date:"Y-m-d" }}{% endif %}"
-                               min="1900-01-01">
-                    </div>
-                </div>
+{% block aside %}
+    <section class="auth-aside__card">
+        <div class="auth-identity">
+            {% if user.profile_image %}
+                <img class="auth-identity__avatar" src="{{ user.profile_image.url }}" alt="Zdjęcie profilowe">
+            {% else %}
                 
-                <div class="auth-field">
-                    <label for="profile_image">Zdjęcie profilowe</label>
-                    <input class="auth-input" type="file" id="profile_image" name="profile_image" accept="image/*">
-                </div>
-            
-                <div class="auth-actions">
-                    <button class="btn btn-primary" type="submit">Zapisz</button>
-                    <a class="btn btn-secondary" href="/change_password/">Zmień hasło</a>
-                    <a class="btn btn-secondary" href="/signout/">Wyloguj</a>
-                </div>
+                <img class="auth-identity__avatar" src="{% static 'logoNoCircle.svg' %}" alt="">
+            {% endif %}
 
-                {% if custom_message %}
-                    <div class="flash {% if 'zapis' in custom_message|lower %}flash--ok{% endif %}">{{ custom_message }}</div>
-                {% endif %}
-            </form>
-        </section>
-    </div>
-</main>
+            <div>
+                {% comment %}.strip, because full_name is "{first} {last}" and returns a single space -
+                   truthy - for a user with both names blank, so |default never fired.{% endcomment %}
+                <p class="auth-identity__name">{{ user.full_name.strip|default:user.username }}</p>
+                <p class="auth-identity__handle">@{{ user.username }}</p>
+            </div>
+        </div>
 
-{% include "footer.html" %}
-</body>
-</html>
+        <div class="auth-facts">
+            <div>
+                <p class="auth-label">Nazwa użytkownika</p>
+                <p class="auth-fact__value">{{ user.username }}</p>
+            </div>
+            <div>
+                <p class="auth-label">Email</p>
+                <p class="auth-fact__value">{{ user.email }}</p>
+            </div>
+        </div>
+    </section>
+
+    {% comment %}Out of the save row on purpose.{% endcomment %}
+    <section class="auth-aside__card">
+        <h2 class="auth-aside__title">Konto</h2>
+        <span class="auth-rule" aria-hidden="true"></span>
+        <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'change_password' %}">
+            Zmień hasło
+            <span class="material-symbols-rounded" aria-hidden="true">lock_reset</span>
+        </a>
+        <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'signout' %}">
+            Wyloguj się
+            <span class="material-symbols-rounded" aria-hidden="true">logout</span>
+        </a>
+    </section>
+{% endblock %}

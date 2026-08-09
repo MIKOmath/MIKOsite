@@ -1,0 +1,29 @@
+{% comment %}The single message surface for all four pages. Tone is inferred from the
+message text because the views expose one field-agnostic string and no flag.{% endcomment %}
+{% if custom_message %}
+    {% if ok_marker and ok_marker in custom_message %}
+        <div class="auth-note auth-note--ok" role="status">
+            <p class="auth-note__head">
+                <span class="material-symbols-rounded auth-note__icon" aria-hidden="true">check_circle</span>
+                Gotowe
+            </p>
+            <p class="auth-note__body">{{ custom_message }}</p>
+        </div>
+    {% elif info_marker and info_marker in custom_message %}
+        <div class="auth-note auth-note--info" role="status">
+            <p class="auth-note__head">
+                <span class="material-symbols-rounded auth-note__icon" aria-hidden="true">info</span>
+                Informacja
+            </p>
+            <p class="auth-note__body">{{ custom_message }}</p>
+        </div>
+    {% else %}
+        <div class="auth-note" role="alert">
+            <p class="auth-note__head">
+                <span class="material-symbols-rounded auth-note__icon" aria-hidden="true">error</span>
+                Błąd
+            </p>
+            <p class="auth-note__body">{{ custom_message }}</p>
+        </div>
+    {% endif %}
+{% endif %}

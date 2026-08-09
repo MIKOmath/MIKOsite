@@ -1,243 +1,446 @@
+/* Auth pages: sign in, sign up, change password, profile.
+   These are ordinary MIKO pages now - the shared column, one h1 with the yellow
+   section rule, canonical tiles underneath. What is left here is the form
+   vocabulary, which is the one thing the design system never needed elsewhere.
+   Buttons, the page column and the band padding are reused, not restated. */
+
+/* ------------------------------------------------------------------- page --- */
+
+/* style.css sets a bare main{display:flex; align-items:center}, which would
+   shrink-wrap the band and pull it out of the site column. */
 .auth-page {
+  display: block;
   width: 100%;
-  padding: 30px 20px 50px;
-  display: grid;
-  place-items: start center;
-  background: linear-gradient(180deg, rgba(7,74,89,0.08) 0%, rgba(255,255,255,0) 55%);
 }
 
-.auth-shell {
-  width: 100%;
-  max-width: 980px;
+/* The wrapper keeps the site column (.home-band__inner, 1320px / --site-gutter);
+   the measure is set inside it, the way .hero__content and .post__body do. A form
+   field 1240px wide is unusable, and moving the wrapper would move the content
+   edge relative to the header and footer, which siteChrome.css:17 forbids. */
+/* Capped rather than stretched: two fields do not need the whole content
+   column, and a form that fills it reads as a page rather than a dialog. The
+   heading shares the same block so it sits over the card, not out at the
+   content edge. */
+.auth-page .home-band__inner > * {
+  max-width: 1008px;
+  margin-inline: auto;
+}
+
+.auth-layout {
   display: grid;
-  grid-template-columns: .95fr 1.25fr;
-  gap: 30px;
+  grid-template-columns: minmax(0, 640px) minmax(280px, 340px);
+  gap: 28px;
   align-items: start;
+  margin-top: 28px;
 }
 
-@media (max-width: 900px) {
-  .auth-shell {
-    grid-template-columns: 1fr;
+/* The width the header swaps to its hamburger and .post and .reg-notice restack,
+   so the page changes shape once. */
+@media screen and (max-width: 1000px) {
+  .auth-layout {
+    grid-template-columns: minmax(0, 640px);
   }
 }
 
-.auth-panel {
-  border: 2px solid var(--b1);
-  border-radius: 20px;
-  background: #fff;
+/* ------------------------------------------------------------------ tiles --- */
+
+/* The canonical tile (.team-member, .info-card, .edition-card, .reg-notice), not
+   the .post shell. .post's 2px --b1 frames one wide announcement block; wrapped
+   round a card full of 2px --b1 inputs it would stack three concentric strokes -
+   the problem style.css:776 solves for .reg-notice__eyebrow by filling it. */
+.auth-card,
+.auth-aside__card {
   padding: 24px 26px;
+  border: 1px solid var(--miko-border);
+  border-radius: var(--miko-radius);
+  background: var(--miko-soft);
   color: var(--b1);
 }
 
-.auth-panel--hero {
-  background: var(--b2);
-  color: #fff;
-  border-color: var(--b2);
+.auth-card {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
 }
 
-.auth-hero-logo {
-  width: min(80px, 80%);
-  margin: 6px 0 14px;
-  user-select: none;
+.auth-aside {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  min-width: 0;
 }
 
-.auth-title {
-  margin: 0 0 18px;
-  font-size: 30px;
-  line-height: 1.2;
+.auth-aside__card {
+  display: grid;
+  gap: 14px;
 }
 
-.auth-subtitle {
-  margin: 18px 0 0;
-  font-size: 16px;
-  line-height: 1.5;
-  opacity: 0.92;
+/* The global h2 is 25px and --y1; yellow on --miko-soft is 1.71:1, so both are
+   named here, exactly as .reg-notice__title does. */
+.auth-aside__title {
+  color: var(--b1);
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.3;
 }
 
-.auth-panel h1 {
-  margin-top: 0;
+/* .team-member hr / .reg-notice__rule. Teal marks an item; the page h1 keeps the
+   yellow rule from style.css, which marks the section. */
+.auth-rule {
+  width: 56px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--b1);
 }
+
+/* ------------------------------------------------------------------- form --- */
 
 .auth-form {
   display: grid;
-  gap: 14px;
+  gap: 18px;
 }
 
 .auth-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 
-@media (max-width: 520px) {
+@media screen and (max-width: 900px) {
   .auth-row {
     grid-template-columns: 1fr;
   }
 }
 
-.auth-field label {
-  display: block;
-  font-size: 14px;
-  margin: 0 0 6px;
-  font-weight: 600;
-  color: var(--b1);
+.auth-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
 }
 
+/* .post__meta-label's recipe - a small label sitting over a value - but in --b1,
+   not --miko-muted: muted is 4.22:1 on the --miko-soft tile and fails AA. --b1 is
+   9.21:1 there. This is the one deliberate departure from the caps-grey rule. */
+.auth-label {
+  margin-bottom: 4px;
+  color: var(--b1);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+/* --r1 is only 3.46:1 on the tile, so the marker cannot be red and stay legible.
+   The glyph is the channel, not the colour. */
+.auth-required {
+  font-weight: 700;
+}
+
+.auth-hint {
+  color: var(--b2);
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+/* ---------------------------------------------------------------- controls --- */
+
+/* 2px solid --b1 is what every outlined control on the site is drawn with
+   (.site-nav__auth, .pagination__step, .calendar__step, .home-band__more) and it
+   is 9.85:1 against the white field. The old rgba(7,74,89,0.35) hairline was
+   1.91:1, and --miko-border is worse - that token is a card edge, not a control
+   boundary. 10px is the house small-block radius (.event, .event-card,
+   .post__images); 20px belongs to cards and 999px to pills. */
 .auth-input,
-.auth-select {
+.auth-select,
+.auth-file {
   width: 100%;
-  padding: 12px 12px;
-  border-radius: 14px;
-  border: 2px solid rgba(7,74,89,0.35);
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 2px solid var(--b1);
+  border-radius: 10px;
+  background: var(--w1);
+  color: var(--b1);
   font-family: "Rubik", sans-serif;
   font-size: 16px;
-  color: var(--b1);
-  background: #fff;
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  transition: border-color 160ms ease;
 }
 
-.auth-input:focus,
-.auth-select:focus {
+/* 4.51:1 on the white field. */
+.auth-input::placeholder {
+  color: var(--miko-muted);
+  opacity: 1;
+}
+
+/* A file input is a replaced element: it ignores most of what the text-field rule
+   sets and paints the UA's own button inside the box, which is why it no longer
+   shares .auth-input. */
+.auth-file {
+  padding: 8px 12px;
+}
+
+.auth-file::file-selector-button {
+  min-height: 32px;
+  margin-right: 12px;
+  padding: 0 16px;
+  border: 2px solid var(--b1);
+  border-radius: 999px;
+  background: var(--w1);
+  color: var(--b1);
+  font-family: "Rubik", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.auth-file::-webkit-file-upload-button {
+  min-height: 32px;
+  margin-right: 12px;
+  padding: 0 16px;
+  border: 2px solid var(--b1);
+  border-radius: 999px;
+  background: var(--w1);
+  color: var(--b1);
+  font-family: "Rubik", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.auth-file::file-selector-button:hover {
+  background: var(--b1);
+  color: var(--w1);
+}
+
+/* An outline, never a shadow, and teal rather than yellow: siteChrome.css:238
+   records the number - #F2B544 on a near-white surface is 1.83:1, under the 3:1
+   a focus indicator has to clear. The old ring was a 25%-alpha yellow box-shadow
+   at roughly 1.2:1, on :focus, over an outline:none. */
+.auth-card :focus-visible,
+.auth-aside :focus-visible {
+  outline: 2px solid var(--b1);
+  outline-offset: 3px;
+}
+
+/* The ring would otherwise sit 3px off a border of its own colour; darkening the
+
+/* --r1 is 3.70:1 on white, over the 3:1 for a control boundary. The extra pixel
+   is the second channel so the state is not colour alone; the padding gives it
+   back so nothing shifts. The note above the form carries the wording. */
+.auth-input[aria-invalid="true"],
+.auth-select[aria-invalid="true"] {
+  border-color: var(--r1);
+  border-width: 3px;
+  padding: 0 11px;
+}
+
+/* Cloudflare injects a fixed ~300x65 iframe that ignores width and cannot be
+   restyled; it only needs a line of its own and room to sit in. */
+
+/* ---------------------------------------------------------------- message --- */
+
+/* One slot, at the top of the card, above the first field, on all four pages. It
+   used to be written four times in three shapes and land in four places, twice
+   below the action row. */
+.auth-note {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 2px solid var(--r1);
+  border-radius: 10px;
+  background: var(--w1);
+}
+
+/* display:grid above would defeat the UA's [hidden] rule. */
+.auth-note[hidden] {
+  display: none;
+}
+
+.auth-note--ok,
+.auth-note--info {
   border-color: var(--b1);
-  box-shadow: 0 0 0 4px rgba(242,181,68,0.25);
 }
 
-.auth-help {
-  border: 2px dashed rgba(7,74,89,0.25);
-  border-radius: 16px;
-  padding: 12px 14px;
-  background: rgba(242,181,68,0.10);
+.auth-note__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--r1);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+/* State never travels on colour alone - the glyph and the word carry it too.
+   --r1 is fine for a 21px glyph and for the border (3:1 for non-text) but not for
+.auth-note__icon {
+  font-size: 21px;
+}
+
+/* Error is the base tone, as it is for the border: red head, teal for ok/info. */
+.auth-note--ok .auth-note__head,
+.auth-note--info .auth-note__head {
   color: var(--b1);
 }
 
-.auth-help ul {
-  margin: 0;
-  padding-left: 6px;
-  list-style: none;
+/* Load-bearing. views.py joins several validator messages with "\n" at :74, :81,
+   :152 and :185; without pre-line up to five password rules run together into one
+   sentence. */
+.auth-note__body {
+  color: var(--b2);
+  font-size: 17px;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: break-word;
 }
 
-.auth-help li + li {
-  margin-top: 6px;
+/* ------------------------------------------------------------------ rules --- */
+
+.auth-rules {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  color: var(--b2);
+  font-size: 16px;
+  line-height: 1.45;
 }
+
+/* --------------------------------------------------------------- identity --- */
+
+.auth-identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+/* .edition-milestones-list__icon's circle: a hairline on a light fill. 52px is the
+   largest round element the system uses (.principle__icon); the old 86px was on
+   no scale at all. White behind it so a transparent placeholder SVG still reads. */
+.auth-identity__avatar {
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--miko-border);
+  border-radius: 50%;
+  background: var(--w1);
+  object-fit: cover;
+}
+
+.auth-identity__name {
+  color: var(--b1);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+.auth-identity__handle {
+  color: var(--b2);
+  font-size: 17px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+/* .post__meta-label over .post__meta-value: the read-only username and email are
+   facts, not disabled controls. The label takes .auth-label. */
+.auth-facts {
+  display: grid;
+  gap: 12px;
+}
+
+.auth-fact__value {
+  color: var(--b1);
+  font-size: 16px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------------- actions --- */
 
 .auth-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
   align-items: center;
-  margin-top: 6px;
+  gap: 12px;
+  margin-top: 4px;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
+/* One baseline for the row: the outlined pill is sized by padding on the home
+   bands and the filled one by min-height, and side by side they have to agree. */
+.auth-actions .home-band__more,
+.auth-aside .home-band__more {
+  min-height: 52px;
+  padding: 0 22px;
+}
+
+/* In the aside there is nothing beside it, so it takes the column. */
+.auth-aside .home-band__more {
   justify-content: center;
-  gap: 8px;
-  border-radius: 16px;
-  padding: 12px 16px;
-  font-weight: 700;
-  font-size: 16px;
-  text-decoration: none;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-  user-select: none;
+  width: 100%;
 }
 
-.btn:hover {
-  transform: translateY(-2px);
+/* The house hover for a filled teal control is a darkening to --b2
+   (.calendar__filters-clear:hover); --dark on its own only lifts, which leaves a
+   submit button with no colour feedback at all. */
+.auth-actions .homepage-cta-button--dark {
+  transition: transform 0.2s ease, background-color 160ms ease, border-color 160ms ease;
 }
 
-.btn-primary {
-  background: var(--b1);
-  color: #fff;
-  border-color: var(--b1);
+.auth-actions .homepage-cta-button--dark:hover {
+  background: var(--b2);
+  border-color: var(--b2);
 }
 
-.btn-primary:hover {
-  background: var(--y1);
-  border-color: var(--y1);
-  color: var(--b2);
-}
+/* ------------------------------------------------------------------ misc --- */
 
-.btn-secondary {
-  background: #fff;
-  color: var(--b1);
-  border-color: rgba(7,74,89,0.35);
-}
 
-.btn-secondary:hover {
-  border-color: var(--b1);
-}
+/* 18px rather than the 20px .post uses at this width: at 375px the gutter is 16px,
+   and the Turnstile iframe is a fixed ~300px that cannot shrink to fit. */
+@media screen and (max-width: 900px) {
+  .auth-card,
+  .auth-aside__card {
+    padding: 20px 18px;
+  }
 
-.auth-links {
-  margin-top: 6px;
-  font-size: 14px;
-  color: var(--b1);
-}
-
-.auth-links a {
-  color: var(--b1);
-  font-weight: 700;
-}
-
-.auth-links a:hover {
-  color: var(--y1);
-}
-
-.flash {
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 2px solid rgba(242,69,53,0.35);
-  background: rgba(242,69,53,0.08);
-  color: var(--b1);
-  white-space: pre-line;
-}
-
-.flash--ok {
-  border-color: rgba(7,74,89,0.35);
-  background: rgba(7,74,89,0.08);
-}
-
-.profile-card {
-  display: grid;
-}
-
-.profile-top {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 16px;
-  align-items: center;
-  margin-bottom: 6px;
-}
-
-@media (max-width: 520px) {
-  .profile-top {
-    grid-template-columns: 1fr;
+  .auth-layout {
+    gap: 20px;
+    margin-top: 22px;
   }
 }
 
-.avatar {
-  width: 86px;
-  height: 86px;
-  border-radius: 999px;
-  border: 2px solid rgba(255,255,255,0.4);
-  object-fit: cover;
-  background: rgba(255,255,255,0.15);
+@media (prefers-reduced-motion: reduce) {
+  .auth-page * {
+    transition: none !important;
+  }
+
+  .auth-page .homepage-cta-button:hover {
+    transform: none;
+  }
 }
 
-.kv {
-  display: grid;
-  gap: 6px;
-  color: #fff;
-}
+/* Profile on a phone: the identity card leads, so you see whose profile it is
+   before the fields. display:contents lets the aside's two cards be ordered
+   independently around the form. */
+@media screen and (max-width: 1000px) {
+  .auth-page--profile .auth-layout {
+    display: flex;
+    flex-direction: column;
+  }
 
-.kv strong {
-  font-size: 18px;
-}
+  .auth-page--profile .auth-aside {
+    display: contents;
+  }
 
-.kv span {
-  opacity: 0.9;
-  font-size: 14px;
+  .auth-page--profile .auth-aside__card:first-child {
+    order: -1;
+  }
 }
