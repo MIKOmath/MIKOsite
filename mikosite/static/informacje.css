@@ -60,7 +60,7 @@ body, html {
 .calendar__step {
     align-items: center;
     background: var(--w1);
-    border: 2px solid var(--b1);
+    border: 1px solid var(--miko-border);
     border-radius: 50%;
     color: var(--b1);
     cursor: pointer;
@@ -168,13 +168,15 @@ body, html {
     cursor: pointer;
     display: inline-flex;
     font-family: inherit;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     gap: 6px;
     justify-content: center;
+    letter-spacing: 0.04em;
     margin-left: auto;
     min-height: 36px;
     padding: 0 16px;
+    text-transform: uppercase;
     transition: background-color 160ms ease, border-color 160ms ease;
 }
 
