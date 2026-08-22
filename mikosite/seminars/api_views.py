@@ -1,10 +1,14 @@
 from datetime import datetime
 
 from django.db.models import Count, IntegerField, OuterRef, Subquery, Value
+from django.http import HttpResponse
 from django.utils import timezone
+from django.utils.cache import get_conditional_response, patch_vary_headers
+from django.utils.http import quote_etag
 from django_filters import rest_framework as filters
 from django_filters import UnknownFieldBehavior
-from rest_framework import viewsets
+from rest_framework import renderers, viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -30,6 +34,14 @@ from .serializers import (
     ReminderSerializer,
     SeminarGroupSerializer,
     SeminarSerializer,
+)
+from .timetable_image import (
+    build_week_image,
+    get_week_image,
+    image_etag,
+    offered_week_starts,
+    week_image_ttl,
+    week_start_of,
 )
 
 
@@ -119,10 +131,40 @@ class ReminderViewSet(viewsets.ModelViewSet):
         return Reminder.objects.filter(date_time__exact=next_reminder.date_time)
 
 
+def schedules_seminars(request) -> bool:
+    """Whoever may put a seminar in the calendar in the first place."""
+    user = getattr(request, 'user', None)
+    if not (user and user.is_authenticated):
+        return False
+    return user.has_perm('seminars.add_seminar') or user.has_perm('seminars.change_seminar')
+
+
+class PNGRenderer(renderers.BaseRenderer):
+    """Only here so `Accept: image/png` negotiates; the view writes the bytes."""
+
+    media_type = 'image/png'
+    format = 'png'
+    charset = None
+    render_style = 'binary'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        return data
+
+
 class CalendarViewSet(ViewSet):
     """Everything drawn on the calendar for one date range."""
 
     permission_classes = (AllowAny,)
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        """A request for a PNG that fails still answers in JSON - only the
+        successful path returns bytes."""
+        if isinstance(response, Response) and isinstance(
+            getattr(request, 'accepted_renderer', None), PNGRenderer
+        ):
+            request.accepted_renderer = renderers.JSONRenderer()
+            request.accepted_media_type = renderers.JSONRenderer.media_type
+        return super().finalize_response(request, response, *args, **kwargs)
 
     @staticmethod
     def _parse_date(raw_value, field_name):
@@ -130,6 +172,51 @@ class CalendarViewSet(ViewSet):
             return datetime.strptime(raw_value, '%Y-%m-%d').date()
         except (TypeError, ValueError):
             raise ValidationError({field_name: "Podaj datę w formacie YYYY-MM-DD."})
+
+    def _resolve_week(self, request, raw_value):
+        """The Monday asked for, and whether it is one the public may have."""
+        day = self._parse_date(raw_value, 'week') if raw_value else timezone.localdate()
+        week_start = week_start_of(day)
+        offered = offered_week_starts()
+
+        if week_start in offered:
+            return week_start, True
+        if schedules_seminars(request):
+            return week_start, False
+        raise ValidationError({'week': (
+            "Obraz planu obejmuje tygodnie zaczynające się od "
+            f"{offered[0].isoformat()} do {offered[-1].isoformat()}."
+        )})
+
+    @staticmethod
+    def _image_response(request, png, raw_etag, week_start, *, shareable):
+        response = HttpResponse(png, content_type='image/png')
+        response['Content-Disposition'] = f'inline; filename="miko-plan-{week_start.isoformat()}.png"'
+        response['ETag'] = quote_etag(raw_etag)
+        response['Cache-Control'] = (
+            f'public, max-age={week_image_ttl()}' if shareable else 'private, no-store'
+        )
+        # Callers are served different sheets, so no cache in front of this may
+        # hand one caller's copy to the next.
+        patch_vary_headers(response, ('Cookie', 'Authorization'))
+        return get_conditional_response(request, etag=response['ETag'], response=response)
+
+    @action(detail=False, url_path='image', renderer_classes=[PNGRenderer, renderers.JSONRenderer])
+    def image(self, request, *args, **kwargs):
+        """One week of the calendar as a PNG poster, sized for sharing.
+
+        `?week=YYYY-MM-DD` names any day of the week wanted and is rounded down
+        to its Monday; without it, the week we are in.
+        """
+        week_start, on_offer = self._resolve_week(request, request.query_params.get('week'))
+
+        shareable = on_offer and not is_admin(request)
+        if not shareable:
+            png = build_week_image(week_start, include_unpublished=is_admin(request))
+            return self._image_response(request, png, image_etag(png), week_start, shareable=False)
+
+        png, etag = get_week_image(week_start)
+        return self._image_response(request, png, etag, week_start, shareable=True)
 
     def list(self, request, *args, **kwargs):
         start_date = self._parse_date(request.query_params.get('start_date'), 'start_date')
