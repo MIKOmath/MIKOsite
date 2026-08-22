@@ -258,6 +258,14 @@
   padding: 0 11px;
 }
 
+/* A field that throws away what is typed into it should not look like one that
+   keeps it. The tile fill rather than a red border: the value is not wrong, it
+   is simply not the reader's to change. */
+.auth-input:read-only {
+  background: var(--miko-soft);
+  cursor: default;
+}
+
 /* Cloudflare injects a fixed ~300x65 iframe that ignores width and cannot be
    restyled; it only needs a line of its own and room to sit in. */
 

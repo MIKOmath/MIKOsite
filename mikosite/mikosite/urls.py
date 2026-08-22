@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+
+import mikosite.admin  # noqa: F401  groups the admin index
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -32,6 +34,8 @@ from seminars.api_views import (
 from accounts import views as account_views
 from seminars import views as seminar_views
 from mainSite.api_views import (
+    BadgeViewSet,
+    BioViewSet,
     PartnerViewSet,
     PostViewSet,
     RegistrationEventViewSet,
@@ -59,6 +63,8 @@ router.register(r'olympiads', OlympiadViewSet)
 router.register(r'olympiad-stages', OlympiadStageViewSet)
 router.register(r'registration-events', RegistrationEventViewSet)
 router.register(r'partners', PartnerViewSet)
+router.register(r'bios', BioViewSet)
+router.register(r'badges', BadgeViewSet)
 router.register(r'posts', PostViewSet)
 router.register(r'users', UserViewSet, basename='user')
 router.register(r'linked-accounts', LinkedAccountViewSet)

@@ -10,7 +10,8 @@ from django.utils.text import Truncator
 
 from django.core.paginator import Paginator
 
-from mainSite.models import Partner, RegistrationEvent, Post
+from accounts.models import User
+from mainSite.models import Badge, Bio, Partner, RegistrationEvent, Post
 from mikosite.dates import (
     polish_partner_unit,
     polish_year_unit,
@@ -27,6 +28,8 @@ MAINSITE_POSTS_MAX_TTL = 86400
 ACTIVE_REGISTRATION_CACHE_KEY = 'active-registration-display-data'
 PARTNERS_CACHE_KEY = 'mainsite-partners-display-data'
 PARTNERS_MAX_TTL = 86400
+BIOS_CACHE_KEY = 'mainsite-bios-display-data'
+BIOS_MAX_TTL = 86400
 HISTORY_CACHE_KEY = 'mainsite-history-display-data'
 HOMEPAGE_POST_MAX = 3
 HOMEPAGE_POST_BUDGET = 1600  # characters of announcement text the band will carry
@@ -159,6 +162,39 @@ def clear_partners_cache(sender, **kwargs):
     cache.delete(PARTNERS_CACHE_KEY)
 
 
+def get_bios_data():
+    data = cache.get(BIOS_CACHE_KEY)
+    if data is None:
+        data = [
+            bio.display_dict()
+            for bio in (
+                Bio.objects.filter(is_published=True)
+                .select_related('user')
+                .prefetch_related('badges')
+            )
+        ]
+        cache.set(BIOS_CACHE_KEY, data, BIOS_MAX_TTL)
+    return data
+
+
+@receiver(post_save, sender=Bio)
+@receiver(post_delete, sender=Bio)
+@receiver(post_save, sender=Badge)
+@receiver(post_delete, sender=Badge)
+@receiver(m2m_changed, sender=Bio.badges.through)
+def clear_bios_cache(sender, **kwargs):
+    cache.delete(BIOS_CACHE_KEY)
+
+
+@receiver(post_save, sender=User)
+def clear_bios_cache_on_user_change(sender, update_fields=None, **kwargs):
+    """A card carries its person's name, but signing in saves `last_login`
+    alone and must not drop the page."""
+    if update_fields is not None and not {'first_name', 'last_name'} & set(update_fields):
+        return
+    cache.delete(BIOS_CACHE_KEY)
+
+
 def get_history_data():
     """Years since the first edition, so the figure keeps itself up to date."""
     data = cache.get(HISTORY_CACHE_KEY)
@@ -234,7 +270,7 @@ def announcements(request):
 
 
 def about(request):
-    return render(request, "about.html")
+    return render(request, "about.html", {"bios": get_bios_data()})
 
 
 def roadmap(request):
