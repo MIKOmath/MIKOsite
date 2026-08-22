@@ -40,6 +40,7 @@ from .timetable_image import (
     get_week_image,
     image_etag,
     offered_week_starts,
+    week_image_filename,
     week_image_ttl,
     week_start_of,
 )
@@ -191,7 +192,7 @@ class CalendarViewSet(ViewSet):
     @staticmethod
     def _image_response(request, png, raw_etag, week_start, *, shareable):
         response = HttpResponse(png, content_type='image/png')
-        response['Content-Disposition'] = f'inline; filename="miko-plan-{week_start.isoformat()}.png"'
+        response['Content-Disposition'] = f'inline; filename="{week_image_filename(week_start)}"'
         response['ETag'] = quote_etag(raw_etag)
         response['Cache-Control'] = (
             f'public, max-age={week_image_ttl()}' if shareable else 'private, no-store'

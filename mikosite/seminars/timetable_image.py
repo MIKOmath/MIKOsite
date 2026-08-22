@@ -20,6 +20,7 @@ from io import BytesIO
 from babel.dates import format_date
 from django.conf import settings
 from django.core.cache import cache
+from django.urls import reverse
 from django.utils import timezone
 from PIL import Image, ImageDraw, ImageFont
 
@@ -48,6 +49,54 @@ def offered_week_starts(today=None) -> list:
     """The Mondays the public sheet is kept for, earliest first."""
     this_week = week_start_of(today or timezone.localdate())
     return [this_week + timedelta(weeks=offset) for offset in range(-WEEKS_BEHIND, WEEKS_AHEAD + 1)]
+
+
+def week_image_filename(week_start) -> str:
+    return f"miko-plan-{week_start.isoformat()}.png"
+
+
+WEEK_NOTES = {
+    -1: "miniony tydzień",
+    0: "bieżący tydzień",
+    1: "następny tydzień",
+    2: "za dwa tygodnie",
+}
+
+
+def offered_week_downloads(today=None) -> list:
+    """Every week the public sheet is kept for, as something to click."""
+    this_week = week_start_of(today or timezone.localdate())
+    return [
+        {
+            'week_start': monday,
+            'label': week_label(monday),
+            'note': WEEK_NOTES[(monday - this_week).days // 7],
+            'url': f"{reverse('calendar-image')}?week={monday.isoformat()}",
+            'filename': week_image_filename(monday),
+        }
+        for monday in offered_week_starts(today)
+    ]
+
+
+SUGGEST_NEXT_FROM_WEEKDAY = 3  # Thursday
+
+
+def featured_week_downloads(today=None) -> list:
+    """The two weeks /kolo/ offers, with the one worth posting marked.
+
+    Early in the week that is the week we are in; by Thursday most of it has
+    already happened, so next week's sheet is the one people come for.
+    """
+    today = today or timezone.localdate()
+    this_week = week_start_of(today)
+    next_week = this_week + timedelta(weeks=1)
+    suggested = next_week if today.weekday() >= SUGGEST_NEXT_FROM_WEEKDAY else this_week
+
+    featured = [week for week in offered_week_downloads(today)
+                if week['week_start'] in (this_week, next_week)]
+    for week in featured:
+        week['is_suggested'] = week['week_start'] == suggested
+    return featured
 
 
 # --------------------------------------------------------------------------- #

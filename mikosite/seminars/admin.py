@@ -3,10 +3,16 @@ from datetime import datetime, timedelta
 
 from django import forms
 from django.contrib import admin
+from django.core.exceptions import PermissionDenied
+from django.template.response import TemplateResponse
+from django.urls import path, reverse
+from django.utils import timezone
 from django.utils.html import format_html
 from rangefilter.filters import DateRangeFilterBuilder
 from more_admin_filters import MultiSelectRelatedOnlyFilter
 
+from .api_views import schedules_seminars
+from .timetable_image import offered_week_downloads, week_start_of
 from .models import (
     DEFAULT_GROUP_COLOR,
     Seminar,
@@ -125,6 +131,30 @@ class SeminarAdmin(admin.ModelAdmin):
     @admin.display(description="Tutors")
     def tutor_list(self, obj):
         return ", ".join(obj.tutors.values_list("username", flat=True)) or "-"
+
+    def get_urls(self):
+        own = [
+            path(
+                'plan-tygodnia/',
+                self.admin_site.admin_view(self.timetable_image_view),
+                name='seminars_seminar_timetable_image',
+            ),
+        ]
+        return own + super().get_urls()
+
+    def timetable_image_view(self, request):
+        """Pick a week, get its sheet. The form posts straight at the API, which
+        is what enforces the range - being staff alone is not enough."""
+        if not schedules_seminars(request):
+            raise PermissionDenied
+
+        return TemplateResponse(request, 'admin/seminars/timetable_image.html', {
+            **self.admin_site.each_context(request),
+            'title': "Plan tygodnia jako obrazek",
+            'image_url': reverse('calendar-image'),
+            'week_downloads': offered_week_downloads(),
+            'this_week': week_start_of(timezone.localdate()).isoformat(),
+        })
 
 
 class GoogleFormsTemplateAdmin(admin.ModelAdmin):

@@ -85,6 +85,30 @@
             </div>
         </div>
 
+        <section class="plan-download" aria-labelledby="planDownloadTitle">
+            <div class="plan-download__intro">
+                <h2 class="plan-download__title" id="planDownloadTitle">Plan na wynos</h2>
+                <p class="plan-download__lead">
+                    Pobierz plan tygodnia jako obrazek - gotowy do wrzucenia na Discorda,
+                    Instagrama albo na tablicę w szkole.
+                </p>
+            </div>
+            <ul class="plan-download__weeks">
+                {% for week in week_downloads %}
+                    <li>
+                        <a class="plan-download__week{% if week.is_suggested %} is-suggested{% endif %}"
+                           href="{{ week.url }}" download="{{ week.filename }}">
+                            <span class="material-symbols-rounded" aria-hidden="true">download</span>
+                            <span class="plan-download__week-text">
+                                <span class="plan-download__week-label">{{ week.label }}</span>
+                                <span class="plan-download__week-note">{{ week.note }}</span>
+                            </span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
         <h1 class="mobile-left-padding">Informacje</h1>
         <h3 class="mobile-left-padding">
             Interesuje cię matematyka, informatyka lub AI i&nbsp;marzysz o&nbsp;sukcesie w&nbsp;olimpiadzie?

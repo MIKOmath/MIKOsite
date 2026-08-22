@@ -1,0 +1,45 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">Strona główna</a>
+        &rsaquo; <a href="{% url 'admin:app_list' app_label='seminars' %}">Seminars</a>
+        &rsaquo; <a href="{% url 'admin:seminars_seminar_changelist' %}">Seminars</a>
+        &rsaquo; {{ title }}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <p>
+        Obrazek z planem jednego tygodnia - to samo, co rysuje kalendarz na
+        <a href="/kolo/">/kolo/</a>, w formie gotowej do wklejenia na Discorda czy do posta.
+        Zawiera także wpisy niepublikowane, więc nadaje się do sprawdzenia planu przed
+        ogłoszeniem go.
+    </p>
+
+    <fieldset class="module aligned">
+        <h2>Dowolny tydzień</h2>
+        <form action="{{ image_url }}" method="get" target="_blank">
+            <div class="form-row">
+                <label for="week">Dowolny dzień szukanego tygodnia:</label>
+                <input type="date" name="week" id="week" value="{{ this_week }}" required>
+                <p class="help">Data zostanie zaokrąglona w dół do poniedziałku.</p>
+            </div>
+            <div class="submit-row">
+                <input type="submit" value="Pokaż obrazek" class="default">
+            </div>
+        </form>
+    </fieldset>
+
+    <fieldset class="module aligned">
+        <h2>Tygodnie widoczne publicznie</h2>
+        <ul>
+            {% for week in week_downloads %}
+                <li style="margin-bottom:6px">
+                    <a href="{{ week.url }}" download="{{ week.filename }}">{{ week.label }}</a>
+                    &mdash; {{ week.note }}
+                </li>
+            {% endfor %}
+        </ul>
+    </fieldset>
+{% endblock %}
