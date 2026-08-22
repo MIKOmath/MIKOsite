@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Optional
 from PIL import Image, ImageDraw, ImageFont
 
+from cards import brand
+
 
 FONT_PATH = "mikosite/static/fonts/RubikVariable.ttf"
 LOGO_PATH = "mikosite/static/logoNoCircle.svg"
@@ -137,11 +139,10 @@ def update_template():
 
     font_stamp = ImageFont.truetype(FONT_PATH, 90)
     font_author = ImageFont.truetype(FONT_PATH, 30)
-    font_stamp.set_variation_by_name('Bold')
+    font_stamp.set_variation_by_name(brand.WEIGHT)
 
-    draw.text(STAMP_POS, STAMP_TEXT, font=font_stamp, fill="white", anchor='lt')
+    stamp_length = brand.draw_wordmark(draw, STAMP_POS, font_stamp, anchor='lt')
     stamp_box = font_stamp.getbbox(STAMP_TEXT)
-    stamp_length = stamp_box[2] - stamp_box[0]
     stamp_height = stamp_box[3] - stamp_box[1]
 
     draw.text((STAMP_POS[0] + stamp_length + 25, STAMP_POS[1] + 5),
