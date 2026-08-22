@@ -1,0 +1,17 @@
+{% extends "_auth_base.html" %}
+
+{% block title %}Konto nieaktywne – MIKO{% endblock %}
+
+{% block heading %}Konto nieaktywne{% endblock %}
+{% block lead %}To konto zostało dezaktywowane.{% endblock %}
+
+{% block form %}
+    {% include "_auth_message.html" with body="To konto jest nieaktywne. Jeśli uważasz, że to pomyłka, skontaktuj się z nami." %}
+
+    <div class="auth-actions">
+        <a class="homepage-cta-button homepage-cta-button--outline" href="/">
+            Wróć na stronę
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+        </a>
+    </div>
+{% endblock %}

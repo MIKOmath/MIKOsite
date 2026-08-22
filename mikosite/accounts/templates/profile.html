@@ -69,9 +69,24 @@
     <section class="auth-aside__card">
         <h2 class="auth-aside__title">Konto</h2>
         <span class="auth-rule" aria-hidden="true"></span>
-        <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'change_password' %}">
-            Zmień hasło
-            <span class="material-symbols-rounded" aria-hidden="true">lock_reset</span>
+        {% if user.has_usable_password %}
+            <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'account_change_password' %}">
+                Zmień hasło
+                <span class="material-symbols-rounded" aria-hidden="true">lock_reset</span>
+            </a>
+        {% else %}
+            <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'account_set_password' %}">
+                Ustaw hasło
+                <span class="material-symbols-rounded" aria-hidden="true">lock</span>
+            </a>
+        {% endif %}
+        <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'account_email' %}">
+            Zmień email
+            <span class="material-symbols-rounded" aria-hidden="true">mail</span>
+        </a>
+        <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'socialaccount_connections' %}">
+            Połączone konta
+            <span class="material-symbols-rounded" aria-hidden="true">link</span>
         </a>
         <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'signout' %}">
             Wyloguj się

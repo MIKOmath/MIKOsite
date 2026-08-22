@@ -1,0 +1,17 @@
+{% extends "_auth_base.html" %}
+
+{% block title %}Potwierdź email – MIKO{% endblock %}
+
+{% block heading %}Potwierdź swój email{% endblock %}
+{% block lead %}Wysłaliśmy wiadomość z linkiem potwierdzającym.{% endblock %}
+
+{% block form %}
+    {% include "_auth_message.html" with body="Kliknij link z wiadomości, aby dokończyć zakładanie konta. Jeśli wiadomość nie dotarła w ciągu kilku minut, sprawdź folder spam." tone="info" %}
+
+    <div class="auth-actions">
+        <a class="homepage-cta-button homepage-cta-button--outline" href="/">
+            Wróć na stronę
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+        </a>
+    </div>
+{% endblock %}

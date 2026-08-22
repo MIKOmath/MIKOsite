@@ -1,0 +1,17 @@
+{% extends "_auth_base.html" %}
+
+{% block title %}Logowanie nie powiodło się – MIKO{% endblock %}
+
+{% block heading %}Logowanie nie powiodło się{% endblock %}
+{% block lead %}Zewnętrzny serwis nie potwierdził logowania.{% endblock %}
+
+{% block form %}
+    {% include "_auth_message.html" with body="Podczas logowania przez zewnętrzne konto wystąpił błąd. Spróbuj ponownie — jeśli problem się powtarza, zaloguj się hasłem." %}
+
+    <div class="auth-actions">
+        <a class="homepage-cta-button homepage-cta-button--dark" href="{% url 'account_login' %}">
+            Wróć do logowania
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+        </a>
+    </div>
+{% endblock %}

@@ -42,14 +42,16 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_AGE = 1209600  # 2 weeks, in seconds
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 ALLOWED_HOSTS = [
     "mikomath.org",
     "127.0.0.1",
     "localhost",
 ]
-
 APPEND_SLASH = True
 
 # Application definition
@@ -75,6 +77,12 @@ INSTALLED_APPS = [
     "seminars",
     "olympiads",
     "cards",
+    # After the local apps, so their template overrides win.
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.discord",
 ]
 if DEBUG:
     INSTALLED_APPS = ['debug_toolbar'] + INSTALLED_APPS
@@ -111,6 +119,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 if DEBUG:
@@ -129,6 +138,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.turnstile_keys',
             ],
         },
     },
@@ -246,6 +256,87 @@ except ImportError:
     print("Turnstile details not found in secrets.py, falling back to env variables.")
     TURNSTILE_SITE_KEY = os.getenv("TURNSTILE_SITE_KEY", "")
     TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY", "")
+
+# --------------------------------------------------------------------------- #
+# Accounts: allauth flows, email delivery, OAuth providers
+# --------------------------------------------------------------------------- #
+
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+ACCOUNT_ADAPTER = 'accounts.adapters.AccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'accounts.adapters.SocialAccountAdapter'
+
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_SIGNUP_FIELDS = ['username*', 'email*', 'password1*', 'password2*']
+ACCOUNT_USERNAME_MIN_LENGTH = MIN_USERNAME_LENGTH
+# Provider-verified emails (Google, Discord) arrive confirmed and skip the mail.
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[MIKO] '
+ACCOUNT_EMAIL_NOTIFICATIONS = True  # notify on password change etc.
+ACCOUNT_CHANGE_EMAIL = True  # one address per account, replaced only after confirmation
+ACCOUNT_SESSION_REMEMBER = True  # sessions persist, as they always have here
+ACCOUNT_REAUTHENTICATION_REQUIRED = True  # linking/unlinking asks for a fresh login
+
+# Region and date of birth are required model fields no provider supplies, so
+# every social signup must pass through the completion form that asks for them.
+SOCIALACCOUNT_AUTO_SIGNUP = False
+
+# Skip allauth's "Continue" interstitial. Its CSRF concern stays covered:
+# connecting still demands reauthentication, and a forced login redirect only
+# reaches the visitor's own provider consent screen.
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+ACCOUNT_SIGNUP_FORM_CLASS = 'accounts.signup_extras.SignupExtrasForm'
+ACCOUNT_FORMS = {
+    'login': 'accounts.forms.HouseLoginForm',
+    'signup': 'accounts.forms.TurnstileSignupForm',
+    'change_password': 'accounts.forms.HouseChangePasswordForm',
+    'set_password': 'accounts.forms.HouseSetPasswordForm',
+    'reset_password': 'accounts.forms.TurnstileResetPasswordForm',
+    'reset_password_from_key': 'accounts.forms.HouseResetPasswordKeyForm',
+}
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'http' if DEBUG else 'https'
+
+# The Workspace relay only accepts mail from the production IP; development
+# writes each message to a file under dev-emails/ instead.
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = BASE_DIR / 'dev-emails'
+else:
+    EMAIL_HOST = 'smtp-relay.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_TIMEOUT = 10  # never let a worker hang on SMTP
+DEFAULT_FROM_EMAIL = 'MIKO <no-reply@mikomath.org>'
+
+try:
+    from .secrets import GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET
+except ImportError:
+    GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "")
+    GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "")
+
+try:
+    from .secrets import DISCORD_OAUTH_CLIENT_ID, DISCORD_OAUTH_CLIENT_SECRET
+except ImportError:
+    DISCORD_OAUTH_CLIENT_ID = os.getenv("DISCORD_OAUTH_CLIENT_ID", "")
+    DISCORD_OAUTH_CLIENT_SECRET = os.getenv("DISCORD_OAUTH_CLIENT_SECRET", "")
+
+# A provider without credentials configures no app and renders no button.
+SOCIALACCOUNT_PROVIDERS = {}
+if GOOGLE_OAUTH_CLIENT_ID:
+    SOCIALACCOUNT_PROVIDERS['google'] = {
+        'APPS': [{'client_id': GOOGLE_OAUTH_CLIENT_ID, 'secret': GOOGLE_OAUTH_CLIENT_SECRET}],
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    }
+if DISCORD_OAUTH_CLIENT_ID:
+    SOCIALACCOUNT_PROVIDERS['discord'] = {
+        'APPS': [{'client_id': DISCORD_OAUTH_CLIENT_ID, 'secret': DISCORD_OAUTH_CLIENT_SECRET}],
+        'SCOPE': ['identify', 'email'],
+    }
 
 if not DEBUG:
     LOGS_DIR = BASE_DIR / "logs"

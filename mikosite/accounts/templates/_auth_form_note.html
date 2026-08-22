@@ -1,0 +1,17 @@
+{% comment %}All form errors in the one note slot the pages share.{% endcomment %}
+{% if form.errors %}
+    <div class="auth-note" role="alert">
+        <p class="auth-note__head">
+            <span class="material-symbols-rounded auth-note__icon" aria-hidden="true">error</span>
+            Błąd
+        </p>
+        {% for error in form.non_field_errors %}
+            <p class="auth-note__body">{{ error }}</p>
+        {% endfor %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                <p class="auth-note__body">{{ field.label }}: {{ error }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}

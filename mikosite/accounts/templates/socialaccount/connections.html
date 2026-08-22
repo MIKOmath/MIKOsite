@@ -1,0 +1,122 @@
+{% extends "_auth_base.html" %}
+
+{% block title %}Połączone konta – MIKO{% endblock %}
+
+{% block heading %}Połączone konta{% endblock %}
+{% block lead %}Konta Google i Discord połączone z Twoim kontem MIKO.{% endblock %}
+
+{% block form %}
+    {% if request.GET.blad == 'juz-polaczone' %}
+        {% include "_auth_message.html" with body="Masz już połączone konto tego typu. Odłącz je, zanim połączysz nowe." %}
+    {% endif %}
+    {% if not user.has_usable_password %}
+        {% comment %}Changes here demand reauthentication, which a passwordless
+account cannot perform - point at the way out.{% endcomment %}
+        <div class="auth-note auth-note--info" role="status">
+            <p class="auth-note__head">
+                <span class="material-symbols-rounded auth-note__icon" aria-hidden="true">info</span>
+                Najpierw ustaw hasło
+            </p>
+            <p class="auth-note__body">Zmiany połączonych kont wymagają potwierdzenia tożsamości hasłem, a Twoje konto loguje się wyłącznie przez połączone konto.</p>
+            <div class="auth-actions">
+                <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'account_set_password' %}">
+                    Ustaw hasło
+                    <span class="material-symbols-rounded" aria-hidden="true">lock</span>
+                </a>
+            </div>
+        </div>
+    {% endif %}
+    {% include "_auth_form_note.html" %}
+
+    {% if form.accounts %}
+        <div class="auth-connections">
+            {% for account in form.accounts %}
+                {% with provider_account=account.get_provider_account %}
+                    <div class="auth-connection">
+                        <span class="auth-connection__icon" aria-hidden="true">
+                            {% include "_auth_provider_icon.html" with provider_id=account.provider %}
+                        </span>
+                        <div class="auth-connection__meta">
+                            <p class="auth-connection__provider">{{ provider_account.get_brand.name }}</p>
+                            <p class="auth-connection__identity">{{ provider_account }}</p>
+                        </div>
+                        <form method="post" action="{% url 'socialaccount_connections' %}"
+                              data-brand="{{ provider_account.get_brand.name }}">
+                            {% csrf_token %}
+                            <input type="hidden" name="account" value="{{ account.pk }}">
+                            <button class="homepage-cta-button homepage-cta-button--outline" type="submit"
+                                    aria-label="Odłącz konto {{ provider_account.get_brand.name }}">
+                                Odłącz
+                                <span class="material-symbols-rounded" aria-hidden="true">link_off</span>
+                            </button>
+                        </form>
+                    </div>
+                {% endwith %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="auth-hint">Nie masz jeszcze żadnych połączonych kont.</p>
+    {% endif %}
+{% endblock %}
+
+{% block body_end %}
+    <dialog class="auth-dialog" id="disconnect-dialog" aria-labelledby="disconnect-dialog-title">
+        <h2 class="auth-aside__title" id="disconnect-dialog-title">Odłączyć konto?</h2>
+        <span class="auth-rule" aria-hidden="true"></span>
+        <p class="auth-hint" id="disconnect-dialog-text"></p>
+        <div class="auth-actions">
+            <button class="homepage-cta-button homepage-cta-button--outline" type="button" data-dialog-close>
+                Anuluj
+                <span class="material-symbols-rounded" aria-hidden="true">close</span>
+            </button>
+            <button class="homepage-cta-button homepage-cta-button--dark" type="button" id="disconnect-dialog-confirm">
+                Odłącz
+                <span class="material-symbols-rounded" aria-hidden="true">link_off</span>
+            </button>
+        </div>
+    </dialog>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var dialog = document.getElementById('disconnect-dialog');
+            var text = document.getElementById('disconnect-dialog-text');
+            var confirmButton = document.getElementById('disconnect-dialog-confirm');
+            if (!dialog || typeof dialog.showModal !== 'function') return;
+            var pendingForm = null;
+
+            document.querySelectorAll('.auth-connection form').forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    pendingForm = form;
+                    text.textContent = 'Konto ' + (form.dataset.brand || '') +
+                        ' zostanie odłączone od Twojego konta MIKO.';
+                    dialog.showModal();
+                });
+            });
+
+            confirmButton.addEventListener('click', function () {
+                if (pendingForm) {
+                    dialog.close();
+                    // .submit() bypasses the submit event, so this cannot loop.
+                    pendingForm.submit();
+                }
+            });
+            dialog.querySelector('[data-dialog-close]').addEventListener('click', function () {
+                pendingForm = null;
+                dialog.close();
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block aside %}
+    {% include "_auth_socials.html" with process="connect" socials_title="Połącz nowe konto" %}
+
+    <section class="auth-aside__card">
+        <h2 class="auth-aside__title">Konto</h2>
+        <span class="auth-rule" aria-hidden="true"></span>
+        <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'profile' %}">
+            Wróć do profilu
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+        </a>
+    </section>
+{% endblock %}

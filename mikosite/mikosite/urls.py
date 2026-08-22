@@ -70,6 +70,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("mainSite.urls")),
     path('', include('accounts.urls')),
+    path('accounts/', include('allauth.urls')),
     path('kolo/', include('seminars.urls')),
     path('editions/', seminar_views.previous_editions, name='previous_editions'),
     # path("bazahintow/", include("hintBase.urls")),

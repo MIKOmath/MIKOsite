@@ -1,0 +1,43 @@
+{% extends "_auth_base.html" %}
+
+{% block title %}Dokończ rejestrację – MIKO{% endblock %}
+
+{% block heading %}Dokończ rejestrację{% endblock %}
+{% block lead %}Konto {{ account.get_provider.name }} zostało rozpoznane. Uzupełnij jeszcze dane profilu.{% endblock %}
+
+{% block form %}
+    {% include "_auth_form_note.html" %}
+
+    <form class="auth-form" method="post" action="{% url 'socialaccount_signup' %}">
+        {% csrf_token %}
+        {{ redirect_field }}
+
+        {% for field in form %}
+            {% if field.is_hidden %}
+                {{ field }}
+            {% else %}
+                <div class="auth-field">
+                    <label class="auth-label" for="{{ field.id_for_label }}">
+                        {{ field.label }}{% if field.field.required %}<span class="auth-required" aria-hidden="true">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="auth-actions">
+            <button class="homepage-cta-button homepage-cta-button--dark" type="submit">Utwórz konto</button>
+        </div>
+    </form>
+{% endblock %}
+
+{% block aside %}
+    <section class="auth-aside__card">
+        <h2 class="auth-aside__title">Dlaczego pytamy?</h2>
+        <span class="auth-rule" aria-hidden="true"></span>
+        <p class="auth-hint">
+            {{ account.get_provider.name }} potwierdza Twój adres email, ale nie
+            przekazuje nam wszystkich danych, których wymaga profil MIKO.
+        </p>
+    </section>
+{% endblock %}

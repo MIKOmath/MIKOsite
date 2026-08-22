@@ -89,6 +89,30 @@ Jeśli używasz PostgreSQL, dodaj również:
 DB_PASSWORD = 'hasło użytkownika postgres w PostgreSQL'
 ```
 
+### Konta i logowanie (django-allauth)
+Rejestracja, logowanie, weryfikacja adresów email, reset hasła i logowanie
+przez Google/Discord obsługuje django-allauth (strony pod `/accounts/...`).
+
+* **Turnstile** - rejestracja i prośba o reset hasła wymagają przejścia
+  Cloudflare Turnstile. Bez skonfigurowanych kluczy formularze odmawiają
+  przyjęcia zgłoszenia. Do pracy lokalnej można użyć [oficjalnych kluczy
+  testowych Cloudflare](https://developers.cloudflare.com/turnstile/troubleshooting/testing/)
+  (uwaga: ich endpoint testowy nie odsyła pola `action`, więc weryfikacja
+  akcji formularza je odrzuci - do pełnego testu lokalnego użyj prawdziwych
+  kluczy w trybie testowym).
+* **OAuth** - przyciski Google/Discord pojawiają się dopiero, gdy w
+  `secrets.py` (lub zmiennych środowiskowych) są klucze:
+  `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`,
+  `DISCORD_OAUTH_CLIENT_ID`, `DISCORD_OAUTH_CLIENT_SECRET`.
+  Konto założone przez Google/Discord ma potwierdzony email od ręki.
+* **Email** - przy `DEBUG = True` wiadomości trafiają na konsolę serwera.
+  Produkcja wysyła przez relay Google Workspace (`smtp-relay.gmail.com:587`),
+  który przyjmuje pocztę wyłącznie z adresu IP produkcji - relay trzeba
+  skonfigurować w panelu Workspace (allowlist IP + TLS + DKIM).
+* Konta Google/Discord połączone z kontem MIKO przechowuje tabela allauth
+  (`SocialAccount`) - API udostępnia ją pod `/api/linked-accounts/` z polami
+  `platform` i `external_id`, widać ją też w panelu admina.
+
 ## Migracja bazy danych, pliki statyczne, konta
 Przed uruchomieniem serwera testowego należy utworzyć bazę danych poleceniem `migrate`.
 Następnie należy wygenerować automatyczne pliki statyczne oraz wykonać kompresję django-compressor.

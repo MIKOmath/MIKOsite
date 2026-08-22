@@ -1,0 +1,18 @@
+{% load socialaccount %}
+{% comment %}Provider buttons; nothing renders when no provider has
+credentials. Callers pass process="login" or "connect".{% endcomment %}
+{% get_providers as socialaccount_providers %}
+{% if socialaccount_providers %}
+    <section class="auth-aside__card">
+        <h2 class="auth-aside__title">{{ socials_title|default:"Albo użyj konta" }}</h2>
+        <span class="auth-rule" aria-hidden="true"></span>
+        {% for provider in socialaccount_providers %}
+            <a class="homepage-cta-button homepage-cta-button--outline"
+               href="{% provider_login_url provider process=process %}"
+               aria-label="Kontynuuj przez {{ provider.name }}">
+                {{ provider.name }}
+                {% include "_auth_provider_icon.html" with provider_id=provider.id %}
+            </a>
+        {% endfor %}
+    </section>
+{% endif %}

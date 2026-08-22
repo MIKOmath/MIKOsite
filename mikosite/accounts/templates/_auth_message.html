@@ -1,0 +1,8 @@
+{% comment %}Single-message note. tone: '' (error) | 'info' | 'ok'.{% endcomment %}
+<div class="auth-note{% if tone %} auth-note--{{ tone }}{% endif %}" role="{% if tone %}status{% else %}alert{% endif %}">
+    <p class="auth-note__head">
+        <span class="material-symbols-rounded auth-note__icon" aria-hidden="true">{% if tone == 'ok' %}check_circle{% elif tone == 'info' %}info{% else %}error{% endif %}</span>
+        {% if tone == 'ok' %}Gotowe{% elif tone == 'info' %}Informacja{% else %}Błąd{% endif %}
+    </p>
+    <p class="auth-note__body">{{ body }}</p>
+</div>
