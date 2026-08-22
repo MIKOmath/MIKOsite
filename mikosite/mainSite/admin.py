@@ -59,13 +59,22 @@ class EventAdmin(admin.ModelAdmin):
         "date_end",
         "registration_begin",
         "registration_end",
+        "is_published",
     )
+    list_editable = ("is_published",)
     search_fields = ("name", "location")
-    list_filter = ("date_begin", "date_end", "registration_begin", "registration_end", "location")
+    list_filter = (
+        "is_published",
+        "date_begin",
+        "date_end",
+        "registration_begin",
+        "registration_end",
+        "location",
+    )
     ordering = ("-registration_end", "-date_begin", "name")
     readonly_fields = ("image_preview",)
     fieldsets = (
-        (None, {"fields": ("name", "location")}),
+        (None, {"fields": ("name", "location", "is_published")}),
         ("Terminy", {"fields": ("date_begin", "date_end", "registration_begin", "registration_end")}),
         ("Zapisy", {"fields": ("registration_url",)}),
         ("Zdjęcie", {

@@ -19,18 +19,47 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from rest_framework.routers import DefaultRouter
-from seminars.api_views import CalendarView, SeminarGroupViewSet, SeminarViewSet, GoogleFormViewSet, ReminderViewSet
+from rest_framework.permissions import AllowAny
+from rest_framework.routers import APIRootView, DefaultRouter
+from seminars.api_views import (
+    CalendarViewSet,
+    GoogleFormViewSet,
+    PreviousEditionViewSet,
+    ReminderViewSet,
+    SeminarGroupViewSet,
+    SeminarViewSet,
+)
 from seminars import views as seminar_views
-from mainSite.api_views import PostImageViewSet, PostViewSet
+from mainSite.api_views import (
+    PartnerViewSet,
+    PostViewSet,
+    RegistrationEventViewSet,
+)
+from olympiads.api_views import OlympiadStageViewSet, OlympiadViewSet
 from accounts.api_views import UserViewSet, LinkedAccountViewSet, UserActivityViewSet, ActivityScoreViewSet
 
-router = DefaultRouter()
+
+class PublicAPIRootView(APIRootView):
+    """Index of available endpoints."""
+
+    permission_classes = (AllowAny,)
+
+
+class PublicRootRouter(DefaultRouter):
+    APIRootView = PublicAPIRootView
+
+
+router = PublicRootRouter()
+router.register(r'calendar', CalendarViewSet, basename='calendar')
 router.register(r'seminar-groups', SeminarGroupViewSet)
 router.register(r'seminars', SeminarViewSet)
+router.register(r'previous-editions', PreviousEditionViewSet)
+router.register(r'olympiads', OlympiadViewSet)
+router.register(r'olympiad-stages', OlympiadStageViewSet)
+router.register(r'registration-events', RegistrationEventViewSet)
+router.register(r'partners', PartnerViewSet)
 router.register(r'posts', PostViewSet)
-router.register(r'post-images', PostImageViewSet)
-router.register(r'users', UserViewSet)
+router.register(r'users', UserViewSet, basename='user')
 router.register(r'linked-accounts', LinkedAccountViewSet)
 router.register(r'user-activity', UserActivityViewSet, basename='user-activity')
 router.register(r'activity-scores', ActivityScoreViewSet)
@@ -44,7 +73,6 @@ urlpatterns = [
     path('kolo/', include('seminars.urls')),
     path('editions/', seminar_views.previous_editions, name='previous_editions'),
     # path("bazahintow/", include("hintBase.urls")),
-    path('api/calendar/', CalendarView.as_view(), name='api_calendar'),
     path('api/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

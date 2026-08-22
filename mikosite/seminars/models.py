@@ -15,7 +15,6 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 
 from accounts.models import User
-from mikosite.dates import format_day_range
 
 
 absolute_url_validator = URLValidator(schemes=["http", "https"])
@@ -64,14 +63,6 @@ class SeminarGroup(models.Model):
     @property
     def display_short_label(self):
         return self.short_label or self.name
-
-    def calendar_dict(self) -> dict:
-        return {
-            'id': self.pk,
-            'name': self.name,
-            'short_label': self.display_short_label,
-            'color': self.display_color,
-        }
 
     def display_dict(self) -> dict:
         return {
@@ -161,6 +152,14 @@ class Seminar(models.Model):
         return datetime.combine(self.date, self.time) + self.duration
 
     @property
+    def time_label(self) -> str:
+        """The "18:00-19:30" label, shared by the site and the API."""
+        locale = settings.BABEL_LOCALE
+        start_time = format_time(self.start_timestamp, format='HH:mm', locale=locale)
+        end_time = format_time(self.end_timestamp, format='HH:mm', locale=locale)
+        return f"{start_time}-{end_time}"
+
+    @property
     def real_difficulty(self):
         default_difficulty = self.group.default_difficulty if self.group else None
         return self.difficulty or default_difficulty
@@ -185,8 +184,6 @@ class Seminar(models.Model):
 
     def display_dict(self, locale=settings.BABEL_LOCALE) -> dict:
         polish_date = format_date(self.start_timestamp, format='d MMMM', locale=locale)
-        start_time = format_time(self.start_timestamp, format='HH:mm', locale=locale)
-        end_time = format_time(self.end_timestamp, format='HH:mm', locale=locale)
 
         difficulty_badge_content = self.difficulty_dict.get(self.real_difficulty, {'label': None, 'icon': None})
 
@@ -194,7 +191,7 @@ class Seminar(models.Model):
             'theme': self.theme,
             'description': self.description,
             'date_string': polish_date,
-            'time_string': f"{start_time}-{end_time}",
+            'time_string': self.time_label,
             'tutors': [tutor.full_name for tutor in self.tutors.all()],
             'image_url': self.image.url if self.image else None,
             'file_url': self.file.url if self.file else None,
@@ -203,28 +200,6 @@ class Seminar(models.Model):
             'group_name': self.group.name if self.group else None,
             'difficulty_label': difficulty_badge_content['label'],
             'difficulty_icon': difficulty_badge_content['icon'],
-        }
-
-    def calendar_dict(self, locale=settings.BABEL_LOCALE) -> dict:
-        start_time = format_time(self.start_timestamp, format='HH:mm', locale=locale)
-        end_time = format_time(self.end_timestamp, format='HH:mm', locale=locale)
-        difficulty_badge_content = self.difficulty_dict.get(self.real_difficulty, {'label': None, 'icon': None})
-
-        return {
-            'id': self.pk,
-            'date': self.date.isoformat(),
-            'time': self.time.isoformat(timespec='minutes'),
-            'time_label': f"{start_time}-{end_time}",
-            'theme': self.theme,
-            'description': self.description or '',
-            'tutors': [tutor.full_name for tutor in self.tutors.all()],
-            'image': self.image.url if self.image else None,
-            'file': self.file.url if self.file else None,
-            'featured': self.featured,
-            'special_guest': self.special_guest,
-            'difficulty_label': difficulty_badge_content['label'],
-            'difficulty_icon': difficulty_badge_content['icon'],
-            'group': self.group.calendar_dict() if self.group else None,
         }
 
 

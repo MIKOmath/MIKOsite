@@ -1,325 +1,341 @@
-from datetime import date, time, datetime, timedelta
+"""Seminars and their groups: one shape for the public, one for administrators."""
+from datetime import date, time, timedelta
 
-from rest_framework.test import APITestCase
 from rest_framework import status
 
-from accounts.models import User
-from seminars.models import Seminar, SeminarGroup
+from seminars.models import GoogleFormsTemplate, Seminar, SeminarGroup
+
+from .api_base import ApiPlaneTestCase
+
+PUBLIC_SEMINAR_FIELDS = {
+    'id', 'date', 'time', 'time_label', 'duration', 'theme', 'description', 'image', 'file',
+    'started', 'finished', 'featured', 'special_guest', 'difficulty', 'difficulty_label',
+    'difficulty_icon', 'tutors', 'group', 'discord_channel_id', 'discord_voice_channel_id',
+    'group_role_id',
+}
+ADMIN_SEMINAR_FIELDS = {
+    'id', 'date', 'time', 'duration', 'theme', 'description', 'image', 'file', 'started',
+    'finished', 'featured', 'special_guest', 'difficulty', 'group', 'form', 'tutors',
+    'discord_channel_id', 'discord_voice_channel_id',
+}
+# The registration form points at an internal template, so it stays admin-only.
+# The Discord ids do not: they are public routing.
+SEMINAR_SECRETS = {'form'}
+
+PUBLIC_GROUP_FIELDS = {
+    'id', 'name', 'short_label', 'color', 'lead', 'description', 'default_difficulty',
+    'discord_role_id', 'discord_channel_id', 'discord_voice_channel_id',
+}
 
 
-class SeminarViewSetTests(APITestCase):
-    def setUp(self):
-        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com')
-        self.regular_user = User.objects.create_user(username='user', password='userpass', email='user@test.com')
+def make_seminar(day, start, theme, **kwargs):
+    return Seminar.objects.create(
+        date=day, time=start, duration=timedelta(hours=1, minutes=30), theme=theme, **kwargs,
+    )
 
-        self.group = SeminarGroup.objects.create(name='Test Group')
 
-        self.seminar1 = Seminar.objects.create(
-            date=date(2024, 1, 1),
-            time=time(10, 0),
-            duration=timedelta(hours=1),
-            group=self.group,
-            difficulty=3,
-            theme="Seminar 1",
+class SeminarReadTests(ApiPlaneTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.group = SeminarGroup.objects.create(
+            name="OM średnia", short_label="OM śr.", color="#0E7C9B",
+            default_difficulty=2, discord_role_id='111', discord_channel_id='222',
+            discord_voice_channel_id='333',
         )
-        self.seminar2 = Seminar.objects.create(
-            date=date(2024, 2, 1),
-            time=time(14, 0),
-            duration=timedelta(hours=2),
-            difficulty=2,
-            theme="Seminar 2",
+        cls.form = GoogleFormsTemplate.objects.create(name="Zapisy", file='google_forms_templates/f.txt')
+        cls.seminar = make_seminar(
+            date(2026, 3, 10), time(18, 0), "Nierówności",
+            group=cls.group, form=cls.form, discord_channel_id='444',
+            discord_voice_channel_id='555', description="Opis",
         )
-        self.seminar3 = Seminar.objects.create(
-            date=date(2024, 3, 1),
-            time=time(18, 0),
-            duration=timedelta(hours=1.5),
-            difficulty=2,
-            theme="Seminar 3",
-        )
-        self.seminar2.tutors.set([self.admin_user])
+        cls.seminar.tutors.set([cls.member])
 
-    # Viewing Seminars
-    def test_list_seminars(self):
-        self.client.login(username='admin', password='adminpass')
+    def test_anyone_may_read_seminars(self):
         response = self.client.get('/api/seminars/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 3)
 
-    def test_filter_seminars_by_date_range(self):
-        self.client.login(username='admin', password='adminpass')
-        params = {'start_date': '2024-01-15', 'end_date': '2024-02-20'}
-        response = self.client.get('/api/seminars/', query_params=params)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]['theme'], self.seminar2.theme)
 
-        params = {'start_date': '2024-02-01'}
-        response = self.client.get('/api/seminars/', query_params=params)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
+    def test_the_public_shape_is_exactly_the_display_shape(self):
+        response = self.client.get(f'/api/seminars/{self.seminar.pk}/')
 
-    def test_filter_seminar_by_group(self):
-        self.client.login(username='admin', password='adminpass')
-        params = {'group': self.group.id}
-        response = self.client.get('/api/seminars/', query_params=params)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]['id'], self.seminar1.id)
+        self.assertEqual(set(response.data), PUBLIC_SEMINAR_FIELDS)
 
-    def test_display_only_param(self):
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.get('/api/seminars/', {'display_only': '1'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_the_public_shape_withholds_the_registration_form(self):
+        for caller in (self.as_anonymous, self.as_member, self.as_staff):
+            with self.subTest(caller=caller.__name__):
+                caller()
+                response = self.client.get(f'/api/seminars/{self.seminar.pk}/')
+                self.assertEqual(set(response.data) & SEMINAR_SECRETS, set())
 
-        seminars = response.data['results']
-        for seminar in seminars:
-            self.assertTrue('theme' in seminar)
-            self.assertTrue('group_name' in seminar)
-            self.assertTrue('difficulty_label' in seminar)
+    def test_the_public_shape_carries_the_discord_routing(self):
+        response = self.client.get(f'/api/seminars/{self.seminar.pk}/')
 
-            if seminar['theme'] == self.seminar1.theme:
-                self.assertEqual(seminar['group_name'], self.group.name)
-                self.assertEqual(seminar['difficulty_label'], self.seminar1.difficulty_label)
+        self.assertEqual(response.data['discord_channel_id'], '444')
+        self.assertEqual(response.data['discord_voice_channel_id'], '555')
+        self.assertEqual(response.data['group_role_id'], '111')
 
-    def test_retrieve_seminar(self):
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.get(f'/api/seminars/{self.seminar1.id}/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['theme'], self.seminar1.theme)
+    def test_a_seminar_without_its_own_channel_inherits_the_groups(self):
+        bare = make_seminar(date(2026, 3, 11), time(18, 0), "Bez kanału", group=self.group)
 
-    # Creating Seminars
-    def test_create_seminar(self):
-        self.client.login(username='admin', password='adminpass')
-        data = {
-            "date": "2024-04-01",
-            "time": "09:00:00",
-            "duration": "01:30:00",
-            "theme": "New Seminar",
-            "difficulty": 4,
-            "group": self.group.id,
+        response = self.client.get(f'/api/seminars/{bare.pk}/')
+
+        self.assertEqual(response.data['discord_channel_id'], '222')
+        self.assertEqual(response.data['discord_voice_channel_id'], '333')
+
+    def test_a_seminar_without_a_group_reports_no_role(self):
+        orphan = make_seminar(date(2026, 3, 12), time(18, 0), "Bez grupy")
+
+        response = self.client.get(f'/api/seminars/{orphan.pk}/')
+
+        self.assertIsNone(response.data['group_role_id'])
+        self.assertIsNone(response.data['group'])
+
+    def test_the_nested_group_stays_the_compact_badge(self):
+        response = self.client.get(f'/api/seminars/{self.seminar.pk}/')
+
+        self.assertEqual(set(response.data['group']), {'id', 'name', 'short_label', 'color'})
+
+    def test_the_administrator_shape_carries_the_routing_and_the_form(self):
+        self.as_admin()
+
+        response = self.client.get(f'/api/seminars/{self.seminar.pk}/')
+
+        self.assertEqual(set(response.data), ADMIN_SEMINAR_FIELDS)
+        self.assertEqual(response.data['discord_channel_id'], '444')
+        self.assertEqual(response.data['form'], self.form.pk)
+
+    def test_the_time_stays_in_the_form_the_calendar_prints(self):
+        response = self.client.get(f'/api/seminars/{self.seminar.pk}/')
+
+        self.assertEqual(response.data['time'], "18:00")
+        self.assertEqual(response.data['time_label'], "18:00-19:30")
+
+    def test_tutors_are_named_rather_than_numbered(self):
+        response = self.client.get(f'/api/seminars/{self.seminar.pk}/')
+
+        self.assertEqual(response.data['tutors'], [self.member.full_name])
+
+    def test_the_difficulty_falls_back_to_the_groups_default(self):
+        response = self.client.get(f'/api/seminars/{self.seminar.pk}/')
+
+        self.assertEqual(response.data['difficulty_label'], "poziom średni")
+
+    def test_the_old_display_only_switch_is_gone_and_harmless(self):
+        plain = self.client.get(f'/api/seminars/{self.seminar.pk}/').data
+        legacy = self.client.get(f'/api/seminars/{self.seminar.pk}/', {'display_only': '1'}).data
+
+        self.assertEqual(plain, legacy)
+
+
+class SeminarQueryCountTests(ApiPlaneTestCase):
+    def test_the_group_and_tutors_are_joined_rather_than_fetched_per_row(self):
+        group = SeminarGroup.objects.create(name="OM")
+        for day in range(1, 11):
+            make_seminar(date(2026, 3, day), time(18, 0), f"Temat {day}", group=group).tutors.set(
+                [self.member],
+            )
+
+        with self.assertNumQueries(3):  # count, page of seminars, prefetched tutors
+            self.client.get('/api/seminars/')
+
+
+class SeminarFilterTests(ApiPlaneTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.group = SeminarGroup.objects.create(name="OM")
+        make_seminar(date(2026, 3, 1), time(18, 0), "Marzec", group=cls.group)
+        make_seminar(date(2026, 4, 1), time(18, 0), "Kwiecień")
+
+    def themes(self, params):
+        return [item['theme'] for item in self.client.get('/api/seminars/', params).data['results']]
+
+    def test_the_date_window_filters_both_ends(self):
+        self.assertEqual(self.themes({'start_date': '2026-03-15'}), ["Kwiecień"])
+        self.assertEqual(self.themes({'end_date': '2026-03-15'}), ["Marzec"])
+
+    def test_seminars_may_be_narrowed_to_one_group(self):
+        self.assertEqual(self.themes({'group': self.group.pk}), ["Marzec"])
+
+    def test_an_exact_date_may_be_asked_for(self):
+        self.assertEqual(self.themes({'date': '2026-04-01'}), ["Kwiecień"])
+
+    def test_an_unknown_query_parameter_is_ignored_rather_than_obeyed(self):
+        self.assertEqual(len(self.themes({'nonsense': 'x'})), 2)
+
+    def test_seminars_come_back_in_calendar_order(self):
+        self.assertEqual(self.themes({}), ["Marzec", "Kwiecień"])
+
+
+class SeminarWriteTests(ApiPlaneTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.seminar = make_seminar(date(2026, 3, 10), time(18, 0), "Nierówności")
+
+    def payload(self):
+        return {
+            'date': '2026-05-01', 'time': '18:00', 'duration': '01:30:00', 'theme': "Nowy",
         }
-        response = self.client.post('/api/seminars/', data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Seminar.objects.count(), 4)
 
-    # Modifying Seminars
-    def test_move_seminar(self):
-        self.client.login(username='admin', password='adminpass')
-        data = {"date": "2024-04-01"}
-        response = self.client.patch(f'/api/seminars/{self.seminar1.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.seminar1.refresh_from_db()
-        self.assertEqual(self.seminar1.date, datetime.strptime(data['date'], "%Y-%m-%d").date())
+    def test_writing_is_refused_off_the_administrator_plane(self):
+        for caller in (self.as_anonymous, self.as_member, self.as_staff):
+            with self.subTest(caller=caller.__name__):
+                caller()
+                self.assertEqual(
+                    self.client.post('/api/seminars/', self.payload()).status_code,
+                    status.HTTP_403_FORBIDDEN,
+                )
+                self.assertEqual(
+                    self.client.patch(f'/api/seminars/{self.seminar.pk}/', {'theme': "X"}).status_code,
+                    status.HTTP_403_FORBIDDEN,
+                )
+                self.assertEqual(
+                    self.client.delete(f'/api/seminars/{self.seminar.pk}/').status_code,
+                    status.HTTP_403_FORBIDDEN,
+                )
 
-    def test_regroup_seminar(self):
-        self.client.login(username='admin', password='adminpass')
-        data = {"group": self.group.id}
-        response = self.client.patch(f'/api/seminars/{self.seminar3.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.seminar3.refresh_from_db()
-        self.assertEqual(self.seminar1.group.id, self.group.id)
+    def test_an_administrator_may_create_and_edit_and_delete(self):
+        self.as_admin()
 
-    def test_swap_tutor_seminar(self):
-        self.client.login(username='admin', password='adminpass')
-        data = {"tutors": [self.regular_user.id]}
-        response = self.client.patch(f'/api/seminars/{self.seminar2.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.seminar2.refresh_from_db()
-        self.assertEqual(self.seminar2.tutors.count(), 1)
-        self.assertEqual(self.seminar2.tutors.first().username, self.regular_user.username)
-
-    # Deleting Seminars
-    def test_delete_seminar(self):
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.delete(f'/api/seminars/{self.seminar3.id}/')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(Seminar.objects.count(), 2)
-
-    # Permission tests
-    def test_regular_user_can_list_seminars(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.get('/api/seminars/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_anonymous_can_list_seminars(self):
-        response = self.client.get('/api/seminars/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_regular_user_can_retrieve_seminar(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.get(f'/api/seminars/{self.seminar1.id}/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_anonymous_can_retrieve_seminar(self):
-        response = self.client.get(f'/api/seminars/{self.seminar1.id}/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_regular_user_cannot_create_seminar(self):
-        self.client.login(username='user', password='userpass')
-        data = {
-            "date": "2024-04-01",
-            "time": "09:00:00",
-            "duration": "01:30:00",
-            "theme": "New Seminar",
-        }
-        response = self.client.post('/api/seminars/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(Seminar.objects.count(), 3)
-
-    def test_anonymous_cannot_create_seminar(self):
-        data = {
-            "date": "2024-04-01",
-            "time": "09:00:00",
-            "duration": "01:30:00",
-            "theme": "New Seminar",
-        }
-        response = self.client.post('/api/seminars/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(Seminar.objects.count(), 3)
-
-    def test_regular_user_cannot_modify_seminar(self):
-        self.client.login(username='user', password='userpass')
-        data = {"date": "2024-04-01"}
-        response = self.client.patch(f'/api/seminars/{self.seminar1.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_anonymous_cannot_modify_seminar(self):
-        data = {"date": "2024-04-01"}
-        response = self.client.patch(f'/api/seminars/{self.seminar1.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_regular_user_cannot_delete_seminar(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.delete(f'/api/seminars/{self.seminar3.id}/')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_anonymous_cannot_delete_seminar(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.delete(f'/api/seminars/{self.seminar3.id}/')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-
-class SeminarGroupViewSetTests(APITestCase):
-    def setUp(self):
-        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com')
-        self.regular_user = User.objects.create_user(username='user', password='userpass', email='user@test.com')
-
-        self.group1 = SeminarGroup.objects.create(
-            name="Group A",
-            lead="Lead description for Group A",
-            description="Description for Group A",
-            discord_role_id="12345",
-            default_difficulty=3,
+        self.assertEqual(
+            self.client.post('/api/seminars/', self.payload()).status_code,
+            status.HTTP_201_CREATED,
         )
-        self.group2 = SeminarGroup.objects.create(
-            name="Group B",
-            lead="Lead description for Group B",
-            description="Description for Group B",
+        self.assertEqual(
+            self.client.patch(f'/api/seminars/{self.seminar.pk}/', {'theme': "Zmienione"}).status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            self.client.delete(f'/api/seminars/{self.seminar.pk}/').status_code,
+            status.HTTP_204_NO_CONTENT,
         )
 
-    # Viewing Groups
-    def test_list_groups(self):
-        self.client.login(username='admin', password='adminpass')
+
+class SeminarGroupTests(ApiPlaneTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.group = SeminarGroup.objects.create(
+            name="OM średnia", lead="Wstęp", description="Opis",
+            discord_role_id='111', discord_channel_id='222', discord_voice_channel_id='333',
+        )
+
+    def test_anyone_may_read_the_groups(self):
         response = self.client.get('/api/seminar-groups/')
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(set(response.data['results'][0]), PUBLIC_GROUP_FIELDS)
 
-    def test_retrieve_group(self):
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.get(f'/api/seminar-groups/{self.group1.id}/')
+    def test_the_public_shape_carries_the_discord_routing(self):
+        response = self.client.get(f'/api/seminar-groups/{self.group.pk}/')
+
+        self.assertEqual(response.data['discord_role_id'], '111')
+        self.assertEqual(response.data['discord_channel_id'], '222')
+        self.assertEqual(response.data['discord_voice_channel_id'], '333')
+
+    def test_the_public_shape_resolves_the_display_defaults(self):
+        response = self.client.get(f'/api/seminar-groups/{self.group.pk}/')
+
+        self.assertEqual(response.data['short_label'], "OM średnia")
+        self.assertEqual(response.data['color'], "#074A59")
+
+    def test_the_administrator_shape_reports_the_display_defaults_unresolved(self):
+        self.as_admin()
+
+        response = self.client.get(f'/api/seminar-groups/{self.group.pk}/')
+
+        self.assertEqual(response.data['short_label'], '')
+        self.assertEqual(response.data['color'], '')
+
+    def test_only_administrators_may_write_a_group(self):
+        self.as_staff()
+        self.assertEqual(
+            self.client.post('/api/seminar-groups/', {'name': "Nowa"}).status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        self.as_admin()
+        self.assertEqual(
+            self.client.post('/api/seminar-groups/', {'name': "Nowa"}).status_code,
+            status.HTTP_201_CREATED,
+        )
+
+
+class InternalResourceTests(ApiPlaneTestCase):
+    """Form templates and reminders have no public shape at all."""
+
+    def test_form_templates_are_administrators_only(self):
+        for caller in (self.as_anonymous, self.as_member, self.as_staff):
+            with self.subTest(caller=caller.__name__):
+                caller()
+                self.assertEqual(
+                    self.client.get('/api/google-form-template/').status_code,
+                    status.HTTP_403_FORBIDDEN,
+                )
+
+    def test_reminders_are_administrators_only(self):
+        for caller in (self.as_anonymous, self.as_member, self.as_staff):
+            with self.subTest(caller=caller.__name__):
+                caller()
+                self.assertEqual(
+                    self.client.get('/api/reminders/').status_code, status.HTTP_403_FORBIDDEN,
+                )
+
+
+class ReminderScheduleTests(ApiPlaneTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from django.utils import timezone
+
+        from seminars.models import Reminder
+
+        cls.seminar = make_seminar(date(2026, 3, 10), time(18, 0), "Nierówności")
+        now = timezone.now()
+        cls.past = Reminder.objects.create(
+            seminar=cls.seminar, type='start', date_time=now - timedelta(hours=1),
+        )
+        cls.next_one = Reminder.objects.create(
+            seminar=cls.seminar, type='start', date_time=now + timedelta(hours=1),
+        )
+        cls.also_next = Reminder.objects.create(
+            seminar=cls.seminar, type='voice', date_time=cls.next_one.date_time,
+        )
+        cls.later = Reminder.objects.create(
+            seminar=cls.seminar, type='start', date_time=now + timedelta(hours=5),
+        )
+
+    def test_only_next_returns_everything_due_at_the_same_moment(self):
+        self.as_admin()
+
+        response = self.client.get('/api/reminders/', {'only_next': '1'})
+
+        self.assertEqual({item['id'] for item in response.data['results']},
+                         {self.next_one.pk, self.also_next.pk})
+
+    def test_without_the_switch_the_whole_schedule_comes_back(self):
+        from seminars.models import Reminder
+
+        self.as_admin()
+
+        response = self.client.get('/api/reminders/')
+
+        # Saving a seminar schedules reminders of its own, so count the table.
+        self.assertEqual(response.data['count'], Reminder.objects.count())
+        self.assertGreaterEqual(response.data['count'], 4)
+
+    def test_only_next_compares_against_an_aware_now(self):
+        """The old implementation compared a naive `datetime.now()` against an
+        aware column, which Django only warns about."""
+        import warnings
+
+        self.as_admin()
+
+        with warnings.catch_warnings():
+            warnings.simplefilter('error', RuntimeWarning)
+            response = self.client.get('/api/reminders/', {'only_next': '1'})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], self.group1.name)
-
-    # Creating Groups
-    def test_create_group(self):
-        self.client.login(username='admin', password='adminpass')
-        data = {
-            "name": "Group C",
-            "lead": "Lead description for Group C",
-            "description": "Description for Group C",
-            "default_difficulty": 1,
-        }
-        response = self.client.post('/api/seminar-groups/', data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(SeminarGroup.objects.count(), 3)
-
-    # Modifying Groups
-    def test_update_group(self):
-        self.client.login(username='admin', password='adminpass')
-        data = {"default_difficulty": 2}
-        response = self.client.patch(f'/api/seminar-groups/{self.group1.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.group1.refresh_from_db()
-        self.assertEqual(self.group1.default_difficulty, 2)
-
-    # Deleting Groups
-    def test_delete_group(self):
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.delete(f'/api/seminar-groups/{self.group2.id}/')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(SeminarGroup.objects.count(), 1)
-
-    # Permission tests
-    def test_regular_user_can_list_groups(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.get('/api/seminar-groups/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
-
-    def test_anonymous_can_list_groups(self):
-        response = self.client.get('/api/seminar-groups/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
-
-    def test_regular_user_can_retrieve_group(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.get(f'/api/seminar-groups/{self.group1.id}/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_anonymous_can_retrieve_group(self):
-        response = self.client.get(f'/api/seminar-groups/{self.group1.id}/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_regular_user_cannot_create_group(self):
-        self.client.login(username='user', password='userpass')
-        data = {
-            "name": "Group C",
-            "lead": "Lead description for Group C",
-            "description": "Description for Group C",
-        }
-        response = self.client.post('/api/seminar-groups/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(SeminarGroup.objects.count(), 2)
-
-    def test_anonymous_cannot_create_group(self):
-        data = {
-            "name": "Group C",
-            "lead": "Lead description for Group C",
-            "description": "Description for Group C",
-        }
-        response = self.client.post('/api/seminar-groups/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(SeminarGroup.objects.count(), 2)
-
-    def test_regular_user_cannot_update_group(self):
-        self.client.login(username='user', password='userpass')
-        data = {"default_difficulty": 5}
-        response = self.client.patch(f'/api/seminar-groups/{self.group1.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_anonymous_cannot_update_group(self):
-        data = {"default_difficulty": 5}
-        response = self.client.patch(f'/api/seminar-groups/{self.group1.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_regular_user_cannot_delete_group(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.delete(f'/api/seminar-groups/{self.group2.id}/')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(SeminarGroup.objects.count(), 2)
-
-    def test_anonymous_cannot_delete_group(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.delete(f'/api/seminar-groups/{self.group2.id}/')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(SeminarGroup.objects.count(), 2)

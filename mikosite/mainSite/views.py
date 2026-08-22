@@ -109,7 +109,7 @@ def get_active_registration_event_data():
         today = datetime.today()
         event = (
             RegistrationEvent.objects
-            .filter(registration_begin__lte=today, registration_end__gte=today)
+            .filter(is_published=True, registration_begin__lte=today, registration_end__gte=today)
             .order_by('registration_end', 'date_begin', 'pk')
             .first()
         )

@@ -1,64 +1,128 @@
 from datetime import datetime
 
-from rest_framework import viewsets
+from django.db.models import Count, IntegerField, OuterRef, Subquery, Value
+from django.utils import timezone
 from django_filters import rest_framework as filters
-from rest_framework import permissions
-from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from django_filters import UnknownFieldBehavior
-from babel import Locale
+from rest_framework import viewsets
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.viewsets import ViewSet
 
-from .calendar_data import MAX_CALENDAR_RANGE_DAYS, get_calendar_payload
-from .models import SeminarGroup, Seminar, GoogleFormsTemplate, Reminder
-from .serializers import SeminarGroupSerializer, SeminarSerializer, DisplaySeminarSerializer, GoogleFormSerializer, \
-    RemindersSerializer
+from mikosite.api import AdminPlaneMixin
+from mikosite.permissions import IsAdmin, IsAdminOrReadOnly, is_admin
 
-locale = Locale('pl_PL')
+from .calendar_data import MAX_CALENDAR_RANGE_DAYS, build_calendar_payload, get_calendar_payload
+from .models import (
+    GoogleFormsTemplate,
+    PreviousEdition,
+    Reminder,
+    Seminar,
+    SeminarGroup,
+)
+from .serializers import (
+    AdminPreviousEditionSerializer,
+    AdminSeminarGroupSerializer,
+    AdminSeminarSerializer,
+    GoogleFormSerializer,
+    PreviousEditionSerializer,
+    ReminderSerializer,
+    SeminarGroupSerializer,
+    SeminarSerializer,
+)
 
 
-class SeminarGroupViewSet(viewsets.ModelViewSet):
+class SeminarGroupViewSet(AdminPlaneMixin, viewsets.ModelViewSet):
+    """Groups that seminars belong to."""
+
     queryset = SeminarGroup.objects.all()
     serializer_class = SeminarGroupSerializer
+    admin_serializer_class = AdminSeminarGroupSerializer
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class SeminarFilter(filters.FilterSet):
     start_date = filters.DateFilter(field_name='date', lookup_expr='gte')
     end_date = filters.DateFilter(field_name='date', lookup_expr='lte')
-    unknown_field_behavior = UnknownFieldBehavior.IGNORE
 
     class Meta:
         model = Seminar
         fields = ['group', 'date']
+        unknown_field_behavior = UnknownFieldBehavior.IGNORE
+
+
+class SeminarViewSet(AdminPlaneMixin, viewsets.ModelViewSet):
+    """Seminars."""
+
+    queryset = (
+        Seminar.objects.select_related('group').prefetch_related('tutors').order_by('date', 'time')
+    )
+    serializer_class = SeminarSerializer
+    admin_serializer_class = AdminSeminarSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = SeminarFilter
+
+
+class PreviousEditionViewSet(AdminPlaneMixin, viewsets.ModelViewSet):
+    """Past editions."""
+
+    queryset = PreviousEdition.objects.all()
+    serializer_class = PreviousEditionSerializer
+    admin_serializer_class = AdminPreviousEditionSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    published_field = 'is_published'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.on_admin_plane:
+            return queryset
+        seminars_in_range = (
+            Seminar.objects
+            .filter(date__gte=OuterRef('start_date'), date__lte=OuterRef('end_date'))
+            .order_by()
+            .values(grouper=Value(1))
+            .annotate(total=Count('pk'))
+            .values('total')
+        )
+        return queryset.prefetch_related('milestones').annotate(
+            annotated_seminar_count=Subquery(seminars_in_range, output_field=IntegerField()),
+        )
 
 
 class GoogleFormViewSet(viewsets.ModelViewSet):
+    """Registration form templates."""
+
     queryset = GoogleFormsTemplate.objects.all()
     serializer_class = GoogleFormSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = (IsAdmin,)
 
 
 class ReminderViewSet(viewsets.ModelViewSet):
+    """Scheduled reminders for seminars."""
+
     queryset = Reminder.objects.all()
-    serializer_class = RemindersSerializer
-    permission_classes = [permissions.IsAdminUser]
+    serializer_class = ReminderSerializer
+    permission_classes = (IsAdmin,)
 
     def get_queryset(self):
-        # Filter reminders with `date_time` greater than now and order by `date_time`
-        only_next = self.request.query_params.get('only_next', None)
-        if only_next:
-            base_reminder = Reminder.objects.filter(date_time__gt=datetime.now()).order_by('date_time')[:1]
-            if len(base_reminder) > 0:
-                return Reminder.objects.filter(date_time__exact=base_reminder[0].date_time)
+        if not self.request.query_params.get('only_next'):
+            return self.queryset
+        # Everything due at the next scheduled moment, so one ping fires for all
+        # the seminars starting together.
+        next_reminder = (
+            Reminder.objects.filter(date_time__gt=timezone.now()).order_by('date_time').first()
+        )
+        if next_reminder is None:
             return Reminder.objects.none()
-        else:
-            return Reminder.objects.all()
+        return Reminder.objects.filter(date_time__exact=next_reminder.date_time)
 
 
-class CalendarView(APIView):
-    """Read-only feed for the calendar on /kolo/, one visible grid range per request."""
+class CalendarViewSet(ViewSet):
+    """Everything drawn on the calendar for one date range."""
 
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (AllowAny,)
 
     @staticmethod
     def _parse_date(raw_value, field_name):
@@ -67,7 +131,7 @@ class CalendarView(APIView):
         except (TypeError, ValueError):
             raise ValidationError({field_name: "Podaj datę w formacie YYYY-MM-DD."})
 
-    def get(self, request):
+    def list(self, request, *args, **kwargs):
         start_date = self._parse_date(request.query_params.get('start_date'), 'start_date')
         end_date = self._parse_date(request.query_params.get('end_date'), 'end_date')
 
@@ -78,21 +142,6 @@ class CalendarView(APIView):
                 {'end_date': f"Zakres nie może być dłuższy niż {MAX_CALENDAR_RANGE_DAYS} dni."}
             )
 
+        if is_admin(request):
+            return Response(build_calendar_payload(start_date, end_date, include_unpublished=True))
         return Response(get_calendar_payload(start_date, end_date))
-
-
-class SeminarViewSet(viewsets.ModelViewSet):
-    queryset = Seminar.objects.all()
-    serializer_class = SeminarSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_class = SeminarFilter
-
-    def get_queryset(self):
-        display_only = self.request.query_params.get('display_only', None)
-        return Seminar.objects.select_related('group').prefetch_related('tutors') if display_only else self.queryset
-
-    def get_serializer_class(self):
-        if self.action not in ['list', 'retrieve']:
-            return self.serializer_class
-        display_only = self.request.query_params.get('display_only', None)
-        return DisplaySeminarSerializer if display_only else self.serializer_class
