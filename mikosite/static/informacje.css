@@ -1,21 +1,15 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* Tokens, the reset and the heading scale live in base.css, which every page
+   loads first. */
+
+/* The calendar's own: an olympiad stage is not a MIKO session, so it is drawn
+   in a teal of its own rather than a group colour. */
 :root {
-  --b1: #074A59;
-  --b2: #06313E;
-  --r1: #F24535;
-  --y1: #F2B544;
-  --w1: #ffffff;
-  --bcg: #f0faff;
-  --miko-soft: #f4f8f9;
-  --miko-border: rgba(7, 74, 89, 0.24);
-  --miko-muted: #697982;
-  --miko-radius: 20px;
   --olympiad: var(--b1);
   --olympiad-light: #0C6A7D;
+}
+
+.mobile-left-padding {
+  margin-bottom: 20px;
 }
 
 body, html {
@@ -831,37 +825,7 @@ body, html {
   }
 }
 
-h1
-{
-    font-size: 30px;
-    color: var(--b1);
-    margin-bottom: 20px;
-}
-
 /* Yellow marks the page sections; the tile rules stay teal or group coloured. */
-h1::after {
-    background: var(--y1);
-    border-radius: 2px;
-    content: '';
-    display: block;
-    height: 3px;
-    margin-top: 12px;
-    width: 56px;
-}
-
-h2
-{
-    font-size: 25px;
-    color: var(--y1);
-}
-
-h3
-{
-    font-size: 20px;
-    font-weight: 400;
-    color: var(--b1);
-}
-
 hr
 {
     border: none;

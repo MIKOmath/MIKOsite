@@ -1,31 +1,16 @@
 {% comment %}
-One announcement, shared by the home page and the archive. The card keeps the
-full content column; the meta rail and its column rule are what bring the prose
-down to a readable measure. Nothing is truncated - there is no post detail page.
+One announcement, shared by the home page and the archive. Nothing is
+truncated - there is no post detail page - so the card varies by frame rather
+than by length: `lead` marks the newest one.
 
-DOM order is rail, head, body, which is also the visual order at every width.
+The stamp is hidden from screen readers because the footer carries the same
+date in full, spoken rather than abbreviated.
 {% endcomment %}
-<article class="post">
-    <div class="post__rail">
-        <div class="post__rail-inner">
-            <div class="post__meta">
-                <p class="post__meta-label">Opublikowano</p>
-                <p class="post__meta-value">{{ post.date }}, {{ post.time }}</p>
-            </div>
-
-            {% if post.authors %}
-                <div class="post__meta">
-                    <p class="post__meta-label">
-                        {% if post.authors|length > 1 %}Autorzy{% else %}Autor{% endif %}
-                    </p>
-                    <ul class="post__authors">
-                        {% for author in post.authors %}
-                            <li><a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-        </div>
+<article class="post{% if lead %} post--lead{% endif %}">
+    <div class="post__stamp" aria-hidden="true">
+        <span class="post__stamp-day">{{ post.day }}</span>
+        <span class="post__stamp-month">{{ post.month_short }}</span>
+        <span class="post__stamp-year">{{ post.year }}</span>
     </div>
 
     <header class="post__head">
@@ -60,4 +45,18 @@ DOM order is rail, head, body, which is also the visual order at every width.
             </div>
         {% endif %}
     </div>
+
+    <footer class="post__foot">
+        <p class="post__dateline">
+            <span class="material-symbols-rounded post__foot-icon" aria-hidden="true">schedule</span>
+            {{ post.date }}, {{ post.time }}
+        </p>
+
+        {% if post.authors %}
+            <p class="post__byline">
+                <span class="material-symbols-rounded post__foot-icon" aria-hidden="true">stylus_note</span>
+                {% for author in post.authors %}<a href="/publicprofile/{{ author.username }}">{{ author.full_name }}</a>{% if not forloop.last %}<span class="post__byline-sep">·</span>{% endif %}{% endfor %}
+            </p>
+        {% endif %}
+    </footer>
 </article>

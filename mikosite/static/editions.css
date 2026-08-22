@@ -1,14 +1,5 @@
-:root {
-  --b1: #074a59;
-  --b2: #06313e;
-  --r1: #f24535;
-  --y1: #f2b544;
-  --w1: #ffffff;
-  --miko-soft: #f4f8f9;
-  --miko-border: rgba(7, 74, 89, 0.24);
-  --miko-muted: #697982;
-  --miko-radius: 20px;
-}
+/* Tokens, the reset and the heading scale live in base.css, which every page
+   loads first. */
 
 * {
   box-sizing: border-box;
@@ -96,6 +87,7 @@ html {
 
 .edition-card h2,
 .editions-empty h2 {
+  color: var(--b1);
   font-size: 25px;
   line-height: 1.2;
 }

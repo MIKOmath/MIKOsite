@@ -1,40 +1,7 @@
+/* Tokens, the reset and the heading scale live in base.css, which every page
+   loads first. */
+
 /* styles.css */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    --b1: #074A59;
-    --b2: #06313E;
-    --r1: #F24535;
-    --y1: #F2B544;
-    --w1: #ffffff;
-}
-
-
-
-h1
-{
-    font-size: 30px;
-    color: var(--b1);
-    margin-bottom: 20px;
-}
-
-h2
-{
-    font-size: 25px;
-    color: var(--y1);
-}
-
-h3
-{
-    font-size: 20px;
-    font-weight: 400;
-    color: var(--b1);
-}
 
 hr
 {

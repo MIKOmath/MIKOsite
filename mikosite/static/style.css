@@ -1,50 +1,5 @@
-/* Root and Global Styles */
-:root {
-  --b1: #074A59;
-  --b2: #06313E;
-  --r1: #F24535;
-  --y1: #F2B544;
-  --w1: #ffffff;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Rubik", sans-serif;
-  font-optical-sizing: auto;
-}
-
-/* Typography */
-h1 {
-  font-size: 30px;
-  color: var(--b1);
-}
-
-/* Yellow marks the page sections. Auth pages use h1 as a form title, not a section. */
-h1:not(.auth-title)::after {
-  background: var(--y1);
-  border-radius: 2px;
-  content: '';
-  display: block;
-  height: 3px;
-  margin-top: 12px;
-  width: 56px;
-}
-
-h2 {
-  font-size: 25px;
-  color: var(--y1);
-}
-
-h3 {
-  font-size: 20px;
-  font-weight: 400;
-  color: var(--b1);
-}
+/* Tokens, the reset and the heading scale live in base.css, which every page
+   loads first. */
 
 /* Hero. Layers back to front: brand colour, photograph (-3), mark lattice (-2), scrim
    (-1), copy. The scrim sits above the lattice so it holds the marks back behind the
@@ -114,9 +69,52 @@ h3 {
   background-image: var(--hero-pattern);
   background-repeat: repeat;
   background-size: 200px 200px;
-  opacity: 0;
+  /* The scrim runs 0.97 over the copy and 0.68 right, so the marks show
+     only where there is nothing to read. */
+  opacity: 0.3;
   pointer-events: none;
   transition: opacity 600ms ease;
+}
+
+/* Slow enough to read as depth: one tile in 80s. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__pattern {
+    animation: lattice-drift 80s linear infinite;
+  }
+}
+
+@keyframes lattice-drift {
+  to {
+    background-position: 200px 200px;
+  }
+}
+
+/* The hero states its lines in reading order; `backwards` holds each off. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__title,
+  .hero__lead,
+  .hero__actions {
+    animation: hero-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  .hero__title {
+    animation-delay: 60ms;
+  }
+
+  .hero__lead {
+    animation-delay: 190ms;
+  }
+
+  .hero__actions {
+    animation-delay: 310ms;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+  }
 }
 
 /* Hovering the copy, rather than the whole band, trades the photograph for the lattice.
@@ -1027,81 +1025,107 @@ main {
   }
 }
 
-/* --- announcement card ---------------------------------------------------- */
-
-/* The original shell - white, 2px teal, 20px radius. What changed is inside it:
-   a meta rail takes the left, so the prose gets a readable measure instead of
-   the whole 1240px column, and the card still spans the column like every
-   other band. */
-.post {
-  display: grid;
-  /* Sized to the content, not to the column: the longest Polish dateline,
-     "23 września 2026, 18:00", measures 188px, so the rail holds it on one line
-     and stops. Anything wider was empty space with a rule drawn beside it. */
-  grid-template-columns: clamp(220px, 19%, 240px) minmax(0, 1fr);
-  /* Row 2 must be flexible: with two auto rows, a rail taller than a one-line
-     post spreads its surplus across both and wedges a gap under the title. */
-  grid-template-rows: auto minmax(0, 1fr);
-  grid-template-areas:
-    "rail head"
-    "rail body";
-  column-gap: 40px;
-  row-gap: 16px;
-  padding: 24px 30px 28px;
-  border: 2px solid var(--b1);
-  border-radius: 20px;
-  color: var(--b1);
-}
-
-.post + .post {
-  margin-top: 30px;
-}
-
-/* Spans both rows, so the divider is as tall as the card whether the body runs
-   one line or eighty. That edge is what stops the space beside a short post
-   reading as a hole. */
-.post__rail {
-  grid-area: rail;
-  min-width: 0;
-  padding-right: 24px;
-  border-right: 3px solid var(--y1);
-}
-
-/* Self-disabling on a short post - sticky does nothing until the container is
-   taller than the sticky box. 85px clears the 68px header and its border. */
-.post__rail-inner {
-  position: sticky;
-  top: 85px;
+/* Archive only: on the home page three posts share a month. */
+.post-feed__month {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 16px;
-}
-
-.post__meta {
-  min-width: 0;
-}
-
-.post__meta-label {
-  margin-bottom: 4px;
-  color: var(--miko-muted);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  line-height: 1.3;
+  margin: 34px 0 18px;
+  color: var(--b1);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.post__meta-value {
-  color: var(--b1);
-  font-size: 16px;
-  line-height: 1.4;
+.post-feed__month::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--miko-border);
 }
 
-.post__authors {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  list-style: none;
+/* Clears the section rule under the page title. */
+.post-feed__month:first-of-type {
+  margin-top: 30px;
+}
+
+/* --- announcement card ---------------------------------------------------- */
+
+/* A date stamp holds the left column, where a metadata rail used to. */
+.post {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  /* Row 2 flexes, or a tall stamp wedges a gap under a short post's title. */
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "stamp head"
+    "stamp body"
+    "stamp foot";
+  column-gap: 30px;
+  row-gap: 14px;
+  padding: 26px 32px 20px;
+  border: 2px solid var(--b1);
+  border-radius: var(--miko-radius);
+  background: var(--w1);
+  color: var(--ink);
+}
+
+.post + .post {
+  margin-top: 26px;
+}
+
+/* 92px clears the header. Sticky is inert until the card is taller than it. */
+.post__stamp {
+  position: sticky;
+  top: 92px;
+  grid-area: stamp;
+  align-self: start;
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  overflow: hidden;
+  padding: 15px 6px 10px;
+  border: 2px solid var(--b1);
+  border-radius: 14px;
+}
+
+/* A cap, not a border-top, which would break the corner radius. */
+.post__stamp::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 6px;
+  background: var(--y1);
+}
+
+.post__stamp-day {
+  color: var(--b1);
+  font-size: 30px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.post__stamp-month {
+  color: var(--r1);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.post__stamp-year {
+  color: var(--miko-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.post--lead .post__stamp::before {
+  background: var(--r1);
 }
 
 .post__head {
@@ -1110,19 +1134,22 @@ main {
   min-width: 0;
 }
 
-/* Named: the global h2 is yellow, which is 1.83:1 on white. */
 .post__title {
   color: var(--b1);
   font-size: 25px;
+  font-weight: 700;
   line-height: 1.25;
   overflow-wrap: break-word;
 }
 
-/* The original subtitle, which was an h3. */
+.post--lead .post__title {
+  font-size: 29px;
+}
+
 .post__subtitle {
   margin-top: 8px;
   color: var(--b1);
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 400;
   line-height: 1.4;
 }
@@ -1134,9 +1161,9 @@ main {
   /* Active, not a backstop: Rubik runs about 9.2px a character at this size, so
      the full track would run past 100 characters. 41em holds the line to ~84. */
   max-width: 41em;
-  color: var(--b1);
+  color: var(--ink);
   font-size: 18px;
-  line-height: 1.55;
+  line-height: 1.6;
   overflow-wrap: break-word;
 }
 
@@ -1144,8 +1171,41 @@ main {
   margin-top: 16px;
 }
 
-/* Rendered markdown. Headings are rewritten to <p> by DisallowHeadersExtension,
-   so only the constructs below can appear. */
+/* The mark that closes a proof, at the end of the last line as on a sheet. */
+.post__content > p:last-child::after {
+  content: '\00A0\220E';
+  color: var(--y1);
+}
+
+.post__foot {
+  grid-area: foot;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 22px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--miko-border);
+  color: var(--miko-muted);
+  font-size: 15px;
+}
+
+.post__foot p {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.post__foot-icon {
+  color: var(--b1);
+  font-size: 18px !important;
+}
+
+.post__byline-sep {
+  padding: 0 6px;
+  color: var(--miko-border);
+}
+
 .post__content > * + * {
   margin-top: 10px;
 }
@@ -1198,17 +1258,12 @@ main {
 }
 
 .post__content a,
-.post__authors a {
+.post__byline a {
   color: var(--b1);
   text-decoration: underline;
   text-decoration-color: rgba(7, 74, 89, 0.35);
   text-underline-offset: 0.16em;
   transition: text-decoration-color 160ms ease;
-}
-
-.post__authors a {
-  font-size: 16px;
-  line-height: 1.4;
 }
 
 /* Long URLs in prose must break rather than push the grid. */
@@ -1219,7 +1274,7 @@ main {
 /* Replaces the white-on-teal inversion, which stamped a filled slab into the
    middle of a paragraph. */
 .post__content a:hover,
-.post__authors a:hover {
+.post__byline a:hover {
   text-decoration-color: currentColor;
 }
 
@@ -1261,56 +1316,49 @@ main {
 @media screen and (max-width: 1000px) {
   .post {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
     grid-template-areas:
-      "rail"
+      "stamp"
       "head"
-      "body";
+      "body"
+      "foot";
     column-gap: 0;
     row-gap: 14px;
-    padding: 20px 24px 24px;
+    padding: 20px 24px 18px;
   }
 
-  /* The rule rotates: column divider becomes the strip's edge. */
-  .post__rail {
-    padding-right: 0;
-    padding-bottom: 12px;
-    border-right: none;
-    border-bottom: 3px solid var(--y1);
-  }
-
-  /* Never sticky once stacked - a pinned strip would sit on the text. */
-  .post__rail-inner {
+  /* The stamp turns on its side: never sticky once stacked, or a pinned block
+     would sit on the text it belongs to. */
+  .post__stamp {
     position: static;
-    flex-direction: row;
-    flex-wrap: wrap;
+    grid-auto-flow: column;
+    justify-self: start;
+    justify-items: baseline;
     align-items: baseline;
-    gap: 10px 28px;
+    gap: 9px;
+    padding: 12px 14px 8px;
   }
 
-  .post__authors {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 2px 0;
+  .post__stamp-day {
+    font-size: 24px;
   }
 
-  .post__authors li + li::before {
-    content: "\00B7";
-    padding: 0 8px;
-    color: rgba(7, 74, 89, 0.45);
+  .post__stamp-year {
+    line-height: 1.5;
   }
 }
 
 @media screen and (max-width: 900px) {
   .post {
-    padding: 18px 20px 20px;
+    padding: 18px 20px 16px;
   }
 
   .post + .post {
     margin-top: 20px;
   }
 
-  .post__title {
+  .post__title,
+  .post--lead .post__title {
     font-size: 22px;
   }
 
@@ -1330,7 +1378,8 @@ main {
 }
 
 @media screen and (max-width: 560px) {
-  .post__rail-inner {
-    gap: 8px 20px;
+  .post__foot {
+    gap: 4px 16px;
+    font-size: 14px;
   }
 }
