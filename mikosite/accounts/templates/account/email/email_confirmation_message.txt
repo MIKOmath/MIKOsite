@@ -1,0 +1,10 @@
+{% extends "account/email/base_message.txt" %}
+{% load account %}
+
+{% block content %}{% autoescape off %}{% user_display user as user_display %}Otrzymujesz tę wiadomość, ponieważ użytkownik {{ user_display }} podał ten adres email w serwisie MIKO.
+
+Aby potwierdzić, że adres należy do Ciebie, otwórz poniższy link:
+
+{{ activate_url }}
+
+Jeśli to nie Ty — zignoruj tę wiadomość.{% endautoescape %}{% endblock content %}

@@ -65,6 +65,8 @@ class SignupFlowTests(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('marek@test.com', mail.outbox[0].to)
+        self.assertTrue(mail.outbox[0].subject.startswith('[MIKO] '))
+        self.assertIn('zespół MIKO', mail.outbox[0].body)
         address = EmailAddress.objects.get(email='marek@test.com')
         self.assertFalse(address.verified)
 

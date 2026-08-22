@@ -1,0 +1,11 @@
+{% extends "account/email/base_message.txt" %}
+
+{% block content %}{% autoescape off %}Otrzymujesz tę wiadomość, ponieważ na Twoim koncie wprowadzono następującą zmianę:
+
+{% block notification_message %}{% endblock notification_message %}
+
+Jeśli to nie Ty — jak najszybciej zabezpiecz swoje konto. Zmiana została wykonana z:
+
+- adres IP: {{ ip }}
+- przeglądarka: {{ user_agent }}
+- data: {{ timestamp }}{% endautoescape %}{% endblock %}
