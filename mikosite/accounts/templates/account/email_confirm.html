@@ -1,0 +1,36 @@
+{% extends "_auth_base.html" %}
+{% load account %}
+
+{% block title %}Potwierdź email – MIKO{% endblock %}
+
+{% block heading %}Potwierdź email{% endblock %}
+{% block lead %}Ostatni krok: potwierdź, że ten adres należy do Ciebie.{% endblock %}
+
+{% block form %}
+    {% if confirmation %}
+        {% user_display confirmation.email_address.user as user_display %}
+        {% if can_confirm %}
+            <p class="auth-hint">
+                Potwierdź, że <strong>{{ confirmation.email_address.email }}</strong>
+                to adres email konta <strong>{{ user_display }}</strong>.
+            </p>
+            <form class="auth-form" method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+                {% csrf_token %}
+                {{ redirect_field }}
+                <div class="auth-actions">
+                    <button class="homepage-cta-button homepage-cta-button--dark" type="submit">Potwierdzam</button>
+                </div>
+            </form>
+        {% else %}
+            {% include "_auth_message.html" with body="Nie można potwierdzić tego adresu, ponieważ został już potwierdzony przez inne konto." %}
+        {% endif %}
+    {% else %}
+        {% include "_auth_message.html" with body="Ten link potwierdzający wygasł lub jest nieprawidłowy." %}
+        <div class="auth-actions">
+            <a class="homepage-cta-button homepage-cta-button--dark" href="{% url 'account_email' %}">
+                Wyślij nowy link
+                <span class="material-symbols-rounded" aria-hidden="true">refresh</span>
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}

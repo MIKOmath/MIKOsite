@@ -1,0 +1,7 @@
+{% extends "_auth_base.html" %}
+{% comment %}Safety net: any allauth page without a dedicated override
+renders its content block inside the house card.{% endcomment %}
+
+{% block title %}{% block head_title %}Konto{% endblock %} – MIKO{% endblock %}
+
+{% block form %}{% block content %}{% endblock %}{% endblock %}

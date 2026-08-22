@@ -1,0 +1,11 @@
+{% load allauth %}
+<div class="auth-note" role="alert">
+    <p class="auth-note__head">
+        <span class="material-symbols-rounded auth-note__icon" aria-hidden="true">error</span>
+        Błąd
+    </p>
+    <p class="auth-note__body">
+        {% slot message %}
+        {% endslot %}
+    </p>
+</div>

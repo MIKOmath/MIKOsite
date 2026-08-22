@@ -161,20 +161,6 @@ class User(AbstractUser):
         ]
 
 
-class LinkedAccount(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, related_name='linked_accounts', on_delete=models.CASCADE)
-    external_id = models.CharField(max_length=128, blank=False, null=False)
-    platform = models.CharField(max_length=50, blank=False, null=False)
-    timestamp = models.DateTimeField(auto_now=True, blank=False, null=False)
-
-    class Meta:
-        unique_together = (('external_id', 'platform'), ('user', 'platform'))
-
-    def __str__(self):
-        return f"USER {self.user.username} IS {self.external_id} ON {self.platform}"
-
-
 class ActivityScore(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, related_name='activity_scores', on_delete=models.CASCADE)

@@ -10,7 +10,8 @@ from django.contrib import admin as django_admin
 from django.core.cache import cache
 from rest_framework import status
 
-from accounts.models import ActivityScore, LinkedAccount
+from accounts.models import ActivityScore
+from allauth.socialaccount.models import SocialAccount
 from hintBase.models import Problem, ProblemHint, Review
 from mainSite.models import Image, Partner, Post, RegistrationEvent
 from olympiads.models import Olympiad, OlympiadStage
@@ -184,7 +185,7 @@ class SecretExposureTests(ApiPlaneTestCase):
         )
         PreviousEditionMilestone.objects.create(edition=edition, date=date(2024, 10, 1), title="Start")
         ActivityScore.objects.create(user=cls.member, change=5, reason="obecność")
-        LinkedAccount.objects.create(user=cls.member, external_id='123', platform='discord')
+        SocialAccount.objects.create(user=cls.member, provider='discord', uid='123')
         GoogleFormsTemplate.objects.create(name="Formularz", file='google_forms_templates/f.txt')
         Reminder.objects.create(
             seminar=cls.seminar, type='start',

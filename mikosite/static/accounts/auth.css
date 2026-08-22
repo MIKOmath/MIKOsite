@@ -388,6 +388,138 @@
   width: 100%;
 }
 
+/* ------------------------------------------------------------ connections --- */
+
+/* One tile per linked account: brand mark, identity, its own disconnect
+   button. White on the soft card, the way inputs sit. */
+.auth-connections {
+  display: grid;
+  gap: 14px;
+}
+
+.auth-connection {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--miko-border);
+  border-radius: 10px;
+  background: var(--w1);
+}
+
+.auth-connection__icon svg {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+.auth-connection__provider {
+  color: var(--b1);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.auth-connection__identity {
+  color: var(--b1);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+/* On a phone the button takes its own full-width row under the identity. */
+@media screen and (max-width: 600px) {
+  .auth-connection {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .auth-connection form {
+    grid-column: 1 / -1;
+  }
+
+  .auth-connection form .homepage-cta-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* The disconnect confirmation. A dialog is centered by the UA; the skin is the
+   house card, the backdrop the band teal at half strength. */
+.auth-dialog {
+  /* The global margin reset also strips the UA's `margin: auto` that centers
+     a modal dialog; without this it pins to the top-left corner. */
+  margin: auto;
+  max-width: 420px;
+  padding: 24px 26px;
+  border: 1px solid var(--miko-border);
+  border-radius: var(--miko-radius);
+  background: var(--miko-soft);
+  color: var(--b1);
+}
+
+.auth-dialog::backdrop {
+  background: rgba(7, 74, 89, 0.45);
+}
+
+.auth-dialog .auth-hint {
+  margin-top: 12px;
+}
+
+.auth-dialog .auth-actions {
+  margin-top: 18px;
+}
+
+/* A choice row (fallback pages' radios and checkboxes): control and
+   label on one line, centered, instead of the stacked grid a text field uses. */
+.auth-field--choice {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-field--choice .auth-label {
+  margin-bottom: 0;
+}
+
+.auth-field--choice input[type="radio"],
+.auth-field--choice input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--b1);
+}
+
+/* The aside's stacked buttons read as tiles, and tiles share a width. The same
+   rule .auth-aside .home-band__more already follows; intrinsic widths made the
+   profile's account card ragged. */
+.auth-aside__card .homepage-cta-button {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Fallback pages render provider buttons through the element system. */
+.auth-actions--stack {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* On a phone the action row becomes a column of equal-width buttons; three
+   shrink-wrapped pills wrapping at different widths read as misalignment. */
+@media screen and (max-width: 600px) {
+  .auth-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .auth-actions .homepage-cta-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* The house hover for a filled teal control is a darkening to --b2
    (.calendar__filters-clear:hover); --dark on its own only lifts, which leaves a
    submit button with no colour feedback at all. */
@@ -434,6 +566,9 @@
   .auth-page--profile .auth-layout {
     display: flex;
     flex-direction: column;
+    /* The grid rule's align-items:start survives into flex mode, where it
+       governs the cross axis - the cards shrink-wrapped to ragged widths. */
+    align-items: stretch;
   }
 
   .auth-page--profile .auth-aside {

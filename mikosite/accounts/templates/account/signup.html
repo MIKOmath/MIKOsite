@@ -4,15 +4,17 @@
 {% block description %}Załóż konto w systemie MIKO – Matematycznego Internetowego Koła Olimpijskiego.{% endblock %}
 
 {% block head_extra %}
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    {% comment %}defer without async: implicit rendering scans the DOM when the
+    script runs, so it must run after the widget div is parsed - a cached async
+    script runs too early and renders nothing.{% endcomment %}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
 {% endblock %}
 
 {% block heading %}Rejestracja{% endblock %}
 {% block lead %}Utwórz konto, aby korzystać ze wszystkich funkcji systemu MIKO.{% endblock %}
 
 {% block form %}
-    {# Every message signup can produce is an error, so no markers are passed. #}
-    {% include "_auth_note.html" %}
+    {% include "_auth_form_note.html" %}
     {# One message slot per page: the client guard writes into the same place the server does. #}
     <div class="auth-note" id="signup-password-mismatch" role="alert" tabindex="-1" hidden>
         <p class="auth-note__head">
@@ -22,17 +24,18 @@
         <p class="auth-note__body">Hasła nie są takie same.</p>
     </div>
 
-    <form class="auth-form" id="signup-form" method="post" action="{% url 'signup' %}">
+    <form class="auth-form" id="signup-form" method="post" action="{% url 'account_signup' %}">
         {% csrf_token %}
+        {{ redirect_field }}
 
-        {% include "_auth_name_row.html" %}
+        {% include "_auth_name_row.html" with first_value=form.first_name.value last_value=form.last_name.value %}
 
         <div class="auth-field">
             <label class="auth-label" for="username">
                 Nazwa użytkownika<span class="auth-required" aria-hidden="true">*</span>
             </label>
-            
             <input class="auth-input" type="text" id="username" name="username"
+                   value="{{ form.username.value|default_if_none:'' }}"
                    placeholder="np. marek123" autocomplete="username"
                    autocapitalize="none" spellcheck="false"
                    minlength="4" maxlength="32" required>
@@ -43,31 +46,32 @@
                 Email<span class="auth-required" aria-hidden="true">*</span>
             </label>
             <input class="auth-input" type="email" id="email" name="email"
+                   value="{{ form.email.value|default_if_none:'' }}"
                    placeholder="np. marek@mikomath.org" autocomplete="email"
                    autocapitalize="none" spellcheck="false" required>
         </div>
 
         <div class="auth-row">
             <div class="auth-field">
-                <label class="auth-label" for="password">
+                <label class="auth-label" for="password1">
                     Hasło<span class="auth-required" aria-hidden="true">*</span>
                 </label>
-                <input class="auth-input" type="password" id="password" name="password"
+                <input class="auth-input" type="password" id="password1" name="password1"
                        placeholder="••••••••••" autocomplete="new-password"
                       {% if pwd_help_texts %} aria-describedby="password-rules"{% endif %} required>
             </div>
 
             <div class="auth-field">
-                <label class="auth-label" for="confirmPassword">
+                <label class="auth-label" for="password2">
                     Powtórz hasło<span class="auth-required" aria-hidden="true">*</span>
                 </label>
-                <input class="auth-input" type="password" id="confirmPassword" name="confirmPassword"
+                <input class="auth-input" type="password" id="password2" name="password2"
                        placeholder="••••••••••" autocomplete="new-password"
                       {% if pwd_help_texts %} aria-describedby="password-rules"{% endif %} required>
             </div>
         </div>
 
-        {% include "_auth_region_row.html" with show_region_placeholder=True dob_required=True %}
+        {% include "_auth_region_row.html" with region_choices=form.region.field.choices show_region_placeholder=True selected_region=form.region.value dob_value=form.date_of_birth.value|default_if_none:'' dob_required=True %}
 
         {# data-theme is pinned: the widget's auto mode would paint a dark box inside a light card. #}
         <div class="auth-turnstile cf-turnstile"
@@ -91,23 +95,25 @@
     <section class="auth-aside__card">
         <h2 class="auth-aside__title">Masz już konto?</h2>
         <span class="auth-rule" aria-hidden="true"></span>
-        <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'signin' %}">
+        <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'account_login' %}">
             Zaloguj się
             <span class="material-symbols-rounded" aria-hidden="true">login</span>
         </a>
     </section>
+
+    {% include "_auth_socials.html" with process="login" socials_title="Albo załóż przez" %}
 {% endblock %}
 
 {% block body_end %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var form = document.getElementById('signup-form');
-        var password = document.getElementById('password');
-        var confirmPassword = document.getElementById('confirmPassword');
+        var password = document.getElementById('password1');
+        var confirmPassword = document.getElementById('password2');
         var note = document.getElementById('signup-password-mismatch');
-        ['password', 'confirmPassword'].forEach(function (id) {
+        ['password1', 'password2'].forEach(function (id) {
           document.getElementById(id).addEventListener('input', function () {
-            document.getElementById('confirmPassword').removeAttribute('aria-invalid');
+            document.getElementById('password2').removeAttribute('aria-invalid');
             document.getElementById('signup-password-mismatch').hidden = true;
           });
         });

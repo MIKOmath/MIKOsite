@@ -16,7 +16,9 @@ from mikosite.permissions import (
     is_admin,
 )
 
-from .models import ActivityScore, LinkedAccount, User
+from allauth.socialaccount.models import SocialAccount
+
+from .models import ActivityScore, User
 from .serializers import (
     ActivityScoreSerializer,
     AdminUserSerializer,
@@ -41,9 +43,9 @@ class UserViewSet(viewsets.ModelViewSet):
             .annotate(annotated_activity_score=Sum('activity_scores__change'))
         )
         if self._reading_own_record():
-            return queryset.prefetch_related('linked_accounts', 'activity_scores')
+            return queryset.prefetch_related('socialaccount_set', 'activity_scores')
         if is_admin(self.request):
-            return queryset.prefetch_related('linked_accounts', 'groups', 'user_permissions')
+            return queryset.prefetch_related('socialaccount_set', 'groups', 'user_permissions')
         return queryset
 
     def _reading_own_record(self) -> bool:
@@ -76,14 +78,19 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class LinkedAccountFilter(filters.FilterSet):
+    external_id = filters.CharFilter(field_name='uid')
+    platform = filters.CharFilter(field_name='provider')
+
     class Meta:
-        model = LinkedAccount
-        fields = ['user', 'external_id', 'platform']
+        model = SocialAccount
+        fields = ['user']
         unknown_field_behavior = UnknownFieldBehavior.IGNORE
 
 
 class LinkedAccountViewSet(viewsets.ModelViewSet):
-    queryset = LinkedAccount.objects.select_related('user')
+    """Platform links, served straight from allauth's SocialAccount."""
+
+    queryset = SocialAccount.objects.select_related('user')
     serializer_class = LinkedAccountSerializer
     permission_classes = (IsAdmin,)
     filter_backends = (filters.DjangoFilterBackend,)

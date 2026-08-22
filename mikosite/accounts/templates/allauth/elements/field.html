@@ -1,0 +1,49 @@
+{% load allauth %}
+{% comment %}Default field logic with the house skin, for fallback pages.{% endcomment %}
+{{ attrs.errors }}
+<div class="auth-field{% if attrs.type == "checkbox" or attrs.type == "radio" %} auth-field--choice{% endif %}">
+    {% if attrs.type == "textarea" %}
+        <label class="auth-label" for="{{ attrs.id }}">
+            {% slot label %}
+            {% endslot %}
+        </label>
+        <textarea class="auth-input"
+                  {% if attrs.required %}required{% endif %}
+                  {% if attrs.rows %}rows="{{ attrs.rows }}"{% endif %}
+                  {% if attrs.disabled %}disabled{% endif %}
+                  {% if attrs.readonly %}readonly{% endif %}
+                  {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
+                  {% if attrs.id %}id="{{ attrs.id }}"{% endif %}
+                  {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}>{% slot value %}{% endslot %}</textarea>
+    {% else %}
+        {% if attrs.type != "checkbox" and attrs.type != "radio" %}
+            <label class="auth-label" for="{{ attrs.id }}">
+                {% slot label %}
+                {% endslot %}
+            </label>
+        {% endif %}
+        <input {% if attrs.type != "checkbox" and attrs.type != "radio" %}class="auth-input"{% endif %}
+               {% if attrs.required %}required{% endif %}
+               {% if attrs.disabled %}disabled{% endif %}
+               {% if attrs.readonly %}readonly{% endif %}
+               {% if attrs.checked %}checked{% endif %}
+               {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
+               {% if attrs.id %}id="{{ attrs.id }}"{% endif %}
+               {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}
+               {% if attrs.autocomplete %}autocomplete="{{ attrs.autocomplete }}"{% endif %}
+               {% if attrs.value is not None %}value="{{ attrs.value }}"{% endif %}
+               type="{{ attrs.type }}">
+        {% if attrs.type == "checkbox" or attrs.type == "radio" %}
+            <label class="auth-label" for="{{ attrs.id }}">
+                {% slot label %}
+                {% endslot %}
+            </label>
+        {% endif %}
+    {% endif %}
+    {% if slots.help_text %}
+        <p class="auth-hint">
+            {% slot help_text %}
+            {% endslot %}
+        </p>
+    {% endif %}
+</div>

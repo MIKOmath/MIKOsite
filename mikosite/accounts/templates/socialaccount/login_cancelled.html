@@ -1,0 +1,17 @@
+{% extends "_auth_base.html" %}
+
+{% block title %}Logowanie przerwane – MIKO{% endblock %}
+
+{% block heading %}Logowanie przerwane{% endblock %}
+{% block lead %}Logowanie przez zewnętrzne konto zostało anulowane.{% endblock %}
+
+{% block form %}
+    {% include "_auth_message.html" with body="Nic się nie stało — możesz spróbować ponownie albo zalogować się hasłem." tone="info" %}
+
+    <div class="auth-actions">
+        <a class="homepage-cta-button homepage-cta-button--dark" href="{% url 'account_login' %}">
+            Wróć do logowania
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+        </a>
+    </div>
+{% endblock %}

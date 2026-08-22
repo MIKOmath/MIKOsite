@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
-from .models import ActivityScore, LinkedAccount, User
+from allauth.socialaccount.models import SocialAccount
+
+from .models import ActivityScore, User
 
 
 class PublicUserSerializer(serializers.ModelSerializer):
@@ -15,8 +17,14 @@ class PublicUserSerializer(serializers.ModelSerializer):
 
 
 class OwnLinkedAccountSerializer(serializers.ModelSerializer):
+    """A SocialAccount under the field names the API has always used."""
+
+    external_id = serializers.CharField(source='uid', read_only=True)
+    platform = serializers.CharField(source='provider', read_only=True)
+    timestamp = serializers.DateTimeField(source='last_login', read_only=True)
+
     class Meta:
-        model = LinkedAccount
+        model = SocialAccount
         fields = ['id', 'external_id', 'platform', 'timestamp']
         read_only_fields = fields
 
@@ -24,8 +32,12 @@ class OwnLinkedAccountSerializer(serializers.ModelSerializer):
 class LinkedAccountSerializer(serializers.ModelSerializer):
     """Administrator plane: the platform identity behind an account."""
 
+    external_id = serializers.CharField(source='uid')
+    platform = serializers.CharField(source='provider')
+    timestamp = serializers.DateTimeField(source='last_login', read_only=True)
+
     class Meta:
-        model = LinkedAccount
+        model = SocialAccount
         fields = ['id', 'user', 'external_id', 'platform', 'timestamp']
 
 
@@ -61,7 +73,7 @@ class ActivityScoreFieldsMixin(serializers.Serializer):
 class PrivateUserSerializer(ActivityScoreFieldsMixin, PublicUserSerializer):
     """A member's own record, and everything the API will say about them."""
 
-    linked_accounts = OwnLinkedAccountSerializer(many=True, read_only=True)
+    linked_accounts = OwnLinkedAccountSerializer(source='socialaccount_set', many=True, read_only=True)
     activity_scores = OwnActivityScoreSerializer(many=True, read_only=True)
 
     class Meta(PublicUserSerializer.Meta):
@@ -83,7 +95,7 @@ class AdminUserSerializer(ActivityScoreFieldsMixin, serializers.ModelSerializer)
     """Administrator plane, and the only writable user shape."""
 
     full_name = serializers.CharField(read_only=True)
-    linked_accounts = OwnLinkedAccountSerializer(many=True, read_only=True)
+    linked_accounts = OwnLinkedAccountSerializer(source='socialaccount_set', many=True, read_only=True)
 
     class Meta:
         model = User

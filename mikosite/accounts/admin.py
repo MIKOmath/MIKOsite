@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .models import User, LinkedAccount
+from .models import User
 
 
 @admin.register(User)
@@ -26,4 +26,22 @@ class UserAdmin(DjangoUserAdmin):
     )
 
 
-admin.site.register(LinkedAccount)
+# Provider credentials live in settings and tokens are not stored, so only the
+# account linkage itself belongs in the admin. The import forces allauth's
+# registrations so they can be replaced regardless of app ordering.
+from allauth.socialaccount import admin as _socialaccount_admin  # noqa: E402,F401
+from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken  # noqa: E402
+from django.contrib.admin.exceptions import NotRegistered  # noqa: E402
+
+for _model in (SocialAccount, SocialApp, SocialToken):
+    try:
+        admin.site.unregister(_model)
+    except NotRegistered:
+        pass
+
+
+@admin.register(SocialAccount)
+class SocialAccountAdmin(admin.ModelAdmin):
+    list_display = ("user", "provider", "uid", "last_login")
+    list_filter = ("provider",)
+    search_fields = ("user__username", "uid")

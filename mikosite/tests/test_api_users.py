@@ -1,7 +1,8 @@
 """Who may see what about a member."""
 from rest_framework import status
 
-from accounts.models import ActivityScore, LinkedAccount, User
+from accounts.models import ActivityScore, User
+from allauth.socialaccount.models import SocialAccount
 
 from .api_base import PASSWORD, ApiPlaneTestCase
 
@@ -117,7 +118,7 @@ class OwnRecordTests(ApiPlaneTestCase):
         ActivityScore.objects.create(user=cls.member, change=5, reason="obecność")
         ActivityScore.objects.create(user=cls.member, change=3, reason="zadanie")
         ActivityScore.objects.create(user=cls.admin, change=99, reason="nie moje")
-        LinkedAccount.objects.create(user=cls.member, external_id='123', platform='discord')
+        SocialAccount.objects.create(user=cls.member, provider='discord', uid='123')
 
     def test_a_member_may_reach_their_own_record_without_knowing_their_id(self):
         self.as_member()

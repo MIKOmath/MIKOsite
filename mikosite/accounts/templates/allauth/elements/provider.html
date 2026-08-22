@@ -1,0 +1,6 @@
+{% comment %}One social button: the brand name with its mark.{% endcomment %}
+<a class="homepage-cta-button homepage-cta-button--outline auth-provider"
+   href="{{ attrs.href }}" aria-label="Kontynuuj przez {{ attrs.name }}">
+    {{ attrs.name }}
+    {% include "_auth_provider_icon.html" with provider_id=attrs.provider_id %}
+</a>

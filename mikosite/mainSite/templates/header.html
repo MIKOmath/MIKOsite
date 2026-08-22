@@ -50,8 +50,8 @@ heading silently fell back to a synthesised bold of Rubik Regular.
                     <a class="site-nav__auth" href="/profile/"
                        {% if request.path == '/profile/' %}aria-current="page"{% endif %}>Profil</a>
                 {% else %}
-                    <a class="site-nav__auth" href="/signin/"
-                       {% if request.path == '/signin/' %}aria-current="page"{% endif %}>Zaloguj się</a>
+                    <a class="site-nav__auth" href="{% url 'account_login' %}"
+                       {% if request.path == '/accounts/login/' %}aria-current="page"{% endif %}>Zaloguj się</a>
                 {% endif %}
             </div>
         </div>

@@ -1,0 +1,20 @@
+{% extends "_auth_base.html" %}
+
+{% block title %}{% if process == "connect" %}Połącz konto{% else %}Logowanie{% endif %} – MIKO{% endblock %}
+
+{% block heading %}{% if process == "connect" %}Połącz konto {{ provider.name }}{% else %}Kontynuuj przez {{ provider.name }}{% endif %}{% endblock %}
+{% block lead %}{% if process == "connect" %}Za chwilę połączysz konto {{ provider.name }} ze swoim kontem MIKO.{% else %}Za chwilę zalogujesz się przez konto {{ provider.name }}.{% endif %}{% endblock %}
+
+{% block form %}
+    <form class="auth-form" method="post">
+        {% csrf_token %}
+        <div class="auth-actions">
+            <a class="homepage-cta-button homepage-cta-button--outline"
+               href="{% if process == 'connect' %}{% url 'socialaccount_connections' %}{% else %}{% url 'account_login' %}{% endif %}">
+                Anuluj
+                <span class="material-symbols-rounded" aria-hidden="true">close</span>
+            </a>
+            <button class="homepage-cta-button homepage-cta-button--dark" type="submit">Kontynuuj</button>
+        </div>
+    </form>
+{% endblock %}
