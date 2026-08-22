@@ -125,3 +125,20 @@ Autoryzacja przebiega wtedy poprzez podanie headera:
 ```
 Authorization: Token <token>
 ```
+
+### Poziomy dostępu
+API rozróżnia dwa poziomy dostępu:
+
+* **publiczny** - każdy, zalogowany lub anonimowy, użytkownik może czytać kalendarz, 
+  spotkania, grupy, ogłoszenia, partnerów, wydarzenia z zapisami, olimpiady, etapy olimpiad, 
+  poprzednie edycje oraz profil pojedynczego użytkownika. Zalogowany użytkownik widzi dodatkowo
+  swój pełny profil (`/api/users/me/`) i swoje punkty za aktywnośc.
+* **administratora** - zapis w całym API oraz odczyt danych wewnętrznych: szablonów
+  formularzy, przypomnień, kont powiązanych, listy użytkowników wraz z uprawnieniami
+  (`is_staff`, `is_superuser`, `groups`, `user_permissions`, `last_login`). Administrator
+  to **superużytkownik** (`is_superuser`). Samo `is_staff` daje dostęp wyłącznie do
+  panelu admina i nie ma wpływu na poziom dostępu do API.
+
+Wpisy oznaczone jako niepublikowane (partnerzy, wydarzenia z zapisami, etapy olimpiad,
+poprzednie edycje, nieaktywne olimpiady) są widoczne wyłącznie dla administratora - także
+w kalendarzu.

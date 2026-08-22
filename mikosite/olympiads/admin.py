@@ -21,8 +21,10 @@ class OlympiadAdmin(admin.ModelAdmin):
 
 @admin.register(OlympiadStage)
 class OlympiadStageAdmin(admin.ModelAdmin):
-    list_display = ('olympiad', 'name', 'date_begin', 'date_end', 'location')
+    list_display = ('olympiad', 'name', 'date_begin', 'date_end', 'location', 'is_published')
+    list_editable = ('is_published',)
     list_filter = (
+        'is_published',
         ('olympiad', MultiSelectRelatedOnlyFilter),
         ('date_begin', DateRangeFilterBuilder(title='data rozpoczęcia')),
     )

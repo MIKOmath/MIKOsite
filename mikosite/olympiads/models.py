@@ -47,14 +47,6 @@ class Olympiad(models.Model):
     def stage_count(self):
         return self.stages.count()
 
-    def calendar_dict(self) -> dict:
-        return {
-            'id': self.pk,
-            'name': self.name,
-            'short_name': self.short_name,
-            'logo': self.logo.url if self.logo else None,
-            'website_url': self.website_url,
-        }
 
 
 class OlympiadStage(models.Model):
@@ -74,6 +66,10 @@ class OlympiadStage(models.Model):
     location = models.CharField(max_length=128, blank=True)
     url = models.URLField(max_length=500, blank=True)
     note = models.CharField(max_length=256, blank=True)
+    is_published = models.BooleanField(
+        default=True,
+        help_text="Odznacz, aby ukryć ten etap w kalendarzu i w API.",
+    )
 
     class Meta:
         ordering = ['date_begin', 'olympiad__order', 'olympiad__name']
@@ -120,17 +116,3 @@ class OlympiadStage(models.Model):
     def date_range_label(self, locale=settings.BABEL_LOCALE) -> str:
         return format_day_range(self.date_begin, self.date_end, locale=locale)
 
-    def calendar_dict(self, locale=settings.BABEL_LOCALE) -> dict:
-        return {
-            'id': self.pk,
-            'kind': 'olympiad',
-            'stage_label': self.name,
-            'title': f"{self.olympiad.short_name} – {self.name}",
-            'date_begin': self.date_begin.isoformat(),
-            'date_end': self.date_end.isoformat(),
-            'date_range': self.date_range_label(locale=locale),
-            'location': self.location,
-            'url': self.url or self.olympiad.website_url,
-            'note': self.note,
-            'olympiad': self.olympiad.calendar_dict(),
-        }

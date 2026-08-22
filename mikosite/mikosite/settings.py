@@ -89,7 +89,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',    # For API access with tokens
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'mikosite.permissions.IsAdminUserOrReadOnly',
+        'mikosite.permissions.IsAdmin',
     ],
     'DEFAULT_THROTTLE_CLASSES': [
         'mikosite.throttling.SessionUserThrottle'

@@ -403,7 +403,7 @@ function clearRequestedSeminarId() {
 
 async function openRequestedSeminar(seminarId) {
     try {
-        const response = await fetch(`${SEMINAR_ENDPOINT}${seminarId}/?display_only=1`);
+        const response = await fetch(`${SEMINAR_ENDPOINT}${seminarId}/`);
         if (!response.ok) {
             throw new Error(`Failed to load seminar ${seminarId}`);
         }

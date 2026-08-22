@@ -3,6 +3,9 @@
 The calendar asks for one visible grid range at a time, so a single request has to
 carry everything drawn on that range: seminars, multi-day in-person events that
 registration is held for, and multi-day olympiad stages.
+
+Each of those is serialized by the same class that serves its own endpoint, so
+`/api/calendar/` and `/api/seminars/` describe a seminar identically.
 """
 import time
 
@@ -12,10 +15,13 @@ from django.dispatch import receiver
 from django.utils import timezone
 
 from mainSite.models import RegistrationEvent
+from mainSite.serializers import RegistrationEventSerializer
 from mikosite.dates import seconds_until_next_midnight
 from olympiads.models import Olympiad, OlympiadStage
+from olympiads.serializers import OlympiadStageSerializer
 
 from .models import Seminar, SeminarGroup
+from .serializers import SeminarSerializer
 
 CALENDAR_VERSION_CACHE_KEY = 'calendar-payload-version'
 CALENDAR_PAYLOAD_MAX_TTL = 900  # 15 minutes
@@ -46,8 +52,13 @@ def bump_calendar_version():
         cache.set(CALENDAR_VERSION_CACHE_KEY, int(time.time()), None)
 
 
-def build_calendar_payload(start_date, end_date) -> dict:
-    """Everything drawn on the calendar between the two dates, both inclusive."""
+def build_calendar_payload(start_date, end_date, *, include_unpublished=False) -> dict:
+    """Everything drawn on the calendar between the two dates, both inclusive.
+
+    Media URLs come out relative, because no request is passed into the
+    serializer context: the public payload is cached and shared between callers,
+    and a Host header must never be able to decide what other people read.
+    """
     today = timezone.localdate()
 
     seminars = (
@@ -66,20 +77,28 @@ def build_calendar_payload(start_date, end_date) -> dict:
 
     olympiad_stages = (
         OlympiadStage.objects
-        .filter(date_begin__lte=end_date, date_end__gte=start_date, olympiad__is_active=True)
+        .filter(date_begin__lte=end_date, date_end__gte=start_date)
         .select_related('olympiad')
     )
+
+    if not include_unpublished:
+        registration_events = registration_events.filter(is_published=True)
+        olympiad_stages = olympiad_stages.filter(is_published=True, olympiad__is_active=True)
 
     return {
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
-        'seminars': [seminar.calendar_dict() for seminar in seminars],
-        'registration_events': [event.calendar_dict(today=today) for event in registration_events],
-        'olympiad_stages': [stage.calendar_dict() for stage in olympiad_stages],
+        'seminars': SeminarSerializer(seminars, many=True).data,
+        'registration_events': RegistrationEventSerializer(
+            registration_events, many=True, context={'today': today},
+        ).data,
+        'olympiad_stages': OlympiadStageSerializer(olympiad_stages, many=True).data,
     }
 
 
 def get_calendar_payload(start_date, end_date) -> dict:
+    """The public payload, cached. Administrators are served uncached by the
+    view, so a hidden row can never reach the shared cache."""
     cache_key = calendar_cache_key(start_date, end_date)
     payload = cache.get(cache_key)
     if payload is None:

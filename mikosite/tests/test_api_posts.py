@@ -1,183 +1,150 @@
-from datetime import date, time, datetime
+"""Announcements and the images they embed."""
+from datetime import date, time
 
-from rest_framework.test import APITestCase
 from rest_framework import status
 
-from accounts.models import User
-from mainSite.models import Post, Image
+from mainSite.models import Image, Post
+
+from .api_base import ApiPlaneTestCase
+
+PUBLIC_POST_FIELDS = {
+    'id', 'title', 'subtitle', 'date', 'time', 'content', 'authors', 'file', 'images',
+}
+PUBLIC_AUTHOR_FIELDS = {'id', 'username', 'full_name', 'profile_image'}
 
 
-class PostViewSetTests(APITestCase):
-    def setUp(self):
-        self.admin_user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@test.com')
-        self.regular_user = User.objects.create_user(username='user', password='userpass', email='user@test.com')
-
-        self.image = Image.objects.create(image='/path/to/image.jpg')
-
-        self.post1 = Post.objects.create(
-            title="Post 1",
-            date = date(2024, 1, 1),
-            time = time(18, 0),
-            content="Post content.",
+class PostReadTests(ApiPlaneTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.image = Image.objects.create(image='post_images/i.webp')
+        cls.post = Post.objects.create(
+            title="Ogłoszenie", subtitle="Podtytuł", date=date(2026, 3, 1),
+            time=time(12, 0), content="Treść",
         )
-        self.post2 = Post.objects.create(
-            title="Post 2",
-            date = date(2024, 2, 1),
-            time = time(17, 0),
-        )
-        self.post3 = Post.objects.create(
-            title="Post 3",
-            date = date(2024, 3, 1),
-            time = time(16, 0),
-        )
-        self.post1.authors.set([self.admin_user])
-        self.post2.authors.set([self.regular_user])
-        self.post3.authors.set([self.admin_user])
-        self.post1.images.set([self.image])
+        cls.post.authors.set([cls.member])
+        cls.post.images.set([cls.image])
 
-    # Viewing Posts
-    def test_list_posts(self):
-        self.client.login(username='admin', password='adminpass')
+    def test_anyone_may_read_announcements(self):
         response = self.client.get('/api/posts/')
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 3)
+        self.assertEqual(set(response.data['results'][0]), PUBLIC_POST_FIELDS)
 
-    def test_filter_posts_by_date_range(self):
-        self.client.login(username='admin', password='adminpass')
-        params = {'start_date': '2024-01-15', 'end_date': '2024-02-20'}
-        response = self.client.get('/api/posts/', query_params=params)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]['title'], self.post2.title)
+    def test_authors_come_back_as_public_profiles(self):
+        response = self.client.get(f'/api/posts/{self.post.pk}/')
 
-        params = {'start_date': '2024-02-01'}
-        response = self.client.get('/api/posts/', query_params=params)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(set(response.data['authors'][0]), PUBLIC_AUTHOR_FIELDS)
+        self.assertEqual(response.data['authors'][0]['full_name'], self.member.full_name)
 
-    def test_display_only_param(self):
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.get('/api/posts/', {'display_only': '1'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_an_author_profile_carries_nothing_private(self):
+        response = self.client.get(f'/api/posts/{self.post.pk}/')
 
-        posts = response.data['results']
-        for post in posts:
-            self.assertTrue('title' in post)
-            self.assertTrue('authors' in post)
+        self.assertNotIn(self.member.email, str(response.content))
 
-            if post['id'] == self.post1.id:
-                self.assertTrue(isinstance(post['authors'][0], str))
-                self.assertNotEqual(post['authors'][0], self.admin_user.id)
-                self.assertEqual(post['authors'][0], self.admin_user.full_name)
+    def test_embedded_images_come_back_resolved(self):
+        response = self.client.get(f'/api/posts/{self.post.pk}/')
 
-    def test_retrieve_post(self):
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.get(f'/api/posts/{self.post1.id}/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['title'], self.post1.title)
+        self.assertEqual(response.data['images'][0]['id'], self.image.pk)
+        self.assertIn('i.webp', response.data['images'][0]['image'])
 
-    # Creating Posts
-    def test_create_post(self):
-        self.client.login(username='admin', password='adminpass')
-        data = {
-            "title": "Test Post",
-            "date": "2024-04-01",
-            "time": "18:00:00",
-            "authors": [self.admin_user.id],
+    def test_the_old_display_only_switch_is_gone_and_harmless(self):
+        plain = self.client.get(f'/api/posts/{self.post.pk}/').data
+        legacy = self.client.get(f'/api/posts/{self.post.pk}/', {'display_only': '1'}).data
+
+        self.assertEqual(plain, legacy)
+
+    def test_the_administrator_shape_is_writable_and_uses_ids(self):
+        self.as_admin()
+
+        response = self.client.get(f'/api/posts/{self.post.pk}/')
+
+        self.assertEqual(response.data['authors'], [self.member.pk])
+        self.assertEqual(response.data['images'], [self.image.pk])
+
+    def test_announcements_come_back_newest_first(self):
+        Post.objects.create(title="Nowsze", date=date(2026, 4, 1), time=time(12, 0))
+
+        titles = [item['title'] for item in self.client.get('/api/posts/').data['results']]
+
+        self.assertEqual(titles, ["Nowsze", "Ogłoszenie"])
+
+    def test_authors_and_images_are_joined_rather_than_fetched_per_row(self):
+        for index in range(10):
+            post = Post.objects.create(title=f"Post {index}", date=date(2026, 3, 2), time=time(12, 0))
+            post.authors.set([self.member])
+            post.images.set([self.image])
+
+        with self.assertNumQueries(4):  # count, page, prefetched authors, prefetched images
+            self.client.get('/api/posts/')
+
+
+class PostFilterTests(ApiPlaneTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        Post.objects.create(title="Marzec", date=date(2026, 3, 1), time=time(12, 0))
+        Post.objects.create(title="Kwiecień", date=date(2026, 4, 1), time=time(12, 0))
+
+    def titles(self, params):
+        return [item['title'] for item in self.client.get('/api/posts/', params).data['results']]
+
+    def test_the_date_window_filters_both_ends(self):
+        self.assertEqual(self.titles({'start_date': '2026-03-15'}), ["Kwiecień"])
+        self.assertEqual(self.titles({'end_date': '2026-03-15'}), ["Marzec"])
+
+    def test_an_unknown_query_parameter_is_ignored_rather_than_obeyed(self):
+        self.assertEqual(len(self.titles({'nonsense': 'x'})), 2)
+
+
+class PostWriteTests(ApiPlaneTestCase):
+    def payload(self):
+        return {
+            'title': "Nowy",
+            'date': '2026-05-01',
+            'time': '12:00',
+            'authors': [str(self.member.pk)],
         }
-        response = self.client.post('/api/posts/', data)
+
+    def test_writing_is_refused_off_the_administrator_plane(self):
+        for caller in (self.as_anonymous, self.as_member, self.as_staff):
+            with self.subTest(caller=caller.__name__):
+                caller()
+                self.assertEqual(
+                    self.client.post('/api/posts/', self.payload()).status_code,
+                    status.HTTP_403_FORBIDDEN,
+                )
+
+    def test_an_administrator_may_publish(self):
+        self.as_admin()
+
+        response = self.client.post('/api/posts/', self.payload())
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Post.objects.count(), 4)
-
-    # Modifying Posts
-    def test_modify_date_post(self):
-        self.client.login(username='admin', password='adminpass')
-        data = {"date": "2024-04-01"}
-        response = self.client.patch(f'/api/posts/{self.post1.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.post1.refresh_from_db()
-        self.assertEqual(self.post1.date, datetime.strptime(data['date'], "%Y-%m-%d").date())
-
-    def test_swap_image_post(self):
-        self.client.login(username='admin', password='adminpass')
-        new_image = Image.objects.create(image='/path/to/other/image.jpg')
-        data = {"images": [new_image.id]}
-        response = self.client.patch(f'/api/posts/{self.post1.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.post1.refresh_from_db()
-        self.assertEqual(self.post1.images.count(), 1)
-        self.assertEqual(self.post1.images.first().image, new_image.image)
-
-    # Deleting Posts
-    def test_delete_post(self):
-        self.client.login(username='admin', password='adminpass')
-        response = self.client.delete(f'/api/posts/{self.post3.id}/')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(Post.objects.count(), 2)
-
-    # Permission tests
-    def test_regular_user_can_list_posts(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.get('/api/posts/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_anonymous_can_list_posts(self):
-        response = self.client.get('/api/posts/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_regular_user_can_retrieve_post(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.get(f'/api/posts/{self.post1.id}/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_anonymous_can_retrieve_post(self):
-        response = self.client.get(f'/api/posts/{self.post1.id}/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_regular_user_cannot_create_post(self):
-        self.client.login(username='user', password='userpass')
-        data = {
-            "title": "Forbidden Post",
-            "date": "2024-04-01",
-            "time": "18:00:00",
-            "authors": [self.regular_user.id],
-        }
-        response = self.client.post('/api/posts/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(Post.objects.count(), 3)
-
-    def test_anonymous_cannot_create_post(self):
-        data = {
-            "title": "Forbidden Post",
-            "date": "2024-04-01",
-            "time": "18:00:00",
-            "authors": [self.regular_user.id],
-        }
-        response = self.client.post('/api/posts/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(Post.objects.count(), 3)
-
-    def test_regular_user_cannot_modify_post(self):
-        self.client.login(username='user', password='userpass')
-        data = {"date": "2024-04-01"}
-        response = self.client.patch(f'/api/posts/{self.post1.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_anonymous_cannot_modify_post(self):
-        data = {"date": "2024-04-01"}
-        response = self.client.patch(f'/api/posts/{self.post1.id}/', data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_regular_user_cannot_delete_post(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.delete(f'/api/posts/{self.post3.id}/')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_anonymous_cannot_delete_post(self):
-        self.client.login(username='user', password='userpass')
-        response = self.client.delete(f'/api/posts/{self.post3.id}/')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertTrue(Post.objects.filter(title="Nowy").exists())
 
 
-class PostImageViewSetTests(APITestCase):
-    pass
+class PostImageTests(ApiPlaneTestCase):
+    """Images have no endpoint; they travel with the announcements."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.image = Image.objects.create(image='post_images/i.webp')
+        cls.post = Post.objects.create(
+            title="Ogloszenie", date=date(2026, 3, 1), time=time(12, 0),
+        )
+        cls.post.images.set([cls.image])
+
+    def test_the_image_library_is_not_routed_at_all(self):
+        for caller in (self.as_anonymous, self.as_member, self.as_staff, self.as_admin):
+            with self.subTest(caller=caller.__name__):
+                caller()
+                self.assertEqual(
+                    self.client.get('/api/post-images/').status_code, status.HTTP_404_NOT_FOUND,
+                )
+
+    def test_an_image_still_reaches_the_public_through_its_post(self):
+        response = self.client.get(f'/api/posts/{self.post.pk}/')
+
+        self.assertEqual(response.data['images'][0]['id'], self.image.pk)

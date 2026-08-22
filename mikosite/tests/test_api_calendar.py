@@ -289,3 +289,130 @@ class CalendarViewTests(APITestCase):
         response = self.client.post(CALENDAR_URL, MARCH)
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_the_format_suffix_route_serves_the_calendar(self):
+        response = self.client.get('/api/calendar.json', MARCH)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual([item['theme'] for item in response.data['seminars']], ["W zakresie"])
+
+
+class CalendarPlaneTests(APITestCase):
+    """The calendar is a view onto the API, so it obeys the same two planes."""
+
+    def setUp(self):
+        cache.clear()
+        self.admin = User.objects.create_superuser(
+            username='admin', email='admin@test.com', password='Testpass1!',
+        )
+        self.member = User.objects.create_user(
+            username='member', email='member@test.com', password='Testpass1!',
+        )
+        self.olympiad = Olympiad.objects.get(name="Olimpiada Matematyczna")
+        self.hidden_event = make_registration_event(
+            "Zjazd ukryty", date(2026, 3, 5), date(2026, 3, 7),
+            date(2026, 2, 1), date(2026, 3, 1), is_published=False,
+        )
+        self.hidden_stage = OlympiadStage.objects.create(
+            olympiad=self.olympiad, name="Etap ukryty",
+            date_begin=date(2026, 3, 10), date_end=date(2026, 3, 11), is_published=False,
+        )
+
+    def payload_for(self, user=None):
+        self.client.force_authenticate(user)
+        return self.client.get(CALENDAR_URL, MARCH).data
+
+    def test_an_unpublished_event_is_hidden_from_the_public(self):
+        for user in (None, self.member):
+            with self.subTest(user=user):
+                self.assertEqual(self.payload_for(user)['registration_events'], [])
+
+    def test_an_unpublished_stage_is_hidden_from_the_public(self):
+        for user in (None, self.member):
+            with self.subTest(user=user):
+                self.assertEqual(self.payload_for(user)['olympiad_stages'], [])
+
+    def test_an_administrator_sees_what_is_switched_off(self):
+        payload = self.payload_for(self.admin)
+
+        self.assertEqual([item['title'] for item in payload['registration_events']],
+                         ["Zjazd ukryty"])
+        self.assertEqual([item['stage_label'] for item in payload['olympiad_stages']],
+                         ["Etap ukryty"])
+
+    def test_an_administrator_read_does_not_poison_the_shared_cache(self):
+        self.payload_for(self.admin)
+
+        self.assertEqual(self.payload_for(None)['registration_events'], [])
+
+    def test_a_public_read_does_not_hide_rows_from_the_administrator(self):
+        self.payload_for(None)
+
+        self.assertEqual(len(self.payload_for(self.admin)['registration_events']), 1)
+
+    def test_publishing_an_event_invalidates_the_cache(self):
+        self.assertEqual(self.payload_for(None)['registration_events'], [])
+
+        self.hidden_event.is_published = True
+        self.hidden_event.save()
+
+        self.assertEqual(len(self.payload_for(None)['registration_events']), 1)
+
+    def test_publishing_a_stage_invalidates_the_cache(self):
+        self.assertEqual(self.payload_for(None)['olympiad_stages'], [])
+
+        self.hidden_stage.is_published = True
+        self.hidden_stage.save()
+
+        self.assertEqual(len(self.payload_for(None)['olympiad_stages']), 1)
+
+    def test_the_calendar_carries_the_discord_routing_like_the_resource_does(self):
+        group = SeminarGroup.objects.create(name="OM", discord_role_id='111', discord_channel_id='222')
+        seminar = make_seminar(date(2026, 3, 12), time(18, 0), "Nierówności",
+                               group=group, discord_channel_id='333')
+
+        embedded = next(
+            item for item in self.client.get(CALENDAR_URL, MARCH).data['seminars']
+            if item['id'] == seminar.pk
+        )
+
+        self.assertEqual(embedded['discord_channel_id'], '333')
+        self.assertEqual(embedded['group_role_id'], '111')
+
+
+class CalendarMatchesTheResourceEndpointsTests(APITestCase):
+    """The merge is only real if both routes describe a thing identically."""
+
+    def setUp(self):
+        cache.clear()
+        self.group = SeminarGroup.objects.create(name="OM średnia", short_label="OM śr.")
+        self.seminar = make_seminar(date(2026, 3, 10), time(18, 0), "Nierówności", group=self.group)
+        self.event = make_registration_event(
+            "Zjazd MIKO", date(2026, 3, 5), date(2026, 3, 7), date(2026, 2, 1), date(2026, 3, 1),
+        )
+        self.stage = OlympiadStage.objects.create(
+            olympiad=Olympiad.objects.get(name="Olimpiada Matematyczna"), name="II etap",
+            date_begin=date(2026, 3, 10), date_end=date(2026, 3, 11),
+        )
+
+    def test_a_seminar_reads_the_same_either_way(self):
+        embedded = self.client.get(CALENDAR_URL, MARCH).data['seminars'][0]
+        standalone = self.client.get(f'/api/seminars/{self.seminar.pk}/').data
+
+        self.assertEqual(set(embedded), set(standalone))
+        self.assertEqual(embedded['time_label'], standalone['time_label'])
+        self.assertEqual(embedded['group'], standalone['group'])
+
+    def test_a_registration_event_reads_the_same_either_way(self):
+        embedded = self.client.get(CALENDAR_URL, MARCH).data['registration_events'][0]
+        standalone = self.client.get(f'/api/registration-events/{self.event.pk}/').data
+
+        self.assertEqual(set(embedded), set(standalone))
+        self.assertEqual(embedded['date_range'], standalone['date_range'])
+
+    def test_an_olympiad_stage_reads_the_same_either_way(self):
+        embedded = self.client.get(CALENDAR_URL, MARCH).data['olympiad_stages'][0]
+        standalone = self.client.get(f'/api/olympiad-stages/{self.stage.pk}/').data
+
+        self.assertEqual(set(embedded), set(standalone))
+        self.assertEqual(embedded['title'], standalone['title'])

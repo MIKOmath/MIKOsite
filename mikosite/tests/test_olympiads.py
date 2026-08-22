@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from olympiads.models import Olympiad, OlympiadStage
+from olympiads.serializers import OlympiadStageSerializer
 
 
 class DefaultOlympiadTests(TestCase):
@@ -30,7 +31,7 @@ class OlympiadStageTests(TestCase):
             date_begin=date(2026, 3, 10), date_end=date(2026, 3, 11),
         )
 
-        self.assertEqual(stage.calendar_dict()['title'], "OM – Zawody drużynowe")
+        self.assertEqual(OlympiadStageSerializer(stage).data['title'], "OM – Zawody drużynowe")
 
     def test_stage_defaults_to_the_second_round(self):
         stage = OlympiadStage.objects.create(
@@ -77,7 +78,7 @@ class OlympiadStageTests(TestCase):
         stage = OlympiadStage.objects.create(olympiad=self.olympiad, name="Finał",
                                              date_begin=date(2026, 3, 10), date_end=date(2026, 3, 14))
 
-        self.assertEqual(stage.calendar_dict()['url'], "https://example.invalid/om/")
+        self.assertEqual(OlympiadStageSerializer(stage).data['url'], "https://example.invalid/om/")
 
     def test_stage_link_wins_over_the_olympiad_website(self):
         self.olympiad.website_url = "https://example.invalid/om/"
@@ -87,7 +88,7 @@ class OlympiadStageTests(TestCase):
             date_begin=date(2026, 3, 10), date_end=date(2026, 3, 14),
         )
 
-        self.assertEqual(stage.calendar_dict()['url'], "https://example.invalid/final/")
+        self.assertEqual(OlympiadStageSerializer(stage).data['url'], "https://example.invalid/final/")
 
     def test_stages_are_counted_for_the_admin_listing(self):
         OlympiadStage.objects.create(olympiad=self.olympiad, name="II etap",

@@ -91,6 +91,10 @@ class RegistrationEvent(models.Model):
     registration_begin = models.DateField()
     registration_end = models.DateField()
     registration_url = models.URLField(max_length=500)
+    is_published = models.BooleanField(
+        default=True,
+        help_text="Odznacz, aby ukryć wydarzenie w kalendarzu i w API.",
+    )
     image = models.ImageField(
         upload_to='events/',
         blank=True,
@@ -133,18 +137,3 @@ class RegistrationEvent(models.Model):
             "image_url": self.image.url if self.image else static(DEFAULT_EVENT_IMAGE),
         }
 
-    def calendar_dict(self, today=None, locale=settings.BABEL_LOCALE) -> dict:
-        return {
-            "id": self.pk,
-            "kind": "registration_event",
-            "title": self.name,
-            "location": self.location,
-            "date_begin": self.date_begin.isoformat(),
-            "date_end": self.date_end.isoformat(),
-            "date_range": self.format_date_range(locale=locale),
-            "registration_url": self.registration_url,
-            "registration_open": self.registration_is_open(today=today),
-            "registration_range": format_day_range(
-                self.registration_begin, self.registration_end, locale=locale
-            ),
-        }
