@@ -5,11 +5,15 @@ from rest_framework import viewsets
 from mikosite.api import AdminPlaneMixin
 from mikosite.permissions import IsAdminOrReadOnly
 
-from .models import Partner, Post, RegistrationEvent
+from .models import Badge, Bio, Partner, Post, RegistrationEvent
 from .serializers import (
+    AdminBadgeSerializer,
+    AdminBioSerializer,
     AdminPartnerSerializer,
     AdminPostSerializer,
     AdminRegistrationEventSerializer,
+    BadgeSerializer,
+    BioSerializer,
     PartnerSerializer,
     PostSerializer,
     RegistrationEventSerializer,
@@ -70,3 +74,25 @@ class RegistrationEventViewSet(AdminPlaneMixin, viewsets.ModelViewSet):
     published_field = 'is_published'
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = RegistrationEventFilter
+
+
+class BadgeViewSet(AdminPlaneMixin, viewsets.ModelViewSet):
+    """Badges the about-page cards share.
+
+    No published switch: a badge is visible wherever a visible card wears it.
+    """
+
+    queryset = Badge.objects.all()
+    serializer_class = BadgeSerializer
+    admin_serializer_class = AdminBadgeSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+
+
+class BioViewSet(AdminPlaneMixin, viewsets.ModelViewSet):
+    """Team cards on the about page."""
+
+    queryset = Bio.objects.select_related('user').prefetch_related('badges')
+    serializer_class = BioSerializer
+    admin_serializer_class = AdminBioSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    published_field = 'is_published'

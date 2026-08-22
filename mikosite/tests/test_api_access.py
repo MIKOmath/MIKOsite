@@ -33,6 +33,8 @@ PUBLICLY_READABLE = [
     '/api/seminar-groups/',
     '/api/posts/',
     '/api/partners/',
+    '/api/bios/',
+    '/api/badges/',
     '/api/registration-events/',
     '/api/olympiads/',
     '/api/olympiad-stages/',
@@ -54,7 +56,7 @@ ALL_WRITABLE = PUBLICLY_READABLE + ADMIN_ONLY + MEMBER_READABLE
 
 EXPECTED_API_ROOT = {
     'calendar', 'seminar-groups', 'seminars', 'previous-editions', 'olympiads',
-    'olympiad-stages', 'registration-events', 'partners', 'posts', 'users',
+    'olympiad-stages', 'registration-events', 'partners', 'bios', 'badges', 'posts', 'users',
     'linked-accounts', 'user-activity', 'activity-scores',
     'google-form-template', 'reminders',
 }

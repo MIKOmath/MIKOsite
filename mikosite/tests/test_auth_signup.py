@@ -48,6 +48,9 @@ class SignupFlowTests(TestCase):
     def setUp(self):
         # Allauth cooldowns live in the cache, which outlives a test.
         cache.clear()
+        # Not zero: the about-page cards arrive with placeholder accounts of
+        # their own. What these tests watch is whether signup adds to the roll.
+        self.accounts_before = User.objects.count()
 
     @TURNSTILE_OK
     def test_signup_creates_the_account_with_its_extras(self, _):
@@ -122,7 +125,7 @@ class SignupFlowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "za długa")
-        self.assertEqual(User.objects.count(), 0)
+        self.assertEqual(User.objects.count(), self.accounts_before)
 
     @TURNSTILE_OK
     def test_an_underage_birth_date_is_refused(self, _):
@@ -135,7 +138,7 @@ class SignupFlowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Musisz mieć przynajmniej")
-        self.assertEqual(User.objects.count(), 0)
+        self.assertEqual(User.objects.count(), self.accounts_before)
 
     @TURNSTILE_OK
     def test_the_password_house_rules_still_hold(self, _):
@@ -144,4 +147,4 @@ class SignupFlowTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(User.objects.count(), 0)
+        self.assertEqual(User.objects.count(), self.accounts_before)

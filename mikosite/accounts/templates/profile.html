@@ -15,7 +15,7 @@
     <form class="auth-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
-        {% include "_auth_name_row.html" with first_value=user.first_name last_value=user.last_name %}
+        {% include "_auth_name_row.html" with first_value=user.first_name last_value=user.last_name locked=name_is_locked %}
 
         {% include "_auth_region_row.html" with selected_region=user.region dob_value=user.date_of_birth|date:"Y-m-d" dob_required=False %}
 

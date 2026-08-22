@@ -5,7 +5,7 @@ from accounts.serializers import PublicUserSerializer
 from mikosite.api import ModelCleanMixin
 from mikosite.dates import format_day_range
 
-from .models import DEFAULT_EVENT_IMAGE, Image, Partner, Post, RegistrationEvent
+from .models import DEFAULT_EVENT_IMAGE, Badge, Bio, Image, Partner, Post, RegistrationEvent
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -108,3 +108,46 @@ class AdminRegistrationEventSerializer(ModelCleanMixin, serializers.ModelSeriali
             'image',
             'is_published',
         ]
+
+
+class BadgeSerializer(serializers.ModelSerializer):
+    """Public shape: badges arrive in their order, so the lever itself is not
+    the reader's business."""
+
+    class Meta:
+        model = Badge
+        fields = ['id', 'text', 'color', 'icon']
+        read_only_fields = fields
+
+
+class AdminBadgeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Badge
+        fields = ['id', 'text', 'color', 'icon', 'order']
+        # Left blank, the model fills in the colour's own icon.
+        extra_kwargs = {'icon': {'required': False}}
+
+
+class BioSerializer(serializers.ModelSerializer):
+    """Public shape: a team card as the about page draws it."""
+
+    name = serializers.CharField(read_only=True)
+    user = PublicUserSerializer(read_only=True)
+    badges = BadgeSerializer(many=True, read_only=True)
+    image_url = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Bio
+        fields = ['id', 'name', 'user', 'description', 'image_url', 'badges']
+        read_only_fields = fields
+
+
+class AdminBioSerializer(ModelCleanMixin, serializers.ModelSerializer):
+    """Administrator plane; relations are ids here so the shape is writable."""
+
+    class Meta:
+        model = Bio
+        fields = ['id', 'user', 'description', 'image', 'badges', 'order', 'is_published']
+        # An HTML form omits an unticked checkbox, which would otherwise leave a
+        # card unpublished over multipart and published over JSON.
+        extra_kwargs = {'is_published': {'default': True}}

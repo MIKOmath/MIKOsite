@@ -40,7 +40,9 @@ class UserListTests(ApiPlaneTestCase):
 
         response = self.client.get('/api/users/')
 
-        self.assertEqual(response.data['count'], 3)
+        # Every account, the placeholders behind the about-page cards included:
+        # the roll is the one list that hides nobody from an administrator.
+        self.assertEqual(response.data['count'], User.objects.count())
         self.assertEqual(set(response.data['results'][0]), ADMIN_FIELDS)
 
 

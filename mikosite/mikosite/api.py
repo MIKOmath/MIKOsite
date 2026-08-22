@@ -15,13 +15,17 @@ class ModelCleanMixin:
 
     DRF never calls `Model.clean()`, so rules like "an edition may not overlap
     another edition" or "a stage ends after it begins" held in the admin panel
-    and silently did not hold over the API. Only for models without m2m fields.
+    and silently did not hold over the API.
     """
 
     def validate(self, attrs):
         instance = copy.deepcopy(self.instance) if self.instance is not None else self.Meta.model()
+        # A m2m field refuses direct assignment, and has no row to hang off
+        # before the instance is saved, so `clean()` cannot see it either way.
+        related = {field.name for field in self.Meta.model._meta.many_to_many}
         for field, value in attrs.items():
-            setattr(instance, field, value)
+            if field not in related:
+                setattr(instance, field, value)
         instance.clean()
         return attrs
 

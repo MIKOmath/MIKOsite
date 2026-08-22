@@ -12,6 +12,9 @@ from django.utils.http import url_has_allowed_host_and_scheme
 
 User = get_user_model()
 
+# Named rather than imported: mainSite.models already imports this app.
+EDIT_BIO_PERMISSION = 'mainSite.change_bio'
+
 
 def admin_login(request):
     """Stands in front of the admin panel's own login form.
@@ -36,16 +39,24 @@ def admin_login(request):
 
 @login_required
 def profile(request):
+    # The about page reads a name off the account behind the card, so for
+    # anybody on show, respelling it is editing the card.
+    card = getattr(request.user, 'bio', None)
+    name_is_editable = (
+        card is None
+        or not card.is_published
+        or request.user.has_perm(EDIT_BIO_PERMISSION)
+    )
     ctx = {
         "region_choices": User._meta.get_field('region').choices,
+        "name_is_locked": not name_is_editable,
     }
 
     if request.method == "POST":
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
         region = request.POST.get("region")
         dob_str = request.POST.get("date_of_birth")
         uploaded = request.FILES.get("profile_image")
+        saved_fields = ['region', 'date_of_birth', 'profile_image']
 
         if dob_str:
             try:
@@ -59,8 +70,11 @@ def profile(request):
         if uploaded:
             request.user.profile_image = uploaded
 
-        request.user.first_name = first_name
-        request.user.last_name = last_name
+        if name_is_editable:
+            request.user.first_name = request.POST.get("first_name")
+            request.user.last_name = request.POST.get("last_name")
+            saved_fields += ['first_name', 'last_name']
+
         request.user.region = region
 
         try:
@@ -69,9 +83,7 @@ def profile(request):
             ctx["custom_message"] = "\n".join(msg for msgs in e.message_dict.values() for msg in msgs)
             return render(request, "profile.html", ctx)
 
-        request.user.save(
-            update_fields=['first_name', 'last_name', 'region', 'date_of_birth', 'profile_image']
-        )
+        request.user.save(update_fields=saved_fields)
         ctx["custom_message"] = "Profil został zaktualizowany."
 
     return render(request, "profile.html", ctx)
