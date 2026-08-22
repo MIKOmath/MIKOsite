@@ -37,14 +37,14 @@ class AdminPostSerializer(serializers.ModelSerializer):
 class PartnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Partner
-        fields = ['id', 'name', 'logo', 'url']
+        fields = ['id', 'name', 'logo', 'url', 'badge', 'is_featured']
         read_only_fields = fields
 
 
 class AdminPartnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Partner
-        fields = ['id', 'name', 'logo', 'url', 'order', 'is_published']
+        fields = ['id', 'name', 'logo', 'url', 'badge', 'is_featured', 'order', 'is_published']
 
 
 class RegistrationEventSerializer(serializers.ModelSerializer):

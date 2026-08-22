@@ -10,7 +10,7 @@ from mainSite.models import Partner, RegistrationEvent
 
 from .api_base import ApiPlaneTestCase, tiny_image
 
-PUBLIC_PARTNER_FIELDS = {'id', 'name', 'logo', 'url'}
+PUBLIC_PARTNER_FIELDS = {'id', 'name', 'logo', 'url', 'badge', 'is_featured'}
 ADMIN_PARTNER_FIELDS = PUBLIC_PARTNER_FIELDS | {'order', 'is_published'}
 
 PUBLIC_EVENT_FIELDS = {

@@ -650,8 +650,36 @@ main {
   margin-top: 36px;
 }
 
-/* Fixed cell keeps logos of different aspect ratios on one baseline. */
+/* The border is always there and only changes colour, so marking a partner
+   does not shift the grid. */
 .partner-strip__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px;
+  border: 2px solid transparent;
+  border-radius: var(--miko-radius);
+}
+
+.partner-strip__item--featured {
+  border-color: var(--y1);
+}
+
+/* Both classes, because badges.css loads after this sheet and its .badge sets
+   display:flex, which would stretch the badge across the tile. Capped so a long
+   one wraps rather than pushing out of the column. */
+.badge.partner-strip__badge {
+  display: inline-flex;
+  max-width: 100%;
+  text-align: center;
+}
+
+/* Fixed cell keeps logos of different aspect ratios on one baseline, and gives
+   the link wrapper below a height its percentage can resolve against. */
+.partner-strip__logo {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -659,7 +687,17 @@ main {
   height: 72px;
 }
 
-.partner-strip__item img {
+/* An unlinked logo caps against the cell; a linked one would otherwise cap
+   against an auto-height wrapper, which leaves it uncapped. */
+.partner-strip__logo a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.partner-strip__logo img {
   display: block;
   max-width: 100%;
   max-height: 100%;

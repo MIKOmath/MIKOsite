@@ -315,10 +315,15 @@
    {% if partners %}
     <ul class="partner-strip">
      {% for partner in partners %}
-      <li class="partner-strip__item">
-       {% if partner.url %}<a href="{{ partner.url }}" target="_blank" rel="noopener">{% endif %}
-       <img src="{{ partner.logo_url }}" alt="{{ partner.name }}">
-       {% if partner.url %}</a>{% endif %}
+      <li class="partner-strip__item{% if partner.shows_frame %} partner-strip__item--featured{% endif %}">
+       {% if partner.badge %}
+        <span class="badge {{ partner.badge_class }} partner-strip__badge">{{ partner.badge }}</span>
+       {% endif %}
+       <div class="partner-strip__logo">
+        {% if partner.url %}<a href="{{ partner.url }}" target="_blank" rel="noopener">{% endif %}
+        <img src="{{ partner.logo_url }}" alt="{{ partner.name }}">
+        {% if partner.url %}</a>{% endif %}
+       </div>
       </li>
      {% endfor %}
     </ul>
