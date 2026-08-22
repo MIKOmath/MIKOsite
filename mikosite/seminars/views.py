@@ -10,6 +10,7 @@ from .models import (
     Seminar,
     SeminarGroup,
 )
+from .timetable_image import featured_week_downloads
 
 
 SEMINAR_GROUPS_CACHE_KEY = 'seminar-groups-display-data-v2'
@@ -44,7 +45,10 @@ def clear_seminar_groups_cache(sender, **kwargs):
 
 
 def informacje(request):
-    return render(request, "informacje.html", {"groups": get_seminar_group_data()})
+    return render(request, "informacje.html", {
+        "groups": get_seminar_group_data(),
+        "week_downloads": featured_week_downloads(),
+    })
 
 
 def previous_editions(request):

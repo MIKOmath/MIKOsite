@@ -1,0 +1,10 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+    {% if perms.seminars.add_seminar or perms.seminars.change_seminar %}
+        <li>
+            <a href="{% url 'admin:seminars_seminar_timetable_image' %}">Plan tygodnia jako obrazek</a>
+        </li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

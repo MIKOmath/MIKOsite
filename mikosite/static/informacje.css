@@ -878,3 +878,108 @@ hr
     padding-left: 10px;
   }
 }
+
+/* Plan na wynos: the week's sheet as a download, beside the calendar it draws. */
+.plan-download {
+  align-items: center;
+  background: var(--miko-soft);
+  border: 1px solid var(--miko-border);
+  border-radius: var(--miko-radius);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  margin: 0 0 60px;
+  padding: 20px 24px;
+}
+
+.plan-download__intro {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.plan-download__title {
+  color: var(--b1);
+  font-size: 22px;
+}
+
+.plan-download__lead {
+  color: var(--miko-muted);
+  font-size: 15px;
+  margin-top: 6px;
+  max-width: 44ch;
+}
+
+/* Two buttons sharing whatever the intro leaves, so the row has no dead gap. */
+.plan-download__weeks {
+  display: flex;
+  flex: 2 1 420px;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plan-download__weeks li {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.plan-download__week {
+  align-items: center;
+  background: var(--w1);
+  border: 2px solid var(--b1);
+  border-radius: 999px;
+  color: var(--b1);
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  min-height: 46px;
+  padding: 6px 18px;
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.plan-download__week:hover,
+.plan-download__week:focus-visible {
+  background: var(--b1);
+  color: var(--w1);
+}
+
+/* Early in the week that is this week; from Thursday it is the next one. */
+.plan-download__week.is-suggested {
+  background: var(--b1);
+  color: var(--w1);
+}
+
+.plan-download__week.is-suggested:hover,
+.plan-download__week.is-suggested:focus-visible {
+  background: var(--b2);
+  border-color: var(--b2);
+}
+
+.plan-download__week .material-symbols-rounded {
+  font-size: 22px;
+}
+
+.plan-download__week-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.plan-download__week-label {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.plan-download__week-note {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+@media (max-width: 700px) {
+  .plan-download__weeks li {
+    flex-basis: 100%;
+  }
+}
