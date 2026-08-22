@@ -51,6 +51,9 @@ class Post(models.Model):
         return f"POST {self.title} PUBLISHED {self.date} {self.time}"
 
     def display_dict(self, locale=settings.BABEL_LOCALE) -> dict:
+        def on_date(pattern):
+            return format_date(self.date, format=pattern, locale=locale) if self.date else ''
+
         return {
             'title': self.title,
             'subtitle': self.subtitle,
@@ -58,8 +61,12 @@ class Post(models.Model):
             'file': {'url': self.file.url, 'name': os.path.basename(self.file.name)} if self.file else {},
             'images': [{'url': image, 'alt_text': 'obraz do posta'} for image in self.images.all()],
             'content': mark_safe(md.convert(self.content)),
-            'date': format_date(self.date, format='d MMMM y', locale=locale) if self.date else '',
+            'date': on_date('d MMMM y'),
             'time': format_time(self.time, format='HH:mm', locale=locale) if self.time else '',
+            'day': on_date('d'),
+            'month_short': on_date('LLL'),
+            'month_year': on_date('LLLL y'),
+            'year': on_date('y'),
         }
 
 
@@ -238,7 +245,7 @@ class Bio(ConvertedImageMixin, models.Model):
         on_delete=models.CASCADE,
         related_name='bio',
         verbose_name="użytkownik",
-        help_text="Imię i nazwisko na wizytówce pochodzą z tego konta.",
+        help_text="Imię i nazwisko na wizytówce pochodzą z tego konta."
     )
     description = models.TextField(max_length=1000, verbose_name="opis")
     image = models.ImageField(

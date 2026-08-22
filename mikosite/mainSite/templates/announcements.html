@@ -15,6 +15,7 @@
          sets display, font-size and line-height on every icon. -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     {% compress css %}
+    <link rel="stylesheet" href="{% static 'base.css' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link rel="stylesheet" href="{% static 'badges.css' %}">
     {% endcompress %}
@@ -35,7 +36,11 @@
         <h1>Aktualności</h1>
 
         {% for post in page %}
-            {% include "_post.html" %}
+            {% comment %}The archive runs long, so each new month announces itself.{% endcomment %}
+            {% ifchanged post.month_year %}
+                <p class="post-feed__month">{{ post.month_year }}</p>
+            {% endifchanged %}
+            {% include "_post.html" with lead=forloop.first %}
         {% empty %}
             <p class="home-band__empty">Brak aktualności.</p>
         {% endfor %}

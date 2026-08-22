@@ -1,0 +1,91 @@
+/* Tokens, reset and heading scale. Every page loads this first, so a page
+   sheet can override but never has to restate. */
+
+:root {
+  /* Brand */
+  --b0: #0A6975; /* lighter teal, darkened from the logo's #0D7F8C to clear 4.5:1 on white */
+  --b1: #074A59;
+  --b2: #06313E;
+  --r1: #F24535;
+  --y1: #F2B544;
+  --w1: #ffffff;
+
+  /* Long copy, where the brand teal reads washed. */
+  --ink: #0A2B34;
+
+  /* One content column for the whole site. */
+  --site-width: 1320px;
+  --site-gutter: clamp(16px, 4vw, 40px);
+
+  /* Tiles */
+  --miko-soft: #f4f8f9;
+  --miko-border: rgba(7, 74, 89, 0.24);
+  --miko-muted: #697982;
+  --miko-radius: 20px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Rubik", sans-serif;
+  font-optical-sizing: auto;
+}
+
+h1 {
+  color: var(--b1);
+  font-size: 30px;
+}
+
+/* Marks the page sections. Auth pages use h1 as a form title, not a section. */
+h1:not(.auth-title)::after {
+  background: var(--y1);
+  border-radius: 2px;
+  content: '';
+  display: block;
+  height: 3px;
+  margin-top: 12px;
+  width: 56px;
+}
+
+/* Teal, not amber: amber is 1.83:1 on white. */
+h2 {
+  color: var(--b1);
+  font-size: 25px;
+}
+
+h3 {
+  color: var(--b1);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+/* Tile grids rise into view. Scroll-linked, so it needs no JavaScript and no
+   fallback. `translate`, not `transform`, which the cards use to hover. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .principle,
+    .partner-strip__item,
+    .team-member,
+    .edition-card,
+    .home-band--event .reg-notice {
+      animation: card-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 6% entry 58%;
+    }
+  }
+}
+
+@keyframes card-rise {
+  from {
+    opacity: 0;
+    translate: 0 20px;
+  }
+  to {
+    opacity: 1;
+    translate: none;
+  }
+}
