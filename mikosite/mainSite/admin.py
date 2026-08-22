@@ -4,15 +4,34 @@ from django.utils.html import format_html
 from rangefilter.filters import DateRangeFilterBuilder
 from more_admin_filters import MultiSelectRelatedOnlyFilter
 
-from .models import Badge, Bio, RegistrationEvent, Image, Partner, Post
+from .models import (
+    BADGE_RED,
+    BADGE_TEAL,
+    BADGE_YELLOW,
+    Badge,
+    Bio,
+    Image,
+    Partner,
+    Post,
+    RegistrationEvent,
+)
 
-# The admin never loads the site stylesheets, so a badge swatch repeats the
-# brand colours as literals.
+# The admin never loads the site stylesheets, so a swatch repeats the brand
+# colours as literals, keyed by the class badges.css would have painted.
 BADGE_SWATCHES = {
-    Badge.Color.EXECUTIVE: ('#F24535', '#ffffff'),
-    Badge.Color.NORMAL: ('#074A59', '#ffffff'),
-    Badge.Color.AWARD: ('#F2B544', '#06313E'),
+    BADGE_RED: ('#F24535', '#ffffff'),
+    BADGE_TEAL: ('#074A59', '#ffffff'),
+    BADGE_YELLOW: ('#F2B544', '#06313E'),
 }
+
+
+def render_badge_swatch(text, css_class):
+    background, colour = BADGE_SWATCHES[css_class]
+    return format_html(
+        '<span style="display:inline-block;padding:4px 6px;border-radius:4px;'
+        'font-size:14px;font-weight:bold;background:{};color:{}">{}</span>',
+        background, colour, text,
+    )
 
 
 def render_image_preview(image, empty, width=320):
@@ -61,11 +80,17 @@ class ImageAdmin(admin.ModelAdmin):
 
 @admin.register(Partner)
 class PartnerAdmin(admin.ModelAdmin):
-    list_display = ("name", "order", "is_published", "url")
-    list_editable = ("order", "is_published")
-    search_fields = ("name",)
-    list_filter = ("is_published",)
+    list_display = ("name", "swatch", "badge", "is_featured", "order", "is_published", "url")
+    list_editable = ("badge", "is_featured", "order", "is_published")
+    search_fields = ("name", "badge")
+    list_filter = ("is_published", "is_featured")
     ordering = ("order", "name")
+
+    @admin.display(description="Podgląd")
+    def swatch(self, obj):
+        if not obj.badge:
+            return "-"
+        return render_badge_swatch(obj.badge, obj.badge_class)
 
 
 @admin.register(RegistrationEvent)
@@ -123,12 +148,7 @@ class BadgeAdmin(admin.ModelAdmin):
 
     @admin.display(description="Podgląd")
     def swatch(self, obj):
-        background, colour = BADGE_SWATCHES[obj.color]
-        return format_html(
-            '<span style="display:inline-block;padding:4px 6px;border-radius:4px;'
-            'font-size:14px;font-weight:bold;background:{};color:{}">{}</span>',
-            background, colour, obj.text,
-        )
+        return render_badge_swatch(obj.text, obj.css_class)
 
     @admin.display(description="Wizytówki", ordering="bios__count")
     def bio_count(self, obj):

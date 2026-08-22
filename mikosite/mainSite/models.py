@@ -21,6 +21,11 @@ md = Markdown(extensions=[DisallowHeadersExtension()])
 # Used when an event has no image of its own.
 DEFAULT_EVENT_IMAGE = 'MIKO_GATHERING.webp'
 
+# The classes badges.css paints.
+BADGE_TEAL = 'badge-light'
+BADGE_RED = 'badge-featured'
+BADGE_YELLOW = 'badge-yellow'
+
 # Twice the 300x200 the about page draws a card's photo at.
 BIO_IMAGE_SIZE = getattr(settings, 'BIO_IMAGE_SIZE', (600, 400))
 
@@ -69,6 +74,17 @@ class Partner(models.Model):
     name = models.CharField(max_length=200, help_text="Nazwa widoczna dla czytników ekranu.")
     logo = models.ImageField(upload_to='partners/')
     url = models.URLField(max_length=500, blank=True, help_text="Opcjonalny link do strony partnera.")
+    badge = models.CharField(
+        max_length=40,
+        blank=True,
+        verbose_name="plakietka",
+        help_text="Poziom współpracy, pokazany nad logo. Puste pole = bez plakietki.",
+    )
+    is_featured = models.BooleanField(
+        default=False,
+        verbose_name="wyróżniony",
+        help_text="Żółta plakietka zamiast turkusowej i żółta ramka wokół logo.",
+    )
     order = models.PositiveIntegerField(default=0, help_text="Mniejsza wartość - wcześniej na liście.")
     is_published = models.BooleanField(default=True)
 
@@ -80,11 +96,23 @@ class Partner(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def badge_class(self) -> str:
+        return BADGE_YELLOW if self.is_featured else BADGE_TEAL
+
+    @property
+    def shows_frame(self) -> bool:
+        """A frame with no badge in it would say nothing."""
+        return self.is_featured and bool(self.badge)
+
     def display_dict(self) -> dict:
         return {
             'name': self.name,
             'logo_url': self.logo.url if self.logo else '',
             'url': self.url,
+            'badge': self.badge,
+            'badge_class': self.badge_class,
+            'shows_frame': self.shows_frame,
         }
 
 
@@ -143,7 +171,6 @@ class RegistrationEvent(models.Model):
         }
 
 
-# What each badge colour starts with, and the class badges.css paints it with.
 BadgeStyle = namedtuple('BadgeStyle', 'icon css_class')
 
 
@@ -156,9 +183,9 @@ class Badge(models.Model):
         AWARD = 'award', "osiągnięcie"
 
     STYLES = {
-        Color.EXECUTIVE: BadgeStyle('badge', 'badge-featured'),
-        Color.NORMAL: BadgeStyle('co_present', 'badge-light'),
-        Color.AWARD: BadgeStyle('workspace_premium', 'badge-yellow'),
+        Color.EXECUTIVE: BadgeStyle('badge', BADGE_RED),
+        Color.NORMAL: BadgeStyle('co_present', BADGE_TEAL),
+        Color.AWARD: BadgeStyle('workspace_premium', BADGE_YELLOW),
     }
 
     text = models.CharField(max_length=60, unique=True, verbose_name="napis")
