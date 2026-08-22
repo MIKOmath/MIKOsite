@@ -1,0 +1,39 @@
+{% extends "_auth_base.html" %}
+
+{% block title %}Brak dostępu do panelu – MIKO{% endblock %}
+{% block description %}To konto nie ma uprawnień do panelu administracyjnego MIKO.{% endblock %}
+
+{% block heading %}Brak dostępu do panelu{% endblock %}
+{% block lead %}Panel administracyjny jest dostępny tylko dla zespołu MIKO.{% endblock %}
+
+{% block form %}
+    <p class="auth-hint">
+        Jesteś zalogowany jako <strong>{{ user.username }}</strong>. To konto nie ma dostępu
+        do panelu administracyjnego, więc nie ma tu nic do zobaczenia.
+    </p>
+    <p class="auth-hint">
+        Upewnij się, że logujesz się na właściwym koncie.
+    </p>
+
+    <div class="auth-actions">
+        <a class="homepage-cta-button homepage-cta-button--outline" href="{% url 'signout' %}">
+            Wyloguj się
+            <span class="material-symbols-rounded" aria-hidden="true">logout</span>
+        </a>
+        <a class="homepage-cta-button homepage-cta-button--dark" href="/">
+            Wróć na stronę główną
+        </a>
+    </div>
+{% endblock %}
+
+{% block aside %}
+    <section class="auth-aside__card">
+        <h2 class="auth-aside__title">Potrzebujesz uprawnień?</h2>
+        <span class="auth-rule" aria-hidden="true"></span>
+        <p class="auth-hint">
+            Jeśli potrzebujesz uprawnień do panelu administracyjnego, napisz na
+            <a href="mailto:kontakt@mikomath.org">kontakt@mikomath.org</a> i&nbsp;podaj nazwę
+            swojego konta.
+        </p>
+    </section>
+{% endblock %}
