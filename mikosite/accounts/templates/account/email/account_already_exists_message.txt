@@ -1,0 +1,11 @@
+{% extends "account/email/base_message.txt" %}
+
+{% block content %}{% autoescape off %}Otrzymujesz tę wiadomość, ponieważ Ty lub ktoś inny próbował założyć konto na adres:
+
+{{ email }}
+
+Konto z tym adresem już istnieje. Jeśli nie pamiętasz hasła, możesz je zresetować:
+
+{{ password_reset_url }}
+
+Jeśli to nie Ty — zignoruj tę wiadomość.{% endautoescape %}{% endblock content %}

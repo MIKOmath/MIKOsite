@@ -1,0 +1,9 @@
+{% extends "account/email/base_message.txt" %}
+
+{% block content %}{% autoescape off %}Otrzymujesz tę wiadomość, ponieważ Ty lub ktoś inny próbował skorzystać z konta o adresie {{ email }} — ale w naszej bazie nie ma konta z tym adresem.
+
+Jeśli to nie Ty — zignoruj tę wiadomość.
+
+Jeśli to Ty, możesz założyć konto tutaj:
+
+{{ signup_url }}{% endautoescape %}{% endblock content %}

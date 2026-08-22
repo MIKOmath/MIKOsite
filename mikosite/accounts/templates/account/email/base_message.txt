@@ -1,0 +1,7 @@
+{% autoescape off %}Cześć!
+
+{% block content %}{% endblock content %}
+
+Pozdrawiamy
+zespół MIKO
+mikomath.org{% endautoescape %}

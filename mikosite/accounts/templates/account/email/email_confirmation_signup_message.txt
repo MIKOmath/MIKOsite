@@ -1,0 +1,10 @@
+{% extends "account/email/base_message.txt" %}
+{% load account %}
+
+{% block content %}{% autoescape off %}Dziękujemy za założenie konta w MIKO — Matematycznym Internetowym Kole Olimpijskim!
+
+Aby dokończyć rejestrację, potwierdź swój adres email poniższym linkiem:
+
+{{ activate_url }}
+
+Jeśli to nie Ty zakładasz konto — zignoruj tę wiadomość.{% endautoescape %}{% endblock content %}

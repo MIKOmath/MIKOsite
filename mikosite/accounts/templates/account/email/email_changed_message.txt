@@ -1,0 +1,3 @@
+{% extends "account/email/base_notification.txt" %}
+
+{% block notification_message %}Adres email Twojego konta został zmieniony z {{ from_email }} na {{ to_email }}.{% endblock notification_message %}
