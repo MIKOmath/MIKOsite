@@ -143,6 +143,23 @@
   line-height: 1.45;
 }
 
+/* Prose links in a hint, marked by weight and a dashed rule rather than by
+   colour. --r1 is what .editions-info uses for the same job, but that sits in
+   an h3; on --miko-soft it is 3.46:1, too little for 17px body text, so it
+   only comes out on hover. */
+.auth-hint a {
+  color: var(--b1);
+  font-weight: 700;
+  text-decoration: underline dashed;
+  text-underline-offset: 2px;
+  transition: color 0.18s ease;
+}
+
+.auth-hint a:hover,
+.auth-hint a:focus-visible {
+  color: var(--r1);
+}
+
 /* ---------------------------------------------------------------- controls --- */
 
 /* 2px solid --b1 is what every outlined control on the site is drawn with

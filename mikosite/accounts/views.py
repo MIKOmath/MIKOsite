@@ -1,11 +1,37 @@
 import datetime
 
-from django.contrib.auth import get_user_model, logout
+from django.conf import settings
+from django.contrib import admin
+from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ValidationError
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, resolve_url
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 
 User = get_user_model()
+
+
+def admin_login(request):
+    """Stands in front of the admin panel's own login form.
+
+    The panel ships a login page of its own, which is neither styled like the
+    rest of the site nor able to offer Google and Discord. Anonymous visitors
+    go to the site's form instead, carrying where they were headed; someone
+    signed in without the rights gets a page that says so, rather than the
+    panel's form asking them to sign in again as somebody else.
+    """
+    destination = request.GET.get(REDIRECT_FIELD_NAME) or reverse('admin:index')
+    if not url_has_allowed_host_and_scheme(destination, allowed_hosts={request.get_host()},
+                                           require_https=request.is_secure()):
+        destination = reverse('admin:index')
+
+    if not request.user.is_authenticated:
+        return redirect_to_login(destination, resolve_url(settings.LOGIN_URL))
+    if admin.site.has_permission(request):
+        return admin.site.login(request)
+    return render(request, 'admin_no_access.html', status=403)
 
 
 @login_required

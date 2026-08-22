@@ -29,6 +29,7 @@ from seminars.api_views import (
     SeminarGroupViewSet,
     SeminarViewSet,
 )
+from accounts import views as account_views
 from seminars import views as seminar_views
 from mainSite.api_views import (
     PartnerViewSet,
@@ -67,6 +68,8 @@ router.register(r'google-form-template', GoogleFormViewSet)
 router.register(r'reminders', ReminderViewSet)
 
 urlpatterns = [
+    # Ahead of the admin's own URLs, so its login form is never reached.
+    path('admin/login/', account_views.admin_login),
     path('admin/', admin.site.urls),
     path("", include("mainSite.urls")),
     path('', include('accounts.urls')),
